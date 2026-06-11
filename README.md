@@ -77,6 +77,28 @@ targets **Android TV only** (leanback launcher, D-pad-first UI).
 
 ---
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="extras/screenshots/Main_View.png" alt="Main view"><br><sub>Main view</sub></td>
+    <td align="center"><img src="extras/screenshots/LiveTV_with_PreviewON.png" alt="Live TV with preview"><br><sub>Live TV — preview playing</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="extras/screenshots/Movies.png" alt="Movies"><br><sub>Movies</sub></td>
+    <td align="center"><img src="extras/screenshots/Profile_Selection.png" alt="Profile selection"><br><sub>"Who's watching?" profile gate</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="extras/screenshots/Downloads.png" alt="Downloads"><br><sub>Downloads</sub></td>
+    <td align="center"><img src="extras/screenshots/Settings_Main.png" alt="Settings"><br><sub>Settings</sub></td>
+  </tr>
+</table>
+
+More in **[extras/screenshots/](extras/screenshots/)** — Live TV (preview off), playlist management,
+personalization, profiles & sources settings.
+
+---
+
 ## 🧱 Tech stack
 
 | Area | Choice |
