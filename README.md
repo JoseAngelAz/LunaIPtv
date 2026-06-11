@@ -145,6 +145,9 @@ On first launch you'll go through onboarding: accept the disclaimer, create a pr
 source** (M3U or Xtream) — or import a backup. After it imports, browse from the sidebar and open the
 **Guide** for the EPG. Everything is managed under **Settings**.
 
+**Tested on:** a real **TCL Google TV**, and the **Android Studio emulator** (both the Android TV and
+Google TV system images).
+
 ## 🤖 CI & releases
 
 GitHub Actions ([`.github/workflows/android.yml`](.github/workflows/android.yml)) builds the app in the
