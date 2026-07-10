@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import android.content.Context
@@ -36,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.database.entity.SourceEntity
 import tv.own.owntv.core.model.SourceType
 import tv.own.owntv.core.sync.SyncCounts
@@ -134,7 +136,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(4.dp))
                 Text(display?.detail ?: "Preparing catalog", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(20.dp))
-                OwnTVButton("Cancel", onClick = { showAdd = false; vm.cancelImport() }, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = { showAdd = false; vm.cancelImport() }, style = OwnTVButtonStyle.SECONDARY)
             }
             is SettingsViewModel.ImportState.Success -> {
                 // Semi-auto EPG: ask → sync (with a live count, like the import) → done, before returning.
@@ -142,24 +144,24 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     EpgSyncDialog(state = epgSync, onSync = vm::syncPendingEpg, onDismiss = vm::dismissPendingEpg)
                 } else if (s.summary.contains("Imported with warnings:")) {
                     CenterStatus {
-                        Text("Import complete", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+                        Text(stringResource(R.string.sources_import_complete), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
                         Spacer(Modifier.height(8.dp))
                         Text(s.summary, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                         Spacer(Modifier.height(20.dp))
-                        OwnTVButton("Done", onClick = { showAdd = false; vm.resetImport() })
+                        OwnTVButton(stringResource(R.string.done), onClick = { showAdd = false; vm.resetImport() })
                     }
                 } else {
                     LaunchedEffect(Unit) { showAdd = false; vm.resetImport() }
                 }
             }
             is SettingsViewModel.ImportState.Failed -> CenterStatus {
-                Text("Import failed", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+                Text(stringResource(R.string.sources_import_failed), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
                 Spacer(Modifier.height(8.dp))
                 Text(s.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(20.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OwnTVButton("Back", onClick = { showAdd = false; vm.resetImport() }, style = OwnTVButtonStyle.SECONDARY)
-                    OwnTVButton("Try again", onClick = { vm.resetImport() }, modifier = Modifier.focusRequester(errorFocus))
+                    OwnTVButton(stringResource(R.string.back), onClick = { showAdd = false; vm.resetImport() }, style = OwnTVButtonStyle.SECONDARY)
+                    OwnTVButton(stringResource(R.string.try_again), onClick = { vm.resetImport() }, modifier = Modifier.focusRequester(errorFocus))
                 }
             }
         }
@@ -178,17 +180,17 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .padding(horizontal = 40.dp, vertical = 28.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Sources", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+            Text(stringResource(R.string.sources_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton("Add Source", onClick = { showAdd = true }, icon = tv.own.owntv.ui.components.OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
+            OwnTVButton(stringResource(R.string.sources_add), onClick = { showAdd = true }, icon = tv.own.owntv.ui.components.OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
         }
         Spacer(Modifier.height(8.dp))
-        Text("Sources are shared across all profiles.", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        Text(stringResource(R.string.sources_shared), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(20.dp))
 
         if (sources.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No sources yet. Add an M3U or Xtream source.", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.sources_empty), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -281,15 +283,15 @@ private fun SourceRow(
             )
         }
         Spacer(Modifier.width(12.dp))
-        OwnTVButton("Edit", onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
+        OwnTVButton(stringResource(R.string.edit), onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
         Spacer(Modifier.width(10.dp))
         if (syncState.isActive) {
-            OwnTVButton("Cancel", onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(stringResource(R.string.cancel), onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
         } else {
-            OwnTVButton("Re-sync", onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(stringResource(R.string.sources_resync), onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
         }
         Spacer(Modifier.width(10.dp))
-        OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+        OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
     }
 }
 
@@ -349,9 +351,9 @@ internal fun ConfirmDialog(title: String, message: String, onConfirm: () -> Unit
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.focusRequester(focus))
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.focusRequester(focus))
                 Spacer(Modifier.weight(1f))
-                OwnTVButton("Delete", onClick = onConfirm)
+                OwnTVButton(stringResource(R.string.delete), onClick = onConfirm)
             }
         }
     }

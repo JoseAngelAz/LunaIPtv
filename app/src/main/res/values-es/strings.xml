@@ -560,4 +560,151 @@
     <!-- ===== IDIOMA ===== -->
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
+
+    <!-- ===== BARRA LATERAL ===== -->
+    <string name="sidebar_home">Inicio</string>
+    <string name="sidebar_live_tv">TV en Vivo</string>
+    <string name="sidebar_movies">Películas</string>
+    <string name="sidebar_series">Series</string>
+    <string name="sidebar_downloads">Descargas</string>
+    <string name="sidebar_guide">Guía TV</string>
+    <string name="sidebar_settings">Ajustes</string>
+    <string name="sidebar_search">Buscar</string>
+    <string name="sidebar_switch_profile">Cambiar Perfil</string>
+    <string name="sidebar_default_profile">Usuario LunaIPtv</string>
+
+    <!-- ===== ASISTENTE DE CONFIGURACIÓN ===== -->
+    <string name="setup_welcome_desc">Tu propio reproductor IPTV.</string>
+    <string name="setup_before_start">Antes de empezar</string>
+    <string name="setup_own_tv">Configurar LunaIPtv</string>
+    <string name="setup_add_playlist">Agregar playlist</string>
+    <string name="setup_add_playlist_desc">Agrega una fuente para este perfil, o configúrala después.</string>
+    <string name="setup_existing_playlists">Usar playlists existentes</string>
+    <string name="setup_existing_playlists_desc">Elige las playlists para agregar a este perfil.</string>
+    <string name="setup_restoring">Restaurando…</string>
+    <string name="setup_restore_failed">Error al restaurar</string>
+    <string name="setup_all_set">¡Todo listo!</string>
+    <string name="setup_import_failed">Error al importar</string>
+    <string name="setup_get_started">Empezar</string>
+    <string name="setup_i_understand">Entendido</string>
+    <string name="setup_skip_for_now">Omitir por ahora</string>
+    <string name="setup_add_count">Agregar %1$d</string>
+    <string name="setup_skip_no_passwords">Omitir (sin contraseñas)</string>
+    <string name="setup_restore_button">Restaurar</string>
+    <string name="setup_continue">Continuar</string>
+
+    <!-- ===== FUENTES ===== -->
+    <string name="sources_title">Fuentes</string>
+    <string name="sources_shared">Las fuentes se comparten entre todos los perfiles.</string>
+    <string name="sources_empty">Sin fuentes aún. Agrega una fuente M3U o Xtream.</string>
+    <string name="sources_import_complete">Importación completada</string>
+    <string name="sources_import_failed">Error al importar</string>
+    <string name="sources_add">Agregar Fuente</string>
+    <string name="sources_resync">Re-sincronizar</string>
+
+    <!-- ===== DESCARGAS ===== -->
+    <string name="downloads_title">Descargas</string>
+    <string name="downloads_subtitle">Películas y episodios guardados para ver sin conexión.</string>
+    <string name="downloads_empty">Sin descargas aún. Abre una película o episodio y presiona Descargar.</string>
+    <string name="downloads_storage">Almacenamiento</string>
+    <string name="downloads_status_downloaded">Descargado · %1$s</string>
+    <string name="downloads_status_failed">Descarga falló — no se pudo acceder a la fuente. Toca Reintentar.</string>
+    <string name="downloads_status_queued">En cola…</string>
+    <string name="downloads_play">Reproducir</string>
+    <string name="downloads_external">Externo</string>
+    <string name="downloads_pause">Pausar</string>
+
+    <!-- ===== EPG ===== -->
+    <string name="epg_matching">Buscando coincidencia…</string>
+    <string name="epg_no_epg">Sin EPG agregado.</string>
+    <string name="epg_review_matches">Revisar coincidencias del EPG</string>
+    <string name="epg_accept">Aceptar</string>
+    <string name="epg_skip">Omitir</string>
+    <string name="epg_match">Vincular EPG</string>
+    <string name="epg_jump_now">Ir a ahora</string>
+    <string name="epg_category">Categoría: %1$s</string>
+    <string name="epg_sort">Ordenar: %1$s</string>
+    <string name="epg_auto_match">Vinculación automática EPG</string>
+    <string name="epg_add">Agregar EPG</string>
+    <string name="epg_accept_all">Aceptar todo</string>
+    <string name="epg_skip_all">Omitir todo</string>
+    <string name="epg_auto_match_short">Vinculación automática</string>
+    <string name="epg_pick_manually">Elegir manualmente</string>
+
+    <!-- ===== FUENTES EPG ===== -->
+    <string name="epg_sources_empty">Sin fuentes EPG aún. Agrega un enlace XMLTV.</string>
+    <string name="epg_auto_refresh">Actualización automática</string>
+    <string name="epg_fill_from_playlist">Llenar desde playlist</string>
+    <string name="epg_no_playlist_epg">Ninguna de tus playlists proporciona una URL de EPG.</string>
+
+    <!-- ===== SINCRONIZACIÓN EPG ===== -->
+    <string name="epg_sync_now_title">¿Sincronizar la guía TV ahora?</string>
+    <string name="epg_syncing">Sincronizando guía TV…</string>
+    <string name="epg_not_now">Ahora no</string>
+    <string name="epg_sync_button">Sincronizar ahora</string>
+
+    <!-- ===== PERFILES ===== -->
+    <string name="profile_gate_title">¿Quién está viendo?</string>
+    <string name="profile_add">Agregar perfil</string>
+    <string name="profiles_title">Perfiles</string>
+    <string name="profiles_add_button">Agregar Perfil</string>
+
+    <!-- ===== BARRA SUPERIOR ===== -->
+    <string name="topbar_search">Buscar</string>
+
+    <!-- ===== REPRODUCTOR ===== -->
+    <string name="player_playback_error">Error de reproducción</string>
+    <string name="player_no_tracks">Sin pistas disponibles.</string>
+    <string name="player_volume">Volumen</string>
+
+    <!-- ===== COPIA DE SEGURIDAD ===== -->
+    <string name="backup_title">Copia de Seguridad y Restauración</string>
+    <string name="backup_working">Trabajando…</string>
+    <string name="backup_export">Exportar copia</string>
+    <string name="backup_restore">Restaurar copia</string>
+
+    <!-- ===== CONFIGURACIÓN DEL REPRODUCTOR ===== -->
+    <string name="video_player_movies">Reproductor de Películas y Series</string>
+    <string name="video_player_external">Reproductor externo</string>
+    <string name="video_player_resume">Reanudar reproducción</string>
+
+    <!-- ===== DETALLES DEL MEDIO ===== -->
+    <string name="details_overview">Sinopsis</string>
+    <string name="details_cast">Reparto</string>
+    <string name="details_press_back">Presiona Atrás para cerrar</string>
+
+    <!-- ===== BÚSQUEDA ===== -->
+    <string name="search_title">Buscar</string>
+
+    <!-- ===== PERSONALIZAR ===== -->
+    <string name="customize_title">Personalizar y Elementos Ocultos</string>
+    <string name="customize_categories">Categorías</string>
+    <string name="customize_hide_show">Ocultar o mostrar categorías</string>
+    <string name="customize_unhide">Mostrar</string>
+    <string name="customize_rename">Renombrar</string>
+
+    <!-- ===== NAVEGADOR DE ARCHIVOS ===== -->
+    <string name="browser_use_folder">Usar esta carpeta</string>
+
+    <!-- ===== TMDB ===== -->
+    <string name="tmdb_set_name">Establecer nombre TMDB</string>
+    <string name="tmdb_clear">Borrar</string>
+
+    <!-- ===== REANUDAR ===== -->
+    <string name="resume_title">¿Reanudar reproducción?</string>
+    <string name="resume_start_over">Empezar de nuevo</string>
+
+    <!-- ===== SELECCIONADOR DE PLAYLIST ===== -->
+    <string name="playlist_picker_title">Mostrar playlist</string>
+
+    <!-- ===== AGREGAR FUENTE ===== -->
+    <string name="source_sync_first">Sincronizar primero</string>
+    <string name="source_sync_desc">Elige qué importar ahora. El resto se sincroniza en segundo plano.</string>
+    <string name="source_auto_refresh">Actualización automática</string>
+
+    <!-- ===== DIÁLOGO DE ACTUALIZACIÓN ===== -->
+    <string name="update_latest_version">Esta es la última versión de LunaIPtv (v%1$s).</string>
+    <string name="update_available_luna">LunaIPtv v%1$s está disponible (tienes v%2$s).</string>
+    <string name="update_later">Más tarde</string>
+    <string name="update_try_again">Intentar de nuevo</string>
 </resources>

@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import tv.own.owntv.R
@@ -60,20 +61,21 @@ import tv.own.owntv.ui.components.OwnTVIcon
 import tv.own.owntv.ui.theme.Dimens
 import tv.own.owntv.ui.theme.OwnTVTheme
 
-/** Spanish labels for the sidebar navigation. */
-private val MainSection.esLabel: String get() = when (this) {
-    MainSection.HOME -> "Inicio"
-    MainSection.LIVE_TV -> "TV en Vivo"
-    MainSection.MOVIES -> "Películas"
-    MainSection.SERIES -> "Series"
-    MainSection.DOWNLOADS -> "Descargas"
-    MainSection.EPG -> "Guía TV"
-    MainSection.SETTINGS -> "Ajustes"
-    MainSection.SEARCH -> "Buscar"
-}
-
 /** Golden glow color for the floating tooltip. */
 private val GoldGlow = Color(0xFFFFD700)
+
+/** Resolve sidebar label for a section using string resources. */
+@Composable
+private fun sectionLabel(section: MainSection): String = when (section) {
+    MainSection.HOME -> stringResource(R.string.sidebar_home)
+    MainSection.LIVE_TV -> stringResource(R.string.sidebar_live_tv)
+    MainSection.MOVIES -> stringResource(R.string.sidebar_movies)
+    MainSection.SERIES -> stringResource(R.string.sidebar_series)
+    MainSection.DOWNLOADS -> stringResource(R.string.sidebar_downloads)
+    MainSection.EPG -> stringResource(R.string.sidebar_guide)
+    MainSection.SETTINGS -> stringResource(R.string.sidebar_settings)
+    MainSection.SEARCH -> stringResource(R.string.sidebar_search)
+}
 
 /**
  * Layer 1 — the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
@@ -179,7 +181,7 @@ fun Sidebar(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = section.esLabel,
+                        text = sectionLabel(section),
                         style = MaterialTheme.typography.labelLarge,
                         color = GoldGlow,
                         fontWeight = FontWeight.Bold,
@@ -262,7 +264,7 @@ private fun ProfileCard(
             AvatarButton(avatarId = avatarId, sizeDp = 64, onClick = onPickAvatar)
             Spacer(Modifier.height(10.dp))
             Text(
-                profileName.ifBlank { "Usuario LunaIPtv" },
+                profileName.ifBlank { stringResource(R.string.sidebar_default_profile) },
                 style = MaterialTheme.typography.titleMedium,
                 color = colors.onSurface,
                 maxLines = 1,
@@ -292,7 +294,7 @@ private fun ProfileCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OwnTVIcon(icon = OwnTVIcon.PERSON, tint = c, modifier = Modifier.size(18.dp))
-                    Text("Cambiar Perfil", style = MaterialTheme.typography.labelLarge, color = c, maxLines = 1)
+                    Text(stringResource(R.string.sidebar_switch_profile), style = MaterialTheme.typography.labelLarge, color = c, maxLines = 1)
                 }
             }
         }
@@ -368,7 +370,7 @@ private fun NavItem(
                 )
                 if (expanded) {
                     Text(
-                        text = section.esLabel,
+                        text = sectionLabel(section),
                         style = MaterialTheme.typography.titleMedium,
                         color = ladder.content,
                         maxLines = 1,
