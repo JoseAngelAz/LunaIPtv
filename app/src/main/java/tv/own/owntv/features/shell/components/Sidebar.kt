@@ -216,15 +216,20 @@ fun Sidebar(
  */
 @Composable
 private fun AppLogo(modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.ic_launcher),
-        contentDescription = "LunaIPtv",
+    Box(
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(20.dp))
             .border(width = 2.dp, color = OwnTVTheme.colors.primary, shape = RoundedCornerShape(20.dp)),
-        contentScale = ContentScale.Crop,
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher),
+            contentDescription = "LunaIPtv",
+            modifier = Modifier.size(72.dp),
+            contentScale = ContentScale.Crop,
+        )
+    }
 }
 
 @Composable
