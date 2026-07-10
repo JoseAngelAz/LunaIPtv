@@ -612,7 +612,10 @@ class SettingsRepository(private val context: Context) {
     }
 
     val language: Flow<String> = context.dataStore.data.map { prefs ->
-        prefs[Keys.LANGUAGE] ?: "en"
+        prefs[Keys.LANGUAGE] ?: run {
+            val deviceLang = java.util.Locale.getDefault().language
+            if (deviceLang == "es") "es" else "en"
+        }
     }
 
     suspend fun setLanguage(lang: String) {
