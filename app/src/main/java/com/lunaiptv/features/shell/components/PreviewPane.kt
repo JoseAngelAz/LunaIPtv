@@ -1,5 +1,6 @@
 ﻿package com.lunaiptv.features.shell.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,16 +8,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.components.BrandLockup
+import com.lunaiptv.R
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.theme.OwnTVTheme
 
@@ -39,10 +43,15 @@ fun PreviewPane(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        BrandLockup(markSize = 56, textSize = 34)
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher),
+            contentDescription = "LunaIPtv",
+            modifier = Modifier.size(80.dp),
+            contentScale = ContentScale.Fit,
+        )
         Spacer(Modifier.height(Dimens.GapMedium))
         Text(
-            text = "Your own IPTV player.",
+            text = "Luna Tu IPTV Gratis",
             style = MaterialTheme.typography.titleMedium,
             color = colors.textSecondary,
             textAlign = TextAlign.Center,
