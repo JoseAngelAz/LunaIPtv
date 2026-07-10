@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -226,7 +227,7 @@ private fun AppLogo(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher),
             contentDescription = "LunaIPtv",
-            modifier = Modifier.size(72.dp),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
         )
     }
