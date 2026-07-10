@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Launch-window background. Deep dark blue for LunaIPtv lunar theme. -->
-    <color name="owntv_window_bg">#0A0E27</color>
+    <color name="lunaip_bg">#0A0E27</color>
     <!-- Adaptive launcher icon background. -->
-    <color name="owntv_icon_bg">#0A0E27</color>
+    <color name="lunaip_icon_bg">#0A0E27</color>
 </resources>

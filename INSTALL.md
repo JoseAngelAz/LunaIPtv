@@ -124,7 +124,7 @@ Al abrir LunaIPtv por primera vez:
 OwnTV/
 ├── app/
 │   ├── src/main/
-│   │   ├── java/tv/own/owntv/
+│   │   ├── java/com/lunaiptv/
 │   │   │   ├── core/           # Base de datos, sincronización, actualizaciones
 │   │   │   ├── features/       # Pantallas por función (home, live, movies, series, settings)
 │   │   │   ├── player/         # Motor de reproducción (libmpv + ExoPlayer)

@@ -1,0 +1,759 @@
+package com.lunaiptv.features.live
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import coil3.compose.AsyncImage
+import org.koin.androidx.compose.koinViewModel
+import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Text
+import com.lunaiptv.core.database.entity.ChannelEntity
+import com.lunaiptv.R
+import com.lunaiptv.features.shell.components.CategoryRail
+import com.lunaiptv.ui.components.MoveOrderOverlay
+import com.lunaiptv.features.shell.components.PreviewPane
+import com.lunaiptv.features.shell.components.RailCategory
+import com.lunaiptv.ui.components.longPressMenuGuard
+import com.lunaiptv.ui.components.trapVerticalFocusExit
+import com.lunaiptv.ui.components.FocusableSurface
+import com.lunaiptv.ui.components.OwnTVButton
+import com.lunaiptv.ui.components.OwnTVButtonStyle
+import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.SearchBar
+import com.lunaiptv.ui.components.SortChip
+import com.lunaiptv.ui.components.TextInputDialog
+import com.lunaiptv.ui.components.formatCount
+import com.lunaiptv.ui.components.ContentPanelFill
+import com.lunaiptv.ui.components.PreviewPanelFill
+import com.lunaiptv.ui.components.roundedPanel
+import com.lunaiptv.ui.format.rememberSystemTimeFormatter
+import com.lunaiptv.ui.theme.Dimens
+import com.lunaiptv.ui.Theme.LunaIPtvTheme
+
+/** Layer 2–4 for Live TV: real category rail, Paging channel list, and a live preview pane. */
+@Composable
+fun LiveScreen(
+    onFullscreen: () -> Unit,
+    onChildFocused: () -> Unit,
+    previewEnabled: Boolean = true,
+    restoreFocus: Boolean = false,
+    onRestored: () -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val vm: LiveViewModel = koinViewModel()
+    val railItems by vm.railItems.collectAsStateWithLifecycle()
+    val selectedKey by vm.selectedKey.collectAsStateWithLifecycle()
+    val count by vm.count.collectAsStateWithLifecycle()
+    val favoriteIds by vm.favoriteIds.collectAsStateWithLifecycle()
+    val previewChannel by vm.previewChannel.collectAsStateWithLifecycle()
+    val previewArmed by vm.previewArmed.collectAsStateWithLifecycle()
+    val nowNext by vm.nowNext.collectAsStateWithLifecycle()
+    val searchQuery by vm.searchQuery.collectAsStateWithLifecycle()
+    val sortMode by vm.sortMode.collectAsStateWithLifecycle()
+    val livePreviewSetting by vm.livePreviewEnabled.collectAsStateWithLifecycle()
+    val channels = vm.channels.collectAsLazyPagingItems()
+    val moveState by vm.moveState.collectAsStateWithLifecycle()
+    // Preview runs only when the player isn't busy (previewEnabled) AND the user hasn't turned it off.
+    val effectivePreview = previewEnabled && livePreviewSetting
+
+    // NOTE: do NOT stop the player when LiveScreen leaves composition — going fullscreen disposes
+    // this screen, and stopping here would abort the stream that was just started. Playback is
+    // stopped on fullscreen exit (shell BackHandler) instead.
+
+    // In-pane preview: play the focused channel after the focus settles (700ms). Disabled while the
+    // fullscreen/mini player owns the surface (previewEnabled=false) to avoid two surfaces fighting.
+    LaunchedEffect(previewChannel?.id, effectivePreview, previewArmed) {
+        // previewArmed gates the case where the last channel was restored on startup — we don't auto-preview
+        // it until the user actually focuses a channel (then it plays normally).
+        if (!effectivePreview || !previewArmed) return@LaunchedEffect
+        val ch = previewChannel ?: return@LaunchedEffect
+        delay(700)
+        vm.playPreview(ch)
+    }
+
+    val listState = androidx.compose.foundation.lazy.rememberLazyListState()
+    val selFocus = remember { FocusRequester() }
+    val firstItemFocus = remember { FocusRequester() }
+    var renaming by remember { mutableStateOf<ChannelEntity?>(null) }
+    var matchingEpg by remember { mutableStateOf<ChannelEntity?>(null) }
+    var catchupChannel by remember { mutableStateOf<ChannelEntity?>(null) }
+    var contextChannel by remember { mutableStateOf<ChannelEntity?>(null) } // long-press quick menu
+    // When the long-press menu closes (Cancel, Favourite, Hide) WITHOUT opening another dialog, return focus
+    // to the channel it was opened from — otherwise focus falls back to the nav panel.
+    var contextMenuOpen by remember { mutableStateOf(false) }
+    // Id of the channel the context menu was opened on, plus a dedicated requester bound to that row.
+    // The previous restore was racy (delay(60) + selFocus bound to the *previewed* channel): when the
+    // menu scrim disposed the focused menu button, Compose auto-restored focus and the CategoryRail's
+    // entry-redirect pinned it to the rail before selFocus.requestFocus() ran. Tracking the long-press
+    // target by id and binding a dedicated requester makes the restore deterministic.
+    var contextChannelId by remember { mutableStateOf<Long?>(null) }
+    val contextFocus = remember { FocusRequester() }
+    var enteringMoveMode by remember { mutableStateOf(false) }
+    LaunchedEffect(moveState) { if (moveState != null) enteringMoveMode = false }
+    LaunchedEffect(contextChannel) {
+        val opened = contextChannel != null
+        if (opened) { contextMenuOpen = true; return@LaunchedEffect }
+        if (!contextMenuOpen) return@LaunchedEffect
+        contextMenuOpen = false
+        // A follow-up dialog (rename / match EPG / catch-up / move) grabs focus itself — only restore
+        // for plain closes (Cancel, Favourite, Hide, Close).
+        if (renaming != null || matchingEpg != null || catchupChannel != null || enteringMoveMode) return@LaunchedEffect
+
+        val targetId = contextChannelId
+        if (targetId == null) { runCatching { selFocus.requestFocus() }; return@LaunchedEffect }
+
+        val idx = channels.itemSnapshotList.items.indexOfFirst { it?.id == targetId }
+        if (idx >= 0) {
+            runCatching { listState.scrollToItem(idx) }
+            withFrameNanos { } // wait one frame so the row is laid out and contextFocus is attached
+            runCatching { contextFocus.requestFocus() }
+        } else {
+            // Row is gone (e.g. "Hide channel" removed it) — clear the anchor and land on the first row.
+            contextChannelId = null
+            runCatching { firstItemFocus.requestFocus() }
+        }
+    }
+    // Returning from fullscreen: scroll to and focus the channel you were watching (waits for the list to load).
+    // Also used by "Startup → Live · Favorites": there's no remembered channel yet, so land on the first row
+    // (not the nav panel).
+    LaunchedEffect(restoreFocus, channels.itemCount) {
+        if (!restoreFocus || channels.itemCount == 0) return@LaunchedEffect
+        val ch = previewChannel
+        val idx = if (ch != null) channels.itemSnapshotList.items.indexOfFirst { it.id == ch.id } else -1
+        if (idx >= 0) {
+            runCatching { listState.scrollToItem(idx) }
+            delay(60)
+            runCatching { selFocus.requestFocus() }
+        } else {
+            delay(60)
+            runCatching { firstItemFocus.requestFocus() }
+        }
+        onRestored()
+    }
+
+    val selectedIndex = railItems.indexOfFirst { it.key == selectedKey }.coerceAtLeast(0)
+    val selectedItem = railItems.getOrNull(selectedIndex)
+
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .onFocusChanged { if (it.hasFocus) onChildFocused() },
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        CategoryRail(
+            categories = railItems.map { RailCategory(it.abbr, it.title, it.icon) },
+            selectedIndex = selectedIndex,
+            onSelect = { idx -> railItems.getOrNull(idx)?.let { vm.select(it.key) } },
+            // Focusing a folder stops the in-pane preview — but only when a preview is actually running.
+            // When the player is docked (live PiP) or fullscreen, previewEnabled is false and stopPreview
+            // would kill that stream (e.g. while navigating left to leave Live), so we skip it.
+            onFocused = { if (previewEnabled) vm.stopPreview() },
+        )
+
+        // Layer 3 — header + channel list (fixed-width column; the preview pane fills the rest)
+        Column(
+            modifier = Modifier
+                .width(Dimens.ChannelListWidth)
+                .fillMaxHeight()
+                .roundedPanel(fillColor = ContentPanelFill)
+                // Entering this pane (from the rail or the preview) must land on a channel row, never
+                // the search bar: prefer the last-focused channel, else the first row. onEnter fires
+                // only for directional entry from outside (internal moves don't re-trigger it).
+                .focusProperties {
+                    onEnter = {
+                        if (runCatching { selFocus.requestFocus() }.isFailure) {
+                            runCatching { firstItemFocus.requestFocus() }
+                        }
+                    }
+                }
+                // Held Up/Down can outrun the lazy list's composition and escape this pane
+                // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
+                .trapVerticalFocusExit()
+                .focusGroup()
+                .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
+        ) {
+            Text(
+                stringResource(R.string.live_header, selectedItem?.title ?: stringResource(R.string.common_all)),
+                style = MaterialTheme.typography.headlineMedium,
+                color = OwnTVTheme.colors.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.live_count, selectedItem?.abbr ?: "ALL", formatCount(count)),
+                style = MaterialTheme.typography.titleMedium,
+                color = OwnTVTheme.colors.primary,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.height(14.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = vm::setSearchQuery,
+                    placeholder = stringResource(R.string.live_search, selectedItem?.title ?: stringResource(R.string.common_channels)),
+                    modifier = Modifier.weight(1f).onFocusChanged { if (it.hasFocus && previewEnabled) vm.stopPreview() },
+                )
+                Spacer(Modifier.size(10.dp))
+                SortChip(mode = sortMode, onToggle = vm::toggleSort)
+            }
+            Spacer(Modifier.height(14.dp))
+
+            if (channels.itemCount == 0) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        if (searchQuery.isNotBlank()) stringResource(R.string.live_no_search, searchQuery.trim()) else stringResource(R.string.live_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = OwnTVTheme.colors.onSurfaceVariant,
+                    )
+                }
+            } else {
+                LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(channels.itemCount) { index ->
+                        val channel = channels[index]
+                        if (channel != null) {
+                            ChannelRow(
+                                channel = channel,
+                                isFavorite = favoriteIds.contains(channel.id),
+                                modifier = when {
+                                    channel.id == contextChannelId -> Modifier.focusRequester(contextFocus)
+                                    channel.id == previewChannel?.id -> Modifier.focusRequester(selFocus)
+                                    index == 0 -> Modifier.focusRequester(firstItemFocus)
+                                    else -> Modifier
+                                },
+                                onFocus = { vm.onChannelFocused(channel) },
+                                onClick = {
+                                    vm.watchFullscreen(channel, channels.itemSnapshotList.items.filterNotNull())
+                                    onFullscreen()
+                                },
+                                onLongClick = { contextChannel = channel; contextChannelId = channel.id },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Layer 4 — preview pane
+        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).padding(Dimens.GapLarge)) {
+            LivePreviewPane(
+                channel = previewChannel,
+                nowNext = nowNext,
+                previewEngine = vm.previewEngine,
+                showVideo = effectivePreview,
+                isFavorite = previewChannel?.let { favoriteIds.contains(it.id) } ?: false,
+                onToggleFavorite = { previewChannel?.let { vm.toggleFavorite(it) } },
+                onRename = { renaming = previewChannel },
+                onHide = { previewChannel?.let { vm.hideChannel(it) } },
+                onMatchEpg = { matchingEpg = previewChannel },
+                onCatchup = { catchupChannel = previewChannel },
+            )
+        }
+    }
+
+    catchupChannel?.let { ch ->
+        CatchupDialog(
+            channelName = ch.name,
+            loadProgrammes = { vm.catchupProgrammes(ch) },
+            onPick = { prog -> catchupChannel = null; vm.playCatchupProgramme(ch, prog); onFullscreen() },
+            onDismiss = { catchupChannel = null },
+        )
+    }
+
+    renaming?.let { ch ->
+        TextInputDialog(
+            title = stringResource(R.string.live_rename_title),
+            initial = ch.name,
+            hint = stringResource(R.string.live_rename_hint),
+            onConfirm = { vm.renameChannel(ch, it.takeIf { t -> t.isNotBlank() }); renaming = null },
+            onDismiss = { renaming = null },
+        )
+    }
+
+    matchingEpg?.let { ch ->
+        EpgMatchDialog(
+            channelName = ch.name,
+            currentMatch = vm.currentEpgMatch(ch),
+            loadChannels = { q -> vm.availableEpgChannels(q) },
+            onPick = { epgId -> vm.setEpgMatch(ch, epgId); matchingEpg = null },
+            onClear = { vm.setEpgMatch(ch, null); matchingEpg = null },
+            onDismiss = { matchingEpg = null },
+        )
+    }
+
+    // Long-press a channel → quick actions.
+    contextChannel?.let { ch ->
+        ChannelContextMenu(
+            channelName = ch.name,
+            isFavorite = favoriteIds.contains(ch.id),
+            hasCatchup = ch.catchup,
+            canMove = selectedKey is LiveKey.Folder || selectedKey == LiveKey.Favorites,
+            isHistory = selectedKey == LiveKey.History,
+            onToggleFavorite = { vm.toggleFavorite(ch); contextChannel = null },
+            onRename = { renaming = ch; contextChannel = null },
+            onHide = { vm.hideChannel(ch); contextChannel = null },
+            onMatchEpg = { matchingEpg = ch; contextChannel = null },
+            onCatchup = { catchupChannel = ch; contextChannel = null },
+            onMove = { contextChannel = null; enteringMoveMode = true; vm.enterMoveMode(ch, selectedKey) },
+            onRemoveFromHistory = { vm.removeFromHistory(ch.id); contextChannel = null },
+            onDismiss = { contextChannel = null },
+        )
+    }
+
+    // Move mode overlay — intercepts D-pad Up/Down/OK/Back while reordering.
+    moveState?.let { ms ->
+        MoveOrderOverlay(
+            title = stringResource(R.string.live_reorder),
+            itemNames = ms.items.map { it.name },
+            activeIndex = ms.activeIndex,
+            onMoveUp = vm::moveUp,
+            onMoveDown = vm::moveDown,
+            onCommit = vm::commitMove,
+            onCancel = vm::cancelMove,
+        )
+    }
+}
+
+@Composable
+private fun ChannelRow(
+    channel: ChannelEntity,
+    isFavorite: Boolean,
+    onFocus: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
+    val colors = OwnTVTheme.colors
+    FocusableSurface(
+        onClick = onClick,
+        onLongClick = onLongClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { if (it.hasFocus) onFocus() },
+        shape = RoundedCornerShape(12.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) { focused ->
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Box(
+                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(8.dp)).background(colors.surfaceContainerLowest),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (!channel.logoUrl.isNullOrBlank()) {
+                    AsyncImage(model = channel.logoUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
+                } else {
+                    OwnTVIcon(OwnTVIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
+                }
+            }
+            Text(
+                channel.name,
+                style = MaterialTheme.typography.titleSmall,
+                color = if (focused) colors.primary else colors.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+            if (isFavorite) {
+                OwnTVIcon(OwnTVIcon.STAR, tint = colors.favorite, filled = true, modifier = Modifier.size(20.dp))
+            }
+        }
+    }
+}
+
+/** Long-press quick actions for a Live channel (favourite / rename / hide / match EPG / catch-up / move / remove history). */
+@Composable
+private fun ChannelContextMenu(
+    channelName: String,
+    isFavorite: Boolean,
+    hasCatchup: Boolean,
+    canMove: Boolean,
+    isHistory: Boolean,
+    onToggleFavorite: () -> Unit,
+    onRename: () -> Unit,
+    onHide: () -> Unit,
+    onMatchEpg: () -> Unit,
+    onCatchup: () -> Unit,
+    onMove: () -> Unit,
+    onRemoveFromHistory: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val colors = OwnTVTheme.colors
+    val focus = remember { androidx.compose.ui.focus.FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    androidx.activity.compose.BackHandler { onDismiss() }
+    Box(
+        modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f))
+            .longPressMenuGuard(), // the long-press OK is still held — don't let it auto-click a menu item
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier.width(440.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(channelName, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Spacer(Modifier.height(4.dp))
+            OwnTVButton(
+                if (isFavorite) stringResource(R.string.movies_remove_fav) else stringResource(R.string.movies_add_fav),
+                onClick = onToggleFavorite, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.STAR,
+                modifier = Modifier.fillMaxWidth().focusRequester(focus),
+            )
+            OwnTVButton(stringResource(R.string.live_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.live_hide_channel), onClick = onHide, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.EPG, modifier = Modifier.fillMaxWidth())
+            if (hasCatchup) OwnTVButton(stringResource(R.string.live_catchup), onClick = onCatchup, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (canMove) OwnTVButton(stringResource(R.string.movies_move), onClick = onMove, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (isHistory) OwnTVButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(4.dp))
+            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
+private fun LivePreviewPane(
+    channel: ChannelEntity?,
+    nowNext: EpgNowNext?,
+    previewEngine: com.lunaiptv.player.LivePreviewEngine,
+    showVideo: Boolean,
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
+    onRename: () -> Unit,
+    onHide: () -> Unit,
+    onMatchEpg: () -> Unit,
+    onCatchup: () -> Unit,
+) {
+    val colors = OwnTVTheme.colors
+    val previewState by previewEngine.state.collectAsStateWithLifecycle()
+    val previewHeight by previewEngine.videoHeight.collectAsStateWithLifecycle()
+    val streamChips by previewEngine.streamChips.collectAsStateWithLifecycle()
+    // Show the ExoPlayer surface once it's playing/buffering; on ERROR fall back to the channel logo.
+    val previewPlaying = showVideo && previewState != com.lunaiptv.player.LivePreviewEngine.State.ERROR &&
+        previewState != com.lunaiptv.player.LivePreviewEngine.State.IDLE
+    val previewLoading = showVideo && previewState == com.lunaiptv.player.LivePreviewEngine.State.LOADING
+    val videoRes = previewHeight?.let { "${it}p" }
+    if (channel == null) {
+        PreviewPane(hint = stringResource(R.string.live_focus_hint))
+        return
+    }
+    Column(
+        // Scrollable so the action buttons are never clipped when the EPG (Now/Next/Later) makes the
+        // pane taller than the screen — focusing a button brings it into view.
+        // Outer preview Box carries the rounded panel (Phase 6); no clip/background here.
+        modifier = Modifier.fillMaxSize()
+            .verticalScroll(rememberScrollState()).padding(Dimens.GapLarge),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (!channel.logoUrl.isNullOrBlank()) {
+                AsyncImage(model = channel.logoUrl, contentDescription = null, modifier = Modifier.size(120.dp))
+            } else {
+                OwnTVIcon(OwnTVIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(56.dp))
+            }
+            if (previewPlaying) {
+                com.lunaiptv.player.ExoPreviewSurface(engine = previewEngine, modifier = Modifier.fillMaxSize())
+            }
+            if (previewLoading) {
+                OwnTVSpinner(sizeDp = 28)
+            }
+            // Real stream spec — aspect · resolution · fps · audio. The channel NAME often lies ("…4K"),
+            // so this shows what you'll actually get before you commit to watching. Falls back to just the
+            // resolution until the full format is known.
+            val chips = streamChips.takeIf { it.isNotEmpty() } ?: videoRes?.let { listOf(it) }.orEmpty()
+            chips.takeIf { previewPlaying && it.isNotEmpty() }?.let { list ->
+                Row(
+                    Modifier.align(Alignment.TopStart).padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    list.forEach { label ->
+                        Box(
+                            Modifier.clip(RoundedCornerShape(6.dp))
+                                .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.6f))
+                                .padding(horizontal = 8.dp, vertical = 3.dp),
+                        ) {
+                            Text(label, style = MaterialTheme.typography.labelMedium, color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(14.dp))
+        Text(channel.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+
+        EpgSection(nowNext)
+
+        // Catch-up channels: jump straight to a recent programme to replay it (no Guide gymnastics).
+        if (channel.catchup) {
+            Spacer(Modifier.height(16.dp))
+            OwnTVButton(label = stringResource(R.string.live_catchup), onClick = onCatchup, icon = OwnTVIcon.HISTORY)
+        }
+
+        Spacer(Modifier.height(16.dp))
+        OwnTVButton(
+            label = if (isFavorite) stringResource(R.string.series_favorited) else stringResource(R.string.series_favorite),
+            onClick = onToggleFavorite,
+            style = OwnTVButtonStyle.SECONDARY,
+            icon = OwnTVIcon.STAR,
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+            OwnTVButton(label = stringResource(R.string.live_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(label = stringResource(R.string.hide), onClick = onHide, style = OwnTVButtonStyle.SECONDARY)
+        }
+        Spacer(Modifier.height(10.dp))
+        OwnTVButton(label = stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.EPG)
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(R.string.live_press_ok), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+    }
+}
+
+/** Now-playing (with progress) + up-next, from the channel's short EPG. Hidden when no guide exists. */
+@Composable
+private fun EpgSection(nowNext: EpgNowNext?) {
+    val colors = OwnTVTheme.colors
+    val formatTime = rememberSystemTimeFormatter()
+    val now = nowNext?.now
+    val next = nowNext?.next
+    if (now == null && next == null) return
+
+    Spacer(Modifier.height(16.dp))
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (now != null) {
+            Text(stringResource(R.string.live_now), style = MaterialTheme.typography.labelSmall, color = colors.primary, fontWeight = FontWeight.Bold)
+            Text(
+                now.title,
+                style = MaterialTheme.typography.titleSmall,
+                color = colors.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            val span = (now.stopMs - now.startMs).coerceAtLeast(1)
+            val progress = ((System.currentTimeMillis() - now.startMs).toFloat() / span).coerceIn(0f, 1f)
+            Box(
+                modifier = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(colors.surfaceContainerLowest),
+            ) {
+                Box(Modifier.fillMaxWidth(progress).height(4.dp).clip(RoundedCornerShape(2.dp)).background(colors.primary))
+            }
+            Text(
+                "${formatTime(now.startMs)} – ${formatTime(now.stopMs)}",
+                style = MaterialTheme.typography.labelSmall,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        if (next != null) {
+            Spacer(Modifier.height(2.dp))
+            Text(stringResource(R.string.live_next_time, stringResource(R.string.live_next), formatTime(next.startMs)), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, fontWeight = FontWeight.Bold)
+            Text(
+                next.title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        // Upcoming programmes after "next" — see what's on later without opening the Guide (#11).
+        val later = nowNext?.upcoming ?: emptyList()
+        if (later.isNotEmpty()) {
+            Spacer(Modifier.height(6.dp))
+            Text(stringResource(R.string.live_later), style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, fontWeight = FontWeight.Bold)
+            later.forEach { p ->
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(formatTime(p.startMs), style = MaterialTheme.typography.labelSmall, color = colors.primary)
+                    Text(p.title, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+    }
+}
+
+private fun formatCatchupTime(
+    startMs: Long,
+    stopMs: Long,
+    formatTime: (Long) -> String,
+): String {
+    val day = java.text.SimpleDateFormat("EEE", java.util.Locale.getDefault()).format(java.util.Date(startMs))
+    return "$day ${formatTime(startMs)} – ${formatTime(stopMs)}"
+}
+
+/** Live TV catch-up: pick a recent (already-aired) programme on a catch-up channel to replay from start. */
+@Composable
+private fun CatchupDialog(
+    channelName: String,
+    loadProgrammes: suspend () -> List<com.lunaiptv.core.database.entity.EpgProgrammeEntity>,
+    onPick: (com.lunaiptv.core.database.entity.EpgProgrammeEntity) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val colors = OwnTVTheme.colors
+    val formatTime = rememberSystemTimeFormatter()
+    val list by androidx.compose.runtime.produceState<List<com.lunaiptv.core.database.entity.EpgProgrammeEntity>?>(initialValue = null) {
+        value = runCatching { loadProgrammes() }.getOrDefault(emptyList())
+    }
+    androidx.activity.compose.BackHandler { onDismiss() }
+    val firstFocus = remember { FocusRequester() }
+    LaunchedEffect(list) {
+        if (list.isNullOrEmpty()) return@LaunchedEffect
+        kotlinx.coroutines.delay(60); runCatching { firstFocus.requestFocus() }
+    }
+    Box(
+        Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f)).focusGroup(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(Modifier.width(620.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp)) {
+            Text(stringResource(R.string.live_catchup_title, channelName), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Spacer(Modifier.height(2.dp))
+            Text(stringResource(R.string.live_catchup_pick), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            Spacer(Modifier.height(12.dp))
+            when (val progs = list) {
+                null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
+                else -> if (progs.isEmpty()) {
+                    Text(
+                        stringResource(R.string.live_catchup_no_data),
+                        style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
+                    )
+                } else {
+                    LazyColumn(Modifier.fillMaxWidth().height(360.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        items(progs, key = { it.id }) { p ->
+                            FocusableSurface(
+                                onClick = { onPick(p) },
+                                modifier = if (p == progs.first()) Modifier.fillMaxWidth().focusRequester(firstFocus) else Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                contentAlignment = Alignment.CenterStart,
+                            ) { _ ->
+                                Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp)) {
+                                    Text(p.title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                    Text(formatCatchupTime(p.startMs, p.stopMs, formatTime), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+        }
+    }
+}
+
+/** Manual EPG matching: pick which guide channel this channel uses (search across all EPG feeds).
+ *  Shared with the Guide screen (long-press a channel → Match EPG). */
+@Composable
+internal fun EpgMatchDialog(
+    channelName: String,
+    currentMatch: String?,
+    loadChannels: suspend (String) -> List<com.lunaiptv.core.database.entity.EpgChannelEntity>,
+    onPick: (String) -> Unit,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val colors = OwnTVTheme.colors
+    var query by remember { mutableStateOf("") }
+    val results by androidx.compose.runtime.produceState<List<com.lunaiptv.core.database.entity.EpgChannelEntity>?>(initialValue = null, query) {
+        kotlinx.coroutines.delay(250)
+        value = runCatching { loadChannels(query) }.getOrDefault(emptyList())
+    }
+    androidx.activity.compose.BackHandler { onDismiss() }
+
+    // Pull focus into the dialog once the list first arrives (first result, else the search bar).
+    // One-shot, so later search-driven reloads don't steal focus from the field while typing.
+    val firstItemFocus = remember { FocusRequester() }
+    val searchFocus = remember { FocusRequester() }
+    var didInitialFocus by remember { mutableStateOf(false) }
+    LaunchedEffect(results) {
+        if (didInitialFocus || results == null) return@LaunchedEffect
+        didInitialFocus = true
+        kotlinx.coroutines.delay(60)
+        if (results!!.isNotEmpty()) runCatching { firstItemFocus.requestFocus() }
+        else runCatching { searchFocus.requestFocus() }
+    }
+
+    androidx.compose.foundation.layout.Box(
+        Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f)).focusGroup(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(Modifier.width(580.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp)) {
+            Text(stringResource(R.string.live_match_epg), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Spacer(Modifier.height(2.dp))
+            Text(
+                stringResource(R.string.live_match_epg_pick, channelName) + (currentMatch?.let { "  " + stringResource(R.string.live_match_epg_current, it) } ?: ""),
+                style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(12.dp))
+            SearchBar(query = query, onQueryChange = { query = it }, placeholder = stringResource(R.string.live_match_epg_search), modifier = Modifier.fillMaxWidth().focusRequester(searchFocus))
+            Spacer(Modifier.height(12.dp))
+            val list = results
+            when {
+                list == null -> androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
+                list.isEmpty() -> Text(
+                    if (query.isBlank()) stringResource(R.string.live_match_epg_no_data) else stringResource(R.string.live_match_epg_no_match, query),
+                    style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
+                )
+                else -> LazyColumn(Modifier.fillMaxWidth().height(300.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(list, key = { it.id }) { epg ->
+                        FocusableSurface(
+                            onClick = { onPick(epg.epgChannelId) },
+                            modifier = if (epg == list.first()) Modifier.fillMaxWidth().focusRequester(firstItemFocus) else Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            contentAlignment = Alignment.CenterStart,
+                        ) { _ ->
+                            Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp)) {
+                                Text(epg.displayName ?: epg.epgChannelId, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Text(epg.epgChannelId, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1)
+                            }
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                if (currentMatch != null) OwnTVButton(stringResource(R.string.live_clear_match), onClick = onClear, style = OwnTVButtonStyle.SECONDARY)
+            }
+        }
+    }
+}

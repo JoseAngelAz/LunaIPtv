@@ -105,8 +105,8 @@ adb pull /sdcard/screenshot.png
 
 ### Reiniciar la app
 ```bash
-adb shell am force-stop tv.own.owntv
-adb shell am start -n tv.own.owntv/.MainActivity
+adb shell am force-stop com.lunaiptv
+adb shell am start -n com.lunaiptv/.MainActivity
 ```
 
 ---

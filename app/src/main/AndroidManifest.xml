@@ -37,7 +37,7 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.OwnTV"
+        android:theme="@style/Theme.LunaIPtv"
         android:usesCleartextTraffic="true"
         tools:targetApi="26">
 
@@ -69,7 +69,7 @@
             android:banner="@drawable/banner_luna"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.OwnTV">
+            android:theme="@style/Theme.LunaIPtv">
             <!-- LEANBACK_LAUNCHER shows it on TV launchers; LAUNCHER shows it on phone/tablet/box home
                  screens (so non-TV devices get an app icon, not just an install). -->
             <intent-filter>

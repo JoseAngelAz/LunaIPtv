@@ -107,7 +107,7 @@ Scan to join from your phone:
 ## Architecture
 
 ```
-app/src/main/java/tv/own/owntv/
+app/src/main/java/com/lunaiptv/
 ├── core/                    # Shared infrastructure
 │   ├── data/                # Database (Room), DataStore
 │   ├── sync/                # WorkManager sync workers

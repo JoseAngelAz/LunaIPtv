@@ -4,10 +4,10 @@
       theme only governs the launch window before Compose draws, so we keep it minimal and paint the
       window the brand background to avoid a flash. App default theme is AMOLED dark.
     -->
-    <style name="Theme.OwnTV" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/owntv_window_bg</item>
-        <item name="android:statusBarColor">@color/owntv_window_bg</item>
-        <item name="android:navigationBarColor">@color/owntv_window_bg</item>
+    <style name="Theme.LunaIPtv" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/lunaip_bg</item>
+        <item name="android:statusBarColor">@color/lunaip_bg</item>
+        <item name="android:navigationBarColor">@color/lunaip_bg</item>
         <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

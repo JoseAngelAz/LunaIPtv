@@ -1,0 +1,256 @@
+package com.lunaiptv.core.backup
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
+import org.json.JSONArray
+import org.json.JSONObject
+import com.lunaiptv.core.database.dao.ChannelDao
+import com.lunaiptv.core.database.dao.ContentOrderDao
+import com.lunaiptv.core.database.dao.FavoriteDao
+import com.lunaiptv.core.database.dao.HistoryDao
+import com.lunaiptv.core.database.dao.MovieDao
+import com.lunaiptv.core.database.dao.ProgressDao
+import com.lunaiptv.core.database.dao.ProfileDao
+import com.lunaiptv.core.database.dao.SeriesDao
+import com.lunaiptv.core.database.dao.UserDataExportRow
+import com.lunaiptv.core.database.dao.resolveExistingProfileId
+import com.lunaiptv.core.database.entity.ContentOrderEntity
+import com.lunaiptv.core.database.entity.FavoriteEntity
+import com.lunaiptv.core.database.entity.PlaybackProgressEntity
+import com.lunaiptv.core.database.entity.WatchHistoryEntity
+import com.lunaiptv.core.model.MediaType
+
+private val Context.pendingStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_pending_userdata")
+private val PENDING_KEY = stringPreferencesKey("entries")
+
+/**
+ * Backs up and restores the per-profile user data that lives on volatile content ids: favorites,
+ * watch history, and resume positions. Content rows are clear-then-insert on every sync, so ids
+ * can't be exported directly — instead each record is exported with a stable identity
+ * (sourceId + provider remoteId, falling back to the name) and re-resolved against the content
+ * tables AFTER the post-restore sync repopulates them. Unresolvable records stay pending and are
+ * retried after every sync (and after a show's episodes load), so they heal as content appears.
+ */
+class UserDataResolver(
+    private val context: Context,
+    private val channelDao: ChannelDao,
+    private val movieDao: MovieDao,
+    private val seriesDao: SeriesDao,
+    private val profileDao: ProfileDao,
+    private val favoriteDao: FavoriteDao,
+    private val historyDao: HistoryDao,
+    private val progressDao: ProgressDao,
+    private val contentOrderDao: ContentOrderDao,
+) {
+
+    /** Exports the chosen kinds ("fav" / "his" / "prog" / "order") as stable-key records for the backup file. */
+    suspend fun exportAll(kinds: Set<String> = setOf("fav", "his", "prog", "order")): JSONArray {
+        val out = JSONArray()
+        if ("fav" in kinds) favoriteDao.getAllOnce().forEach { f ->
+            describe(f.mediaType, f.itemId)?.let { out.put(it.put("p", f.profileId).put("kind", "fav").put("at", f.addedAt)) }
+        }
+        if ("his" in kinds) historyDao.getAllOnce().forEach { h ->
+            describe(h.mediaType, h.itemId)?.let { out.put(it.put("p", h.profileId).put("kind", "his").put("at", h.watchedAt)) }
+        }
+        if ("prog" in kinds) progressDao.getAllOnce().forEach { pr ->
+            describe(pr.mediaType, pr.itemId)?.let {
+                out.put(it.put("p", pr.profileId).put("kind", "prog").put("at", pr.updatedAt).put("pos", pr.positionMs).put("dur", pr.durationMs))
+            }
+        }
+        if ("order" in kinds) contentOrderDao.getAllOnce().forEach { o ->
+            describe(o.mediaType, o.itemId)?.let {
+                out.put(it.put("p", o.profileId).put("kind", "order").put("ctx", o.contextKey).put("pos", o.position))
+            }
+        }
+        return out
+    }
+
+    /** Exports only the rows attached to [sourceId], so a single-source re-sync starts promptly. */
+    suspend fun exportForSource(sourceId: Long, kinds: Set<String> = setOf("fav", "his", "prog")): JSONArray {
+        val out = JSONArray()
+        if ("fav" in kinds) favoriteDao.exportRowsForSource(sourceId).forEach { row -> row.toJson("fav")?.let { out.put(it) } }
+        if ("his" in kinds) historyDao.exportRowsForSource(sourceId).forEach { row -> row.toJson("his")?.let { out.put(it) } }
+        if ("prog" in kinds) progressDao.exportRowsForSource(sourceId).forEach { row -> row.toJson("prog")?.let { out.put(it) } }
+        return out
+    }
+
+    private fun UserDataExportRow.toJson(kind: String): JSONObject? {
+        val json = when (mediaType) {
+            MediaType.LIVE, MediaType.MOVIE, MediaType.SERIES -> {
+                val itemName = name ?: return null
+                JSONObject().put("t", mediaType.name).put("src", sourceId).putOpt("rid", remoteId).put("name", itemName)
+            }
+            MediaType.EPISODE -> {
+                val showName = seriesName ?: return null
+                JSONObject().put("t", mediaType.name).put("src", sourceId)
+                    .putOpt("srid", seriesRemoteId).put("sname", showName)
+                    .putOpt("rid", remoteId).put("season", seasonNumber ?: 0).put("ep", episodeNumber ?: 0)
+            }
+        }
+        json.put("p", profileId).put("kind", kind).put("at", at).put("oid", itemId)
+        if (kind == "prog") json.put("pos", positionMs).put("dur", durationMs)
+        return json
+    }
+
+    /**
+     * Heals favorites/history/resume across a source re-sync. Content rows are clear-then-insert, so
+     * their ids change every refresh and the user-data rows (keyed on the old ids) orphan — the count
+     * badge still showed them, but the join returned nothing. Capture [exportAll] BEFORE the sync (ids
+     * still valid → stable keys), then call this AFTER it: re-resolve each record to the new ids, and
+     * (only when [purge] is true) drop the now-orphaned rows so counts and lists agree. Keep anything
+     * still unresolvable (e.g. not-yet-loaded episodes) pending for a later sync / show-open.
+     *
+     * [purge] must be false when the sync didn't fully succeed (e.g. it failed partway through a
+     * chunked import): the clear-then-insert is deferred per chunk, so a partial import can leave
+     * content rows missing that are still valid — purging in that case would permanently delete
+     * favorites for content that's simply not re-synced yet, instead of leaving them to heal on the
+     * next successful sync.
+     */
+    suspend fun relinkAfterSync(snapshot: JSONArray, purge: Boolean = true) {
+        val unresolved = JSONArray()
+        for (i in 0 until snapshot.length()) {
+            val e = snapshot.getJSONObject(i)
+            val ok = runCatching { resolveAndInsert(e) }.getOrDefault(false)
+            if (!ok) unresolved.put(e)
+        }
+        // Purge is strictly snapshot-scoped: only rows this snapshot captured (by their old ids) may
+        // be dropped, and only when their content row is genuinely gone. An EMPTY snapshot must never
+        // purge — the old fallback ran a GLOBAL orphan purge across ALL sources, which could delete
+        // another source's favorites while that source's own sync had its content mid-rewrite
+        // (M3U clear-then-insert / Xtream stale-prune run concurrently on startup refresh).
+        if (purge && snapshot.hasSourceSnapshotIds()) {
+            purgeSnapshotOrphans(snapshot)
+        }
+        if (unresolved.length() > 0) addPending(unresolved)
+        resolvePending() // also retries any in-flight backup restore
+    }
+
+    private fun JSONArray.hasSourceSnapshotIds(): Boolean =
+        length() > 0 && (0 until length()).all { getJSONObject(it).has("oid") }
+
+    private suspend fun purgeSnapshotOrphans(snapshot: JSONArray) {
+        for (i in 0 until snapshot.length()) {
+            val e = snapshot.getJSONObject(i)
+            val type = runCatching { MediaType.valueOf(e.getString("t")) }.getOrNull() ?: continue
+            val profileId = e.getLong("p")
+            val itemId = e.getLong("oid")
+            when (e.optString("kind")) {
+                "fav" -> favoriteDao.purgeSnapshotOrphan(profileId, type, itemId)
+                "his" -> historyDao.purgeSnapshotOrphan(profileId, type, itemId)
+                "prog" -> progressDao.purgeSnapshotOrphan(profileId, type, itemId)
+            }
+        }
+    }
+
+    /** Appends records to the pending set (de-duplicated by content), so they heal on a later resolve. */
+    private suspend fun addPending(extra: JSONArray) {
+        context.pendingStore.edit { prefs ->
+            val existing = prefs[PENDING_KEY]?.let { runCatching { JSONArray(it) }.getOrNull() } ?: JSONArray()
+            val seen = HashSet<String>()
+            for (i in 0 until existing.length()) seen.add(existing.getJSONObject(i).toString())
+            for (i in 0 until extra.length()) {
+                val s = extra.getJSONObject(i).toString()
+                if (seen.add(s)) existing.put(extra.getJSONObject(i))
+            }
+            prefs[PENDING_KEY] = existing.toString()
+        }
+    }
+
+    /** Replaces the pending set with a backup's records (empty/absent clears), then tries resolving. */
+    suspend fun importAll(entries: JSONArray?) {
+        context.pendingStore.edit { prefs ->
+            if (entries == null || entries.length() == 0) prefs.remove(PENDING_KEY)
+            else prefs[PENDING_KEY] = entries.toString()
+        }
+        resolvePending()
+    }
+
+    /**
+     * Tries to attach pending records to current content rows. Called after every successful source
+     * sync and after a show's episodes load; resolved records are inserted (idempotently — the user
+     * data tables have unique (profile, type, item) indices) and removed from the pending set.
+     */
+    suspend fun resolvePending() {
+        val raw = context.pendingStore.data.first()[PENDING_KEY] ?: return
+        val entries = runCatching { JSONArray(raw) }.getOrNull() ?: return
+        if (entries.length() == 0) return
+
+        val remaining = JSONArray()
+        for (i in 0 until entries.length()) {
+            val e = entries.getJSONObject(i)
+            val resolved = runCatching { resolveAndInsert(e) }.getOrDefault(false)
+            if (!resolved) remaining.put(e)
+        }
+        context.pendingStore.edit { prefs ->
+            if (remaining.length() == 0) prefs.remove(PENDING_KEY) else prefs[PENDING_KEY] = remaining.toString()
+        }
+    }
+
+    // --- export side: content row → stable identity ---
+
+    private suspend fun describe(type: MediaType, itemId: Long): JSONObject? = when (type) {
+        MediaType.LIVE -> channelDao.getById(itemId)?.let {
+            JSONObject().put("t", type.name).put("src", it.sourceId).putOpt("rid", it.remoteId).put("name", it.name)
+        }
+        MediaType.MOVIE -> movieDao.getById(itemId)?.let {
+            JSONObject().put("t", type.name).put("src", it.sourceId).putOpt("rid", it.remoteId).put("name", it.name)
+        }
+        MediaType.SERIES -> seriesDao.getSeriesById(itemId)?.let {
+            JSONObject().put("t", type.name).put("src", it.sourceId).putOpt("rid", it.remoteId).put("name", it.name)
+        }
+        MediaType.EPISODE -> {
+            val ep = seriesDao.getEpisodeById(itemId) ?: return null
+            val show = seriesDao.getSeriesById(ep.seriesId) ?: return null
+            JSONObject().put("t", type.name).put("src", show.sourceId)
+                .putOpt("srid", show.remoteId).put("sname", show.name)
+                .putOpt("rid", ep.remoteId).put("season", ep.seasonNumber).put("ep", ep.episodeNumber)
+        }
+    }
+
+    // --- restore side: stable identity → current content row ---
+
+    private suspend fun resolveAndInsert(e: JSONObject): Boolean {
+        val type = runCatching { MediaType.valueOf(e.getString("t")) }.getOrNull() ?: return true // drop garbage
+        val src = e.getLong("src")
+        val rid = e.optStringOrNull("rid")
+        val itemId: Long = when (type) {
+            MediaType.LIVE -> (rid?.let { channelDao.findByRemote(src, it) } ?: channelDao.findByName(src, e.getString("name")))?.id
+            MediaType.MOVIE -> (rid?.let { movieDao.findByRemote(src, it) } ?: movieDao.findByName(src, e.getString("name")))?.id
+            MediaType.SERIES -> (rid?.let { seriesDao.findSeriesByRemote(src, it) } ?: seriesDao.findSeriesByName(src, e.getString("name")))?.id
+            MediaType.EPISODE -> {
+                val srid = e.optStringOrNull("srid")
+                val show = (srid?.let { seriesDao.findSeriesByRemote(src, it) } ?: seriesDao.findSeriesByName(src, e.getString("sname")))
+                    ?: return false
+                (rid?.let { seriesDao.findEpisodeByRemote(show.id, it) }
+                    ?: seriesDao.findEpisodeByNumber(show.id, e.getInt("season"), e.getInt("ep")))?.id
+            }
+        } ?: return false
+
+        val pid = profileDao.resolveExistingProfileId(e.getLong("p")) ?: return false
+        val at = e.optLong("at", System.currentTimeMillis())
+        return runCatching {
+            when (e.getString("kind")) {
+                "fav" -> favoriteDao.add(FavoriteEntity(profileId = pid, mediaType = type, itemId = itemId, addedAt = at))
+                "his" -> historyDao.record(WatchHistoryEntity(profileId = pid, mediaType = type, itemId = itemId, watchedAt = at))
+                "prog" -> progressDao.save(
+                    PlaybackProgressEntity(
+                        profileId = pid, mediaType = type, itemId = itemId,
+                        positionMs = e.optLong("pos", 0), durationMs = e.optLong("dur", 0), updatedAt = at,
+                    ),
+                )
+                "order" -> contentOrderDao.insertAll(
+                    listOf(ContentOrderEntity(profileId = pid, mediaType = type, contextKey = e.getString("ctx"), itemId = itemId, position = e.getInt("pos"))),
+                )
+            }
+            true
+        }.getOrDefault(false)
+    }
+
+    private fun JSONObject.optStringOrNull(key: String): String? =
+        if (isNull(key)) null else optString(key).takeIf { it.isNotEmpty() }
+}
