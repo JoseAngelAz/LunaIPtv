@@ -88,7 +88,6 @@ fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
                         OwnTVButton(stringResource(R.string.epg_sync_now), onClick = onSync, modifier = Modifier.focusRequester(focus))
                     }
                 }
-                }
                 is EpgSyncUi.Syncing -> {
                     OwnTVSpinner(sizeDp = 48)
                     Spacer(Modifier.height(18.dp))

@@ -156,8 +156,7 @@ private fun DisclaimerScreen(onAgree: () -> Unit, onBack: () -> Unit) {
         Text(stringResource(R.string.setup_before_start), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(16.dp))
         Text(
-            "OwnTV is a media player only. It includes no channels, playlists, or content. You are " +
-                "responsible for adding your own legally accessible M3U or Xtream sources.",
+            stringResource(R.string.setup_disclaimer_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = colors.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -181,13 +180,13 @@ private fun SetupChoiceScreen(onCreate: () -> Unit, onRestore: () -> Unit, onBac
         Text(stringResource(R.string.setup_own_tv), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(6.dp))
         Text(
-            "Start fresh, or bring back your profiles, playlists and favorites from a backup file.",
+            stringResource(R.string.setup_choice_desc),
             style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ChoiceCard(icon = OwnTVIcon.PERSON, title = "New profile", desc = "Create a profile and add sources", modifier = Modifier.focusRequester(fr), onClick = onCreate)
-            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = "Restore backup", desc = "Import profiles & playlists from a file", onClick = onRestore)
+            ChoiceCard(icon = OwnTVIcon.PERSON, title = stringResource(R.string.setup_new_profile), desc = stringResource(R.string.setup_new_profile_desc), modifier = Modifier.focusRequester(fr), onClick = onCreate)
+            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = stringResource(R.string.setup_restore_backup), desc = stringResource(R.string.setup_restore_backup_desc), onClick = onRestore)
         }
     }
 }
@@ -203,11 +202,11 @@ private fun AddContentScreen(hasExisting: Boolean, onNew: () -> Unit, onExisting
         Text(stringResource(R.string.setup_add_playlist_desc), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ChoiceCard(icon = OwnTVIcon.ADD, title = "New", desc = "Add an M3U or Xtream source", modifier = Modifier.focusRequester(fr), onClick = onNew)
+            ChoiceCard(icon = OwnTVIcon.ADD, title = stringResource(R.string.setup_new), desc = stringResource(R.string.setup_new_desc), modifier = Modifier.focusRequester(fr), onClick = onNew)
             if (hasExisting) {
-                ChoiceCard(icon = OwnTVIcon.PLAYLIST, title = "Existing", desc = "Use another profile's playlists", onClick = onExisting)
+                ChoiceCard(icon = OwnTVIcon.PLAYLIST, title = stringResource(R.string.setup_existing), desc = stringResource(R.string.setup_existing_playlists_desc), onClick = onExisting)
             }
-            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = "Import", desc = "Restore from a backup file", onClick = onImport)
+            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = stringResource(R.string.setup_import), desc = stringResource(R.string.setup_import_desc), onClick = onImport)
         }
         Spacer(Modifier.height(24.dp))
         OwnTVButton(stringResource(R.string.setup_skip_for_now), onClick = onSkip, style = OwnTVButtonStyle.SECONDARY)
@@ -274,13 +273,13 @@ private fun ImportBackupScreen(
             val firstFocus = remember { FocusRequester() }
             LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
             Text(
-                if (state.retry) "Wrong backup password" else "Enter backup password",
+                if (state.retry) stringResource(R.string.setup_backup_wrong_password) else stringResource(R.string.setup_backup_enter_password),
                 style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                if (state.retry) "That password didn't match. Try again, or skip to restore everything except saved passwords."
-                else "This backup's passwords are encrypted. Enter the backup password to restore them, or skip to restore everything else and re-enter passwords later.",
+                if (state.retry) stringResource(R.string.setup_backup_wrong_desc)
+                else stringResource(R.string.setup_backup_encrypted_desc),
                 style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant,
                 textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp),
             )
@@ -288,7 +287,7 @@ private fun ImportBackupScreen(
             OwnTVTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Backup password",
+                label = stringResource(R.string.setup_backup_password),
                 isPassword = true,
                 focusRequester = firstFocus,
                 modifier = Modifier.widthIn(max = 420.dp),
@@ -306,12 +305,14 @@ private fun ImportBackupScreen(
             Text(state.message, style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp))
             Spacer(Modifier.height(20.dp))
             OwnTVButton(stringResource(R.string.back), onClick = onBack)
-            title = "Pick a backup file to restore",
-            mode = BrowseMode.FILE,
-            fileExtensions = setOf("json"),
-            onPick = onPick,
-            onDismiss = onBack,
-        )
+            StorageBrowser(
+                title = stringResource(R.string.setup_pick_backup),
+                mode = BrowseMode.FILE,
+                fileExtensions = setOf("json"),
+                onPick = onPick,
+                onDismiss = onBack,
+            )
+        }
     }
 }
 
@@ -361,21 +362,21 @@ private fun ImportProgressScreen(
                 val display = progress?.importProgressDisplay(context)
                 OwnTVSpinner(sizeDp = 56)
                 Spacer(Modifier.height(20.dp))
-                Text(display?.title ?: "Importing catalog…", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                Text(display?.title ?: stringResource(R.string.setup_importing_catalog), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    display?.primaryText ?: "Preparing catalog",
+                    display?.primaryText ?: stringResource(R.string.setup_preparing_catalog),
                     style = MaterialTheme.typography.headlineLarge,
                     color = colors.primary,
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    display?.detail ?: "Preparing catalog",
+                    display?.detail ?: stringResource(R.string.setup_preparing_catalog),
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(24.dp))
-                OwnTVButton("Cancel", onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
             }
             is SetupViewModel.ImportState.Success -> {
                 Text(stringResource(R.string.setup_all_set), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
