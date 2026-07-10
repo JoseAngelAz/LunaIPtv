@@ -574,36 +574,45 @@
     <string name="sidebar_switch_profile">Switch Profile</string>
     <string name="sidebar_default_profile">LunaIPtv User</string>
 
-    <!-- ===== SETUP WIZARD ===== -->
+    <!-- ===== SETUP WIZARD (NEW) ===== -->
     <string name="setup_welcome_desc">Your own IPTV player.</string>
-    <string name="setup_before_start">Before you start</string>
     <string name="setup_own_tv">Set up LunaIPtv</string>
-    <string name="setup_add_playlist">Add a playlist</string>
-    <string name="setup_add_playlist_desc">Add a source for this profile, or set one up later.</string>
     <string name="setup_existing_playlists">Use existing playlists</string>
     <string name="setup_existing_playlists_desc">Pick the playlists to add to this profile.</string>
-    <string name="setup_restoring">Restoring…</string>
-    <string name="setup_restore_failed">Restore failed</string>
-    <string name="setup_all_set">All set!</string>
-    <string name="setup_import_failed">Import failed</string>
-    <string name="setup_get_started">Get Started</string>
-    <string name="setup_i_understand">I Understand</string>
     <string name="setup_skip_for_now">Skip for now</string>
-    <string name="setup_add_count">Add %1$d</string>
     <string name="setup_skip_no_passwords">Skip (no passwords)</string>
     <string name="setup_restore_button">Restore</string>
-    <string name="setup_continue">Continue</string>
 
-    <!-- ===== SOURCES ===== -->
-    <string name="sources_title">Sources</string>
-    <string name="sources_shared">Sources are shared across all profiles.</string>
-    <string name="sources_empty">No sources yet. Add an M3U or Xtream source.</string>
-    <string name="sources_import_complete">Import complete</string>
-    <string name="sources_import_failed">Import failed</string>
-    <string name="sources_add">Add Source</string>
-    <string name="sources_resync">Re-sync</string>
+    <!-- ===== EPG (NEW) ===== -->
+    <string name="epg_matching">Matching…</string>
+    <string name="epg_no_epg">No EPG added.</string>
+    <string name="epg_review_matches">Review EPG matches</string>
+    <string name="epg_accept">Accept</string>
+    <string name="epg_skip">Skip</string>
+    <string name="epg_match">Match EPG</string>
+    <string name="epg_jump_now">Jump to Now</string>
+    <string name="epg_category">Category: %1$s</string>
+    <string name="epg_sort">Sort: %1$s</string>
+    <string name="epg_auto_match">Auto-match EPG</string>
+    <string name="epg_accept_all">Accept all</string>
+    <string name="epg_skip_all">Skip all</string>
+    <string name="epg_auto_match_short">Auto-match</string>
+    <string name="epg_pick_manually">Pick manually</string>
+    <string name="epg_sources_empty">No EPG sources yet. Add an XMLTV link.</string>
+    <string name="epg_sync_now_title">Sync the TV guide now?</string>
+    <string name="epg_sync_button">Sync now</string>
 
-    <!-- ===== DOWNLOADS ===== -->
+    <!-- ===== PROFILES (NEW) ===== -->
+    <string name="profile_gate_title">Who\'s watching?</string>
+    <string name="profiles_add_button">Add Profile</string>
+
+    <!-- ===== TOP BAR (NEW) ===== -->
+    <string name="topbar_search">Search</string>
+
+    <!-- ===== PLAYER (NEW) ===== -->
+    <string name="player_playback_error">Playback error</string>
+
+    <!-- ===== DOWNLOADS (NEW) ===== -->
     <string name="downloads_title">Downloads</string>
     <string name="downloads_subtitle">Movies &amp; episodes saved for offline playback.</string>
     <string name="downloads_empty">No downloads yet. Open a movie or episode and press Download.</string>
@@ -615,97 +624,42 @@
     <string name="downloads_external">External</string>
     <string name="downloads_pause">Pause</string>
 
-    <!-- ===== EPG ===== -->
-    <string name="epg_matching">Matching…</string>
-    <string name="epg_no_epg">No EPG added.</string>
-    <string name="epg_review_matches">Review EPG matches</string>
-    <string name="epg_accept">Accept</string>
-    <string name="epg_skip">Skip</string>
-    <string name="epg_match">Match EPG</string>
-    <string name="epg_jump_now">Jump to Now</string>
-    <string name="epg_category">Category: %1$s</string>
-    <string name="epg_sort">Sort: %1$s</string>
-    <string name="epg_auto_match">Auto-match EPG</string>
-    <string name="epg_add">Add EPG</string>
-    <string name="epg_accept_all">Accept all</string>
-    <string name="epg_skip_all">Skip all</string>
-    <string name="epg_auto_match_short">Auto-match</string>
-    <string name="epg_pick_manually">Pick manually</string>
-
-    <!-- ===== EPG SOURCES ===== -->
-    <string name="epg_sources_empty">No EPG sources yet. Add an XMLTV link.</string>
-    <string name="epg_auto_refresh">Auto refresh</string>
-    <string name="epg_fill_from_playlist">Fill from playlist</string>
-    <string name="epg_no_playlist_epg">None of your playlists provide an EPG URL.</string>
-
-    <!-- ===== EPG SYNC ===== -->
-    <string name="epg_sync_now_title">Sync the TV guide now?</string>
-    <string name="epg_syncing">Syncing TV guide…</string>
-    <string name="epg_not_now">Not now</string>
-    <string name="epg_sync_button">Sync now</string>
-
-    <!-- ===== PROFILES ===== -->
-    <string name="profile_gate_title">Who\'s watching?</string>
-    <string name="profile_add">Add profile</string>
-    <string name="profiles_title">Profiles</string>
-    <string name="profiles_add_button">Add Profile</string>
-
-    <!-- ===== TOP BAR ===== -->
-    <string name="topbar_search">Search</string>
-
-    <!-- ===== PLAYER ===== -->
-    <string name="player_playback_error">Playback error</string>
-    <string name="player_no_tracks">No tracks available.</string>
-    <string name="player_volume">Volume</string>
-
-    <!-- ===== BACKUP ===== -->
-    <string name="backup_title">Backup &amp; Restore</string>
-    <string name="backup_working">Working…</string>
-    <string name="backup_export">Export backup</string>
-    <string name="backup_restore">Restore backup</string>
-
-    <!-- ===== VIDEO PLAYER SETTINGS ===== -->
+    <!-- ===== VIDEO PLAYER SETTINGS (NEW) ===== -->
     <string name="video_player_movies">Movies &amp; Series player</string>
     <string name="video_player_external">External player</string>
     <string name="video_player_resume">Resume playback</string>
 
-    <!-- ===== MEDIA DETAILS ===== -->
+    <!-- ===== MEDIA DETAILS (NEW) ===== -->
     <string name="details_overview">Overview</string>
     <string name="details_cast">Cast</string>
     <string name="details_press_back">Press Back to close</string>
 
-    <!-- ===== SEARCH ===== -->
-    <string name="search_title">Search</string>
-
-    <!-- ===== CUSTOMIZE ===== -->
+    <!-- ===== CUSTOMIZE (NEW) ===== -->
     <string name="customize_title">Customize &amp; Hidden Items</string>
     <string name="customize_categories">Categories</string>
     <string name="customize_hide_show">Hide or show categories</string>
     <string name="customize_unhide">Unhide</string>
     <string name="customize_rename">Rename</string>
 
-    <!-- ===== STORAGE BROWSER ===== -->
+    <!-- ===== STORAGE BROWSER (NEW) ===== -->
     <string name="browser_use_folder">Use this folder</string>
 
-    <!-- ===== TMDB ===== -->
+    <!-- ===== TMDB (NEW) ===== -->
     <string name="tmdb_set_name">Set TMDB name</string>
     <string name="tmdb_clear">Clear</string>
 
-    <!-- ===== RESUME ===== -->
+    <!-- ===== RESUME (NEW) ===== -->
     <string name="resume_title">Resume playback?</string>
     <string name="resume_start_over">Start over</string>
 
-    <!-- ===== PLAYLIST PICKER ===== -->
+    <!-- ===== PLAYLIST PICKER (NEW) ===== -->
     <string name="playlist_picker_title">Show playlist</string>
 
-    <!-- ===== ADD SOURCE ===== -->
-    <string name="source_sync_first">Sync first</string>
+    <!-- ===== ADD SOURCE (NEW) ===== -->
     <string name="source_sync_desc">Pick what to import now. The rest syncs in the background.</string>
-    <string name="source_auto_refresh">Auto refresh</string>
 
-    <!-- ===== UPDATE DIALOG ===== -->
+    <!-- ===== UPDATE DIALOG (NEW) ===== -->
     <string name="update_latest_version">This is the latest version of LunaIPtv (v%1$s).</string>
     <string name="update_available_luna">LunaIPtv v%1$s is available (you have v%2$s).</string>
-    <string name="update_later">Later</string>
     <string name="update_try_again">Try again</string>
 </resources>
