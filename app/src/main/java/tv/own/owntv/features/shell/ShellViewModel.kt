@@ -197,6 +197,11 @@ class ShellViewModel(
     val themeMode: StateFlow<ThemeMode> = settings.themeMode
         .stateIn(viewModelScope, SharingStarted.Eagerly, ThemeMode.DARK)
 
+    val language: StateFlow<String> = settings.language
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "en")
+
+    fun setLanguage(lang: String) { viewModelScope.launch { settings.setLanguage(lang) } }
+
     val uiZoomPercent: StateFlow<Int> = settings.uiZoomPercent
         .stateIn(viewModelScope, SharingStarted.Eagerly, UiZoom.DEFAULT)
 

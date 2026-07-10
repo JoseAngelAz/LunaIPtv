@@ -127,6 +127,8 @@ class SettingsRepository(private val context: Context) {
         val METADATA_MODE = stringPreferencesKey("metadata_mode")
         val TMDB_API_KEY = stringPreferencesKey("tmdb_api_key")
         val METADATA_SERVER_URL = stringPreferencesKey("metadata_server_url")
+        // Language ("en" or "es")
+        val LANGUAGE = stringPreferencesKey("language")
     }
 
     // --- Live TV: remember the last focused channel so reopening lands focus back on it ---
@@ -607,6 +609,14 @@ class SettingsRepository(private val context: Context) {
 
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { it[Keys.THEME_MODE] = mode.name }
+    }
+
+    val language: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[Keys.LANGUAGE] ?: "en"
+    }
+
+    suspend fun setLanguage(lang: String) {
+        context.dataStore.edit { it[Keys.LANGUAGE] = lang }
     }
 
     val uiZoomPercent: Flow<Int> = context.dataStore.data.map { prefs ->

@@ -293,6 +293,9 @@ class SettingsViewModel(
     val themeMode: StateFlow<ThemeMode> = settings.themeMode.stateIn(viewModelScope, SharingStarted.Eagerly, ThemeMode.DARK)
     fun setThemeMode(mode: ThemeMode) { viewModelScope.launch { settings.setThemeMode(mode) } }
 
+    val language: StateFlow<String> = settings.language.stateIn(viewModelScope, SharingStarted.Eagerly, "en")
+    fun setLanguage(lang: String) { viewModelScope.launch { settings.setLanguage(lang) } }
+
     val accent: StateFlow<AccentColor> = settings.accent.stateIn(viewModelScope, SharingStarted.Eagerly, AccentColor.TEAL)
     fun setAccent(accent: AccentColor) { viewModelScope.launch { settings.setAccent(accent) } }
 

@@ -67,11 +67,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import tv.own.owntv.core.database.entity.ChannelEntity
+import tv.own.owntv.R
 import tv.own.owntv.core.launcher.LauncherContinuationItem
 import tv.own.owntv.core.launcher.LauncherWatchNextType
 import tv.own.owntv.player.HeroPreviewEngine
@@ -494,7 +496,7 @@ private fun HeroRowSection(
 
     Column(modifier = modifier) {
         Text(
-            text = "Keep Watching".uppercase(),
+            text = stringResource(R.string.home_keep_watching),
             style = MaterialTheme.typography.titleSmall,
             color = colors.primary,
             fontWeight = FontWeight.Bold,
@@ -904,7 +906,7 @@ private fun HeroRowSection(
                             Spacer(Modifier.height(10.dp))
                             OwnTVButton(
                                 label = when (expandedItem.watchNextType) {
-                                    LauncherWatchNextType.NEXT -> "Play Next"
+                                    LauncherWatchNextType.NEXT -> stringResource(R.string.home_play_next)
                                     LauncherWatchNextType.CONTINUE ->
                                         if (expandedItem is HeroItem.LiveHero) "Tune In" else "Resume"
                                 },
@@ -1222,7 +1224,7 @@ private fun HeroFallbackPane(
             BrandLockup(markSize = 72, textSize = 42)
             Spacer(Modifier.height(14.dp))
             Text(
-                text = "Nothing to preview yet.",
+                text = stringResource(R.string.home_empty_preview),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colors.onSurfaceVariant,
                 maxLines = 3,
@@ -1230,7 +1232,7 @@ private fun HeroFallbackPane(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Your continue-watching items will appear here once playback history is available.",
+                text = stringResource(R.string.home_empty_preview_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
                 maxLines = 3,
@@ -1255,14 +1257,14 @@ private fun EmptyHomeState(
             BrandLockup(markSize = 84, textSize = 48)
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Start watching to see your activity here.",
+                text = stringResource(R.string.home_empty_start),
                 style = MaterialTheme.typography.titleLarge,
                 color = colors.onSurface,
                 maxLines = 1,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Continue watching will show up on Home once you have playback history.",
+                text = stringResource(R.string.home_empty_continue),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colors.onSurfaceVariant,
                 maxLines = 2,
@@ -1287,14 +1289,14 @@ private fun AllRowsHiddenState(
             BrandLockup(markSize = 84, textSize = 48)
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "All Home rows are hidden.",
+                text = stringResource(R.string.home_all_hidden),
                 style = MaterialTheme.typography.titleLarge,
                 color = colors.onSurface,
                 maxLines = 1,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Turn rows back on in Settings → Home screen.",
+                text = stringResource(R.string.home_turn_rows),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colors.onSurfaceVariant,
                 maxLines = 2,

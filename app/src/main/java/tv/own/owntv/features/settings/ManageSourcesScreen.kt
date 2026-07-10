@@ -27,8 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import android.content.Context
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
@@ -61,6 +63,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val defaultId by vm.defaultSourceId.collectAsStateWithLifecycle()
     val epgSync by vm.epgSync.collectAsStateWithLifecycle()
     val colors = OwnTVTheme.colors
+    val context = LocalContext.current
 
     var showAdd by remember { mutableStateOf(false) }
     var editingSource by remember { mutableStateOf<SourceEntity?>(null) }
@@ -118,7 +121,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 initial = vm.lastFailedSource, // pre-fill on retry — no re-typing after a typo
             )
             SettingsViewModel.ImportState.Running -> CenterStatus {
-                val display = progress?.importProgressDisplay()
+                val display = progress?.importProgressDisplay(context)
                 OwnTVSpinner(sizeDp = 56)
                 Spacer(Modifier.height(16.dp))
                 Text(
@@ -234,8 +237,9 @@ private fun SourceRow(
     onDelete: () -> Unit,
 ) {
     val colors = OwnTVTheme.colors
+    val context = LocalContext.current
     val activeSync = syncState as? CatalogSyncState.Syncing
-    val activeCountsLabel = activeSync?.countsLabel(source.type, counts)
+    val activeCountsLabel = activeSync?.countsLabel(context, source.type, counts)
     Row(
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(colors.surfaceContainerHigh).padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -255,7 +259,7 @@ private fun SourceRow(
                 activeSync?.let {
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        resyncBadgeText(it.baseItemCount, it.totalProcessed),
+                        resyncBadgeText(context, it.baseItemCount, it.totalProcessed),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.onPrimaryContainer,
                         modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(colors.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp),
@@ -289,7 +293,7 @@ private fun SourceRow(
     }
 }
 
-private fun CatalogSyncState.Syncing.countsLabel(sourceType: SourceType, stored: SyncCounts?): String? {
+private fun CatalogSyncState.Syncing.countsLabel(context: Context, sourceType: SourceType, stored: SyncCounts?): String? {
     fun visibleCount(active: Boolean, processed: Int, storedCount: Int): Int =
         if (active) processed else storedCount
 
@@ -322,7 +326,7 @@ private fun CatalogSyncState.Syncing.countsLabel(sourceType: SourceType, stored:
             seriesActive = false,
         )
     }
-    return syncProgressCountsLabel(counts)
+    return syncProgressCountsLabel(context, counts)
 }
 
 @Composable

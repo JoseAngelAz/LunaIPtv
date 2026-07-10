@@ -102,6 +102,8 @@ fun OwnTVShell(
     onExitApp: () -> Unit,
     onSwitchProfile: () -> Unit,
     modifier: Modifier = Modifier,
+    language: String = "en",
+    onSetLanguage: (String) -> Unit = {},
 ) {
     val colors = OwnTVTheme.colors
     val railSelection = remember { mutableStateMapOf<MainSection, Int>() }
@@ -359,6 +361,8 @@ fun OwnTVShell(
                             onOpenPlaylist = { /* Phase 6: open setup/playlist */ },
                             openEpgAdd = openEpgAdd,
                             onEpgAddConsumed = { openEpgAdd = false },
+                            language = language,
+                            onSetLanguage = onSetLanguage,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .onFocusChanged { if (it.hasFocus) focusedLayer = ShellLayer.CONTENT }

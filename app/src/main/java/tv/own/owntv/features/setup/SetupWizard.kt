@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -347,6 +348,7 @@ private fun ImportProgressScreen(
     onCancel: () -> Unit,
 ) {
     val colors = OwnTVTheme.colors
+    val context = LocalContext.current
     val fr = remember { FocusRequester() }
     LaunchedEffect(state) {
         if (state is SetupViewModel.ImportState.Success || state is SetupViewModel.ImportState.Failed) runCatching { fr.requestFocus() }
@@ -356,7 +358,7 @@ private fun ImportProgressScreen(
         when (state) {
             SetupViewModel.ImportState.Running, SetupViewModel.ImportState.Idle,
             is SetupViewModel.ImportState.NeedPassword -> {
-                val display = progress?.importProgressDisplay()
+                val display = progress?.importProgressDisplay(context)
                 OwnTVSpinner(sizeDp = 56)
                 Spacer(Modifier.height(20.dp))
                 Text(display?.title ?: "Importing catalog…", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)

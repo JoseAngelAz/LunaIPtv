@@ -72,7 +72,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
         contentAlignment = Alignment.Center,
     ) {
         Column(Modifier.width(520.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(28.dp)) {
-            Text("App update", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text("LunaIPtv", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(12.dp))
 
             when (val s = state) {
@@ -85,7 +85,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                 }
                 UpdateManager.State.UpToDate -> {
                     Text(
-                        "You're on the latest version (v${manager.currentVersion}).",
+                        "This is the latest version of LunaIPtv (v${manager.currentVersion}).",
                         style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(20.dp))
@@ -95,7 +95,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                 }
                 is UpdateManager.State.Available -> {
                     Text(
-                        "Version ${s.info.version} is available (you have v${manager.currentVersion}).",
+                        "LunaIPtv v${s.info.version} is available (you have v${manager.currentVersion}).",
                         style = MaterialTheme.typography.bodyMedium, color = colors.onSurface,
                     )
                     if (s.info.notes.isNotBlank()) {

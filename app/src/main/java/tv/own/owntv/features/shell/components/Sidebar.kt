@@ -1,6 +1,12 @@
 package tv.own.owntv.features.shell.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusGroup
@@ -30,15 +36,20 @@ import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.features.shell.MainSection
 import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.components.NavAccentBar
@@ -48,6 +59,21 @@ import tv.own.owntv.ui.components.NavDuotoneIcon
 import tv.own.owntv.ui.components.OwnTVIcon
 import tv.own.owntv.ui.theme.Dimens
 import tv.own.owntv.ui.theme.OwnTVTheme
+
+/** Spanish labels for the sidebar navigation. */
+private val MainSection.esLabel: String get() = when (this) {
+    MainSection.HOME -> "Inicio"
+    MainSection.LIVE_TV -> "TV en Vivo"
+    MainSection.MOVIES -> "Películas"
+    MainSection.SERIES -> "Series"
+    MainSection.DOWNLOADS -> "Descargas"
+    MainSection.EPG -> "Guía TV"
+    MainSection.SETTINGS -> "Ajustes"
+    MainSection.SEARCH -> "Buscar"
+}
+
+/** Golden glow color for the floating tooltip. */
+private val GoldGlow = Color(0xFFFFD700)
 
 /**
  * Layer 1 — the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
@@ -71,22 +97,16 @@ fun Sidebar(
     val colors = OwnTVTheme.colors
     var hasFocus by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    // Phase 2 — the nav is a FIXED icon rail: it never expands or collapses, so the layout never jumps on
-    // the D-pad. The profile avatar is pinned at the bottom (Phase 1). Full section labels live in the panes.
     val expanded = false
-    // Phase 4 — Search left the rail for the top bar, so when Search is the active section there's no nav
-    // item to receive the entry-focus redirect below. Fall back to Home so BACK / left out of Search still
-    // lands in the rail instead of stranding focus in the content area.
     val focusSection = if (selected == MainSection.SEARCH) MainSection.HOME else selected
+
+    // Track which item is focused for the tooltip
+    var focusedSection by remember { mutableStateOf<MainSection?>(null) }
 
     Column(
         modifier = modifier
             .fillMaxHeight()
             .onFocusChanged {
-                // D-pad focus search is spatial — entering the panel from the content area would
-                // land on whatever item happens to be horizontally aligned. Redirect every entry to
-                // the SELECTED section instead (internal up/down moves don't re-trigger this).
-                // Deferred a frame: requesting focus inside onFocusChanged is rejected mid-transaction.
                 val entered = it.hasFocus && !hasFocus
                 hasFocus = it.hasFocus
                 if (it.hasFocus) onFocused()
@@ -94,23 +114,14 @@ fun Sidebar(
             }
             .focusGroup()
             .width(Dimens.SidebarWidthCollapsed)
-            .background(colors.background) // Phase 6 — unified panel surface
-            // Side inset (6.dp). Combined with the content area's start=0, this leaves a ~6.dp gap
-            // between the nav pills and panel 1. Symmetric, so logo/profile stay centered.
+            .background(colors.background)
             .padding(horizontal = 6.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // Phase 2 — brand mark pinned at the top of the rail. Non-focusable, so D-pad entry into the
-        // panel still redirects to the selected nav item below (see onFocusChanged) — it can't trap
-        // an "up" press from the first nav item either.
+        // Brand logo at the top
         AppLogo()
         Spacer(Modifier.height(12.dp))
 
-        // Phase 3 — the nav is vertically centered between the logo and the profile, BUT the rail
-        // scrolls when UI zoom makes the fixed item list taller than the panel (otherwise the top/bottom
-        // items get clipped and become unreachable). A scrollable Box with Center alignment centers the
-        // nav when it fits and pans through it when it overflows; Compose brings each item into view as
-        // D-pad focus moves to it.
         Box(
             modifier = Modifier
                 .weight(1f)
@@ -118,11 +129,6 @@ fun Sidebar(
                 .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center,
         ) {
-            if (expanded) {
-                SectionLabel("Browse")
-                Spacer(Modifier.height(4.dp))
-            }
-
             Column(modifier = Modifier.fillMaxWidth()) {
                 MainSection.entries.filter { it.isBrowse }.forEach { section ->
                     NavItem(
@@ -131,19 +137,22 @@ fun Sidebar(
                         expanded = expanded,
                         count = counts(section),
                         onClick = { onSelect(section) },
+                        onFocused = { focusedSection = section },
+                        onClearFocus = { if (focusedSection == section) focusedSection = null },
                         modifier = if (section == focusSection) {
                             Modifier.focusRequester(selectedItemFocusRequester)
                         } else Modifier,
                     )
                     Spacer(Modifier.height(4.dp))
                 }
-                // Settings closes out the nav block.
                 NavItem(
                     section = MainSection.SETTINGS,
                     active = selected == MainSection.SETTINGS,
                     expanded = expanded,
                     count = 0,
                     onClick = { onSelect(MainSection.SETTINGS) },
+                    onFocused = { focusedSection = MainSection.SETTINGS },
+                    onClearFocus = { if (focusedSection == MainSection.SETTINGS) focusedSection = null },
                     modifier = if (focusSection == MainSection.SETTINGS) {
                         Modifier.focusRequester(selectedItemFocusRequester)
                     } else Modifier,
@@ -151,8 +160,37 @@ fun Sidebar(
             }
         }
 
-        // Phase 1 — profile relocated to the bottom of the rail (was top). A divider groups the account
-        // avatar apart from the nav items above it.
+        // Floating tooltip with golden glow — appears when a nav item is focused
+        AnimatedVisibility(
+            visible = focusedSection != null,
+            enter = fadeIn() + slideInHorizontally(initialOffsetX = { -it / 3 }),
+            exit = fadeOut() + slideOutHorizontally(targetOffsetX = { -it / 3 }),
+        ) {
+            focusedSection?.let { section ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .shadow(8.dp, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(GoldGlow.copy(alpha = 0.15f))
+                        .border(1.dp, GoldGlow.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = section.esLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = GoldGlow,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+
+        // Divider + profile at the bottom
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -172,24 +210,19 @@ fun Sidebar(
 }
 
 /**
- * Brand mark at the top of the rail — the cyan play-triangle inside a rounded-square outline, the same
- * geometry as [ic_launcher_foreground] (kept consistent with the planned branded splash). Drawn from
- * [OwnTVIcon.PLAY] (filled) inside an outlined [Box] so it matches the visual weight of the 56dp avatar
- * below. Decorative only: a plain Box is not focusable, so it neither captures D-pad focus nor traps an
- * "up" press. Tints with [OwnTVTheme.colors].primary so it follows the user's accent like the nav icons.
+ * Brand mark at the top of the rail — the LunaIPtv moon logo. Decorative only: not focusable.
  */
 @Composable
 private fun AppLogo(modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
-    Box(
+    Image(
+        painter = painterResource(id = R.drawable.ic_launcher),
+        contentDescription = "LunaIPtv",
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(20.dp))
-            .border(width = 2.dp, color = colors.primary, shape = RoundedCornerShape(20.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        OwnTVIcon(icon = OwnTVIcon.PLAY, tint = colors.primary, modifier = Modifier.size(26.dp), filled = true)
-    }
+            .border(width = 2.dp, color = OwnTVTheme.colors.primary, shape = RoundedCornerShape(20.dp)),
+        contentScale = ContentScale.Crop,
+    )
 }
 
 @Composable
@@ -229,7 +262,7 @@ private fun ProfileCard(
             AvatarButton(avatarId = avatarId, sizeDp = 64, onClick = onPickAvatar)
             Spacer(Modifier.height(10.dp))
             Text(
-                profileName.ifBlank { "OwnTV User" },
+                profileName.ifBlank { "Usuario LunaIPtv" },
                 style = MaterialTheme.typography.titleMedium,
                 color = colors.onSurface,
                 maxLines = 1,
@@ -259,7 +292,7 @@ private fun ProfileCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OwnTVIcon(icon = OwnTVIcon.PERSON, tint = c, modifier = Modifier.size(18.dp))
-                    Text("Switch Profile", style = MaterialTheme.typography.labelLarge, color = c, maxLines = 1)
+                    Text("Cambiar Perfil", style = MaterialTheme.typography.labelLarge, color = c, maxLines = 1)
                 }
             }
         }
@@ -284,36 +317,23 @@ private fun AvatarButton(avatarId: Int, sizeDp: Int, onClick: () -> Unit, onLong
 }
 
 @Composable
-private fun SectionLabel(text: String) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelMedium,
-        color = OwnTVTheme.colors.onSurfaceVariant,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
-    )
-}
-
-@Composable
 private fun NavItem(
     section: MainSection,
     active: Boolean,
     expanded: Boolean,
     count: Int,
     onClick: () -> Unit,
+    onFocused: () -> Unit = {},
+    onClearFocus: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val colors = OwnTVTheme.colors
-    // Box-style corners (17.dp) so every focus/selection box in the app reads as the same "box", close
-    // to the live-TV channel list item, not an over-rounded pill.
     val shape = RoundedCornerShape(17.dp)
-    // The nav surface itself is transparent + borderless; the shared 4-state nav ladder (NavLadder.kt)
-    // paints the fill, content tint, focus outline and the persistent left accent bar, so the sidebar
-    // and the folder CategoryRail read identically (#47). FocusableSurface still provides the focus
-    // scale, glow and click.
     FocusableSurface(
         onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .onFocusChanged { if (it.hasFocus) onFocused() else onClearFocus() },
         selected = active,
         shape = shape,
         focusedContainerColor = Color.Transparent,
@@ -333,7 +353,6 @@ private fun NavItem(
                     else Modifier
                 ),
         ) {
-            // Persistent left accent bar marking the active section, regardless of focus.
             NavAccentBar(visible = ladder.showAccentBar, height = 26.dp)
             Row(
                 modifier = Modifier
@@ -342,8 +361,6 @@ private fun NavItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = if (expanded) Arrangement.spacedBy(16.dp, Alignment.Start) else Arrangement.Center,
             ) {
-                // Monochrome duotone nav icon — tints via the shared ladder (muted idle, white cursor,
-                // accent when active). No per-frame animation on the always-visible nav.
                 NavDuotoneIcon(
                     section = section,
                     color = ladder.icon,
@@ -351,7 +368,7 @@ private fun NavItem(
                 )
                 if (expanded) {
                     Text(
-                        text = section.label,
+                        text = section.esLabel,
                         style = MaterialTheme.typography.titleMedium,
                         color = ladder.content,
                         maxLines = 1,

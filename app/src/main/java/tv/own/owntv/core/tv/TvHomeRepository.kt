@@ -579,7 +579,7 @@ class TvHomeRepository(
             .setDescription("Recently watched live channels")
             .setAppLinkIntentUri(LauncherDeepLink.OpenLiveSection.toUri())
             .setInternalProviderId(platformInternalId(TvProviderSurface.RECENT_LIVE, profileId, MediaType.LIVE, RECENT_LIVE_CHANNEL_STABLE_KEY))
-            .setLogo(resourceUri(R.drawable.tv_banner))
+            .setLogo(resourceUri(R.drawable.banner_luna))
             .build()
     }
 

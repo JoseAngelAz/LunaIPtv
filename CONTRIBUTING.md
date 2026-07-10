@@ -1,11 +1,11 @@
-# Contributing to OwnTV
+# Contributing to LunaIPtv
 
-Thanks for your interest in improving OwnTV! Contributions of all sizes are welcome — bug fixes,
+Thanks for your interest in improving LunaIPtv! Contributions of all sizes are welcome — bug fixes,
 features, docs, or ideas.
 
 ## Ground rules
 
-- OwnTV is a **player only**. Please keep its bring-your-own-source positioning — no bundled channels,
+- LunaIPtv is a **player only**. Please keep its bring-your-own-source positioning — no bundled channels,
   playlists, or content, and nothing that facilitates access to unauthorized streams.
 - It targets **Android TV** (D-pad / leanback first). Keep navigation remote-friendly.
 - Match the existing code style and structure (Kotlin, Jetpack Compose for TV, Koin, Room).
@@ -19,7 +19,7 @@ features, docs, or ideas.
    ./gradlew assembleDebug
    ```
 
-A quick tour of the codebase lives in the [README](README.md#%EF%B8%8F-how-it-works-backend), and the
+A quick tour of the codebase lives in the [README](README.md), and the
 full design/architecture is in [`extras/`](extras/).
 
 ## Workflow (branch → Pull Request)
@@ -29,25 +29,27 @@ We use a simple fork-and-PR flow:
 1. **Fork** the repo (or, if you're a collaborator, create a branch directly).
 2. Create a branch off `main`:
    ```bash
-   git checkout -b feature/short-description
+   git checkout -b feature/my-improvement main
    ```
-3. Make your changes and **commit** them with clear messages — these become the release changelog,
-   so write them for a reader (e.g. `Fix EPG grid scroll desync on D-pad`).
-4. Push your branch and **open a Pull Request** against `main`.
-5. CI builds the app on your PR — please make sure it's green.
-6. A maintainer reviews and merges.
+3. Make your changes, commit, and push.
+4. Open a Pull Request against `main` with a clear description of what and why.
 
-> Keep each PR focused on one thing. Small, reviewable PRs get merged faster.
+## Code style
 
-## Commit messages
+- **Kotlin** with Compose idioms (no imperative `findViewById`).
+- **Koin** for dependency injection.
+- **Room** for persistence.
+- Prefer **named parameters** in function calls for readability.
+- Keep functions focused; extract composables when a block grows.
 
-- Write in the imperative: "Add…", "Fix…", "Refactor…".
-- One logical change per commit where practical.
-- Add `[skip ci]` to the message for doc-only or config commits that don't need a build.
+## Reporting bugs
 
-## Reporting bugs / requesting features
+Open an issue with:
+- Device model and Android version
+- Steps to reproduce
+- Expected vs. actual behaviour
+- Screenshots or logs if possible
 
-Open an issue with what you expected, what happened, your device / Android TV version, and steps to
-reproduce. Logs (`adb logcat`) help a lot for playback issues.
+## License
 
-By contributing, you agree your contributions are licensed under the project's [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the **GPLv3**.

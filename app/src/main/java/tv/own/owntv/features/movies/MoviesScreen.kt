@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
@@ -53,6 +54,7 @@ import androidx.tv.material3.Text
 import tv.own.owntv.core.database.entity.DownloadEntity
 import tv.own.owntv.core.database.entity.MovieEntity
 import tv.own.owntv.core.model.DownloadStatus
+import tv.own.owntv.R
 import tv.own.owntv.features.live.LiveKey
 import tv.own.owntv.features.settings.data.SettingsRepository
 import tv.own.owntv.features.shell.components.CategoryRail
@@ -238,10 +240,10 @@ fun MoviesScreen(
                 .focusGroup()
                 .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
         ) {
-            Text("Movies / ${selectedItem?.title ?: "All"}", style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+            Text(stringResource(R.string.movies_header, selectedItem?.title ?: stringResource(R.string.common_all)), style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
             Spacer(Modifier.height(4.dp))
             Text(
-                "${selectedItem?.abbr ?: "ALL"} (${formatCount(count)} movies)",
+                stringResource(R.string.movies_count, selectedItem?.abbr ?: "ALL", formatCount(count)),
                 style = MaterialTheme.typography.titleMedium,
                 color = OwnTVTheme.colors.primary,
                 fontWeight = FontWeight.Bold,
@@ -251,11 +253,11 @@ fun MoviesScreen(
                 SearchBar(
                     query = searchQuery,
                     onQueryChange = vm::setSearchQuery,
-                    placeholder = "Search ${selectedItem?.title ?: "movies"}…",
+                    placeholder = stringResource(R.string.movies_search, selectedItem?.title ?: stringResource(R.string.common_movies)),
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(10.dp))
-                SortChip(mode = sortMode, onToggle = vm::toggleSort, playlistLabel = "Provider")
+                SortChip(mode = sortMode, onToggle = vm::toggleSort, playlistLabel = stringResource(R.string.movies_provider))
                 Spacer(Modifier.width(10.dp))
                 // View mode (#10): poster wall vs a compact list (more titles at once).
                 tv.own.owntv.ui.components.OwnTVButton(
@@ -270,7 +272,7 @@ fun MoviesScreen(
             if (movies.itemCount == 0) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        if (searchQuery.isNotBlank()) "No movies found for “${searchQuery.trim()}”" else "No movies here.",
+                        if (searchQuery.isNotBlank()) stringResource(R.string.movies_no_search, searchQuery.trim()) else stringResource(R.string.movies_empty),
                         style = MaterialTheme.typography.bodyLarge, color = OwnTVTheme.colors.onSurfaceVariant,
                     )
                 }
@@ -384,13 +386,13 @@ fun MoviesScreen(
                 contextMovie = null
                 // Idempotent (§11.1): don't re-queue an existing download — nudge to the Downloads menu.
                 if (alreadyDownloaded) {
-                    toast.show("Already downloaded — check the Downloads menu.")
+                    toast.show(context.getString(R.string.movies_already_downloaded))
                 } else vm.download(m)
             },
             onPlayExternal = { contextMovie = null; vm.playExternal(m) },
             onRefetch = {
                 contextMovie = null
-                toast.show("Refetching TMDB details…")
+                toast.show(context.getString(R.string.movies_refetching))
                 vm.refetchMovieMeta(m)
             },
             onSetTmdbName = { contextMovie = null; setTmdbNameMovie = m },
@@ -435,12 +437,12 @@ fun MoviesScreen(
                 onSave = { title, year ->
                     setTmdbNameMovie = null
                     vm.setMovieTmdbName(m, title, year)
-                    toast.show("Re-searching TMDB…")
+                    toast.show(context.getString(R.string.movies_researching))
                 },
                 onClear = {
                     setTmdbNameMovie = null
                     vm.clearMovieTmdbName(m)
-                    toast.show("Re-searching TMDB…")
+                    toast.show(context.getString(R.string.movies_researching))
                 },
                 onDismiss = { setTmdbNameMovie = null },
             )
@@ -461,7 +463,7 @@ fun MoviesScreen(
     // Move mode overlay.
     moveState?.let { ms ->
         MoveOrderOverlay(
-            title = "Reorder movie",
+            title = stringResource(R.string.movies_reorder),
             itemNames = ms.items.map { it.name },
             activeIndex = ms.activeIndex,
             onMoveUp = vm::moveUp,
@@ -513,39 +515,33 @@ private fun MovieContextMenu(
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             Spacer(Modifier.height(4.dp))
             OwnTVButton(
-                if (isFavorite) "Remove from Favourites" else "Add to Favourites",
+                if (isFavorite) stringResource(R.string.movies_remove_fav) else stringResource(R.string.movies_add_fav),
                 onClick = onToggleFavorite, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.STAR,
                 modifier = Modifier.fillMaxWidth().focusRequester(focus),
             )
             OwnTVButton(
-                if (watched) "Mark as unwatched" else "Mark as watched",
+                if (watched) stringResource(R.string.movies_unwatched) else stringResource(R.string.movies_watched),
                 onClick = onToggleWatched, style = OwnTVButtonStyle.SECONDARY,
                 modifier = Modifier.fillMaxWidth(),
             )
-            if (canMove) OwnTVButton("Move", onClick = onMove, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            if (isHistory) OwnTVButton("Remove from History", onClick = onRemoveFromHistory, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton("Hide", onClick = onHide, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton("Download", onClick = onDownload, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth())
-            // Phase B: one-off external playback, independent of the global "External player" toggle.
-            OwnTVButton("Play with external player", onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAY, modifier = Modifier.fillMaxWidth())
-            // TMDB Details — only when a confident match resolved (§11.1).
+            if (canMove) OwnTVButton(stringResource(R.string.movies_move), onClick = onMove, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (isHistory) OwnTVButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.hide), onClick = onHide, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.movies_download), onClick = onDownload, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.movies_external), onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAY, modifier = Modifier.fillMaxWidth())
             if (hasTmdbDetails) {
                 Spacer(Modifier.height(4.dp))
-                OwnTVButton("TMDB Details", onClick = onShowDetails, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.MENU, modifier = Modifier.fillMaxWidth())
+                OwnTVButton(stringResource(R.string.movies_tmdb_details), onClick = onShowDetails, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.MENU, modifier = Modifier.fillMaxWidth())
             }
-            // Play Trailer (§7.3 U4) — only when TMDB actually has a trailer for this title (§11.1 gating).
             trailerKey?.let { key ->
-                OwnTVButton("Play Trailer", onClick = { onPlayTrailer(key) }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                OwnTVButton(stringResource(R.string.movies_play_trailer), onClick = { onPlayTrailer(key) }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             }
-            // Refetch TMDB details (§11.2 U5a) — always available when enrichment is on, so a "no match"
-            // (7-day negative cache) or a stale match can be cleared and re-searched immediately.
             if (canRefetchTmdb) {
-                OwnTVButton("Refetch TMDB details", onClick = onRefetch, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-                // Set TMDB name (§11.2 U5b) — hand-type the exact title to override the auto-match.
-                OwnTVButton("Set TMDB name", onClick = onSetTmdbName, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                OwnTVButton(stringResource(R.string.movies_refetch_tmdb), onClick = onRefetch, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                OwnTVButton(stringResource(R.string.movies_set_tmdb_name), onClick = onSetTmdbName, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             }
             Spacer(Modifier.height(4.dp))
-            OwnTVButton("Close", onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -560,7 +556,7 @@ private fun MovieDetailsPane(
 ) {
     val colors = OwnTVTheme.colors
     if (movie == null) {
-        PreviewPane(hint = "Focus a movie to see details.")
+        PreviewPane(hint = stringResource(R.string.movies_focus_hint))
         return
     }
     // Merge (§7.1 / §4.1). Provider+TMDB → provider wins (provider ?: tmdb); TMDB-only → tmdb wins
@@ -607,7 +603,7 @@ private fun MovieDetailsPane(
         // pane, since movie metadata below can push a lower placement out of view once it scrolls long).
         if (resumePositionMs != null) {
             Text(
-                "Resume ${tv.own.owntv.ui.components.formatTimestamp(resumePositionMs)}",
+                stringResource(R.string.movies_resume, tv.own.owntv.ui.components.formatTimestamp(resumePositionMs)),
                 style = MaterialTheme.typography.labelMedium,
                 color = colors.primary,
             )
@@ -629,7 +625,7 @@ private fun MovieDetailsPane(
         val cast = jsonList(meta?.castJson)
         if (cast.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            Text("Cast", style = MaterialTheme.typography.labelMedium, color = colors.onSurface)
+            Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = colors.onSurface)
             Spacer(Modifier.height(2.dp))
             Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 2)
         }
@@ -637,7 +633,7 @@ private fun MovieDetailsPane(
         // Display-only pane (§11.1): actions live on the poster — OK plays, long-press opens the menu
         // (Favorite / Download / TMDB Details). Keeping the pane non-focusable fixes grid→pane navigation.
         Text(
-            "OK to play  ·  long-press for options",
+            stringResource(R.string.movies_instruction),
             style = MaterialTheme.typography.labelMedium,
             color = colors.onSurfaceVariant,
         )

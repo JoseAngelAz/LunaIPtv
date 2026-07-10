@@ -1,3 +1,564 @@
 <resources>
-    <string name="app_name">OwnTV</string>
+    <string name="app_name">LunaIPtv</string>
+
+    <!-- ===== COMMON ===== -->
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+    <string name="done">Done</string>
+    <string name="back">Back</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="retry">Retry</string>
+    <string name="hide">Hide</string>
+    <string name="show">Show</string>
+    <string name="play">Play</string>
+    <string name="reset">Reset</string>
+    <string name="create">Create</string>
+    <string name="try_again">Try again</string>
+    <string name="yes_clear">Yes, clear</string>
+    <string name="no">No</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="soon">SOON</string>
+    <string name="live">LIVE</string>
+    <string name="common_all">All</string>
+    <string name="common_cast">Cast</string>
+    <string name="common_movies">movies</string>
+    <string name="common_series">series</string>
+    <string name="common_channels">channels</string>
+
+    <!-- ===== ERROR MESSAGES ===== -->
+    <string name="err_offline">You appear to be offline. Check your connection and try again.</string>
+    <string name="err_generic">Something went wrong. Please try again.</string>
+    <string name="err_timeout">The server took too long to respond. Please try again.</string>
+    <string name="err_dns">Couldn\'t reach the server. Check the address and your connection.</string>
+    <string name="err_connection">Couldn\'t connect to the server. It may be down, or the address may be wrong.</string>
+    <string name="err_stream_reset">The server interrupted the download. Please try again.</string>
+    <string name="err_auth">The server rejected your login. Check your username and password.</string>
+    <string name="err_not_found">Not found on the server. Check the URL.</string>
+    <string name="err_server">The server had a problem. Please try again later.</string>
+    <string name="err_ssl">Secure connection failed — the server\'s certificate may be invalid.</string>
+    <string name="err_malformed_epg">The guide data from the server was malformed. Some of it may still have loaded — please try again, or check the EPG URL.</string>
+
+    <!-- ===== SYNC ===== -->
+    <string name="sync_live">Live</string>
+    <string name="sync_movies">Movies</string>
+    <string name="sync_series">Series</string>
+    <string name="sync_imported_with_warnings">Imported with warnings: </string>
+    <string name="sync_failed_label">%1$s failed</string>
+    <string name="sync_count_channels">%1$s channels</string>
+    <string name="sync_count_movies">%1$s movies</string>
+    <string name="sync_count_series">%1$s series</string>
+    <string name="sync_preparing">Preparing catalog</string>
+    <string name="sync_importing">Importing catalog…</string>
+    <string name="sync_syncing">Syncing catalog</string>
+    <string name="sync_connecting">Connecting to source…</string>
+    <string name="sync_badge_percent">Syncing %1$d%%</string>
+    <string name="sync_badge">Syncing</string>
+    <string name="sync_guide_sync_failed">Guide sync failed</string>
+
+    <!-- ===== SETUP / ONBOARDING ===== -->
+    <string name="setup_tagline">Your own IPTV player.</string>
+    <string name="setup_get_started">Get Started</string>
+    <string name="setup_before_start">Before you start</string>
+    <string name="setup_i_understand">I Understand</string>
+    <string name="setup_title">Set up LunaIPtv</string>
+    <string name="setup_new_profile">New profile</string>
+    <string name="setup_new_profile_desc">Start fresh with a new profile</string>
+    <string name="setup_restore_backup">Restore backup</string>
+    <string name="setup_restore_backup_desc">Import an existing backup file</string>
+    <string name="setup_add_playlist">Add a playlist</string>
+    <string name="setup_add_playlist_desc">Add a source for this profile, or set one up later.</string>
+    <string name="setup_new">New</string>
+    <string name="setup_new_desc">Add an M3U or Xtream source</string>
+    <string name="setup_existing">Existing</string>
+    <string name="setup_existing_desc">Pick existing playlists already added to LunaIPtv</string>
+    <string name="setup_import">Import</string>
+    <string name="setup_import_desc">Restore a backup file</string>
+    <string name="setup_skip">Skip for now</string>
+    <string name="setup_use_existing">Use existing playlists</string>
+    <string name="setup_pick_playlists">Pick the playlists to add to this profile.</string>
+    <string name="setup_add_count">Add %1$d</string>
+    <string name="setup_restoring">Restoring…</string>
+    <string name="setup_backup_password">Backup password</string>
+    <string name="setup_skip_no_pw">Skip (no passwords)</string>
+    <string name="setup_restore_btn">Restore</string>
+    <string name="setup_restore_failed">Restore failed</string>
+    <string name="setup_pick_backup">Pick a backup file to restore</string>
+    <string name="setup_importing_catalog">Importing catalog…</string>
+    <string name="setup_all_set">All set!</string>
+    <string name="setup_continue">Continue</string>
+    <string name="setup_import_failed">Import failed</string>
+
+    <!-- ===== ADD SOURCE ===== -->
+    <string name="source_edit_title">Edit source</string>
+    <string name="source_add_title">Add your source</string>
+    <string name="source_name_optional">Name (optional)</string>
+    <string name="source_server_url">Server URL</string>
+    <string name="source_username">Username</string>
+    <string name="source_password">Password</string>
+    <string name="source_playlist_url">Playlist URL</string>
+    <string name="source_pick_file">Pick a local M3U file</string>
+    <string name="source_local_file">Local file: %1$s</string>
+    <string name="source_user_agent">User-Agent (optional)</string>
+    <string name="source_default_playlist">Default playlist</string>
+    <string name="source_default_playlist_desc">Show only this playlist across the app. Turn off to see all playlists together.</string>
+    <string name="source_sync_first">Sync first</string>
+    <string name="source_sync_first_desc">Pick what to import now. The rest syncs in the background.</string>
+    <string name="source_live_tv">Live TV</string>
+    <string name="source_live_tv_desc">Channels and categories</string>
+    <string name="source_movies">Movies</string>
+    <string name="source_movies_desc">VOD movie catalog</string>
+    <string name="source_series">Series</string>
+    <string name="source_series_desc">TV series catalog</string>
+    <string name="source_start_import">Start Import</string>
+    <string name="source_pick_file_title">Pick a playlist file (.m3u / .m3u8)</string>
+    <string name="source_auto_refresh">Auto refresh</string>
+    <string name="source_wrong_password">Wrong backup password</string>
+    <string name="source_enter_password">Enter backup password</string>
+    <string name="source_pw_wrong_msg">That password didn\'t match. Try again, or skip to restore everything except saved passwords.</string>
+    <string name="source_pw_info">This backup\'s passwords are encrypted. Enter the backup password to restore them, or skip to restore everything else and re-enter passwords later.</string>
+    <string name="source_pw_protect">Protect passwords?</string>
+    <string name="source_pw_protect_desc">Source and proxy passwords can be encrypted with a backup password. You\'ll need the same password to restore them on another device. Without one, passwords are saved in plain text.</string>
+    <string name="source_encrypt_export">Encrypt &amp; export</string>
+    <string name="source_export_no_pw">Export without passwords</string>
+
+    <!-- ===== PROFILE GATE ===== -->
+    <string name="profile_who">Who\'s watching?</string>
+    <string name="profile_wrong_pin">Wrong PIN - try again</string>
+    <string name="profile_enter_pin">Enter PIN</string>
+    <string name="profile_kids">KIDS</string>
+    <string name="profile_add">Add profile</string>
+    <string name="profile_kids_label">Kids profile</string>
+    <string name="profile_kids_desc">Simplified, safe browsing for children</string>
+    <string name="profile_remove_pin">Remove PIN lock</string>
+    <string name="profile_no_pin_desc">This profile operates without a PIN</string>
+    <string name="profile_choose_avatar">Choose your avatar</string>
+
+    <!-- ===== SHELL / MAIN ===== -->
+    <string name="shell_search">Search</string>
+    <string name="shell_select_channel">Select a channel to preview…</string>
+    <string name="shell_content_for">Content for %1$s</string>
+    <string name="shell_nothing_here">Nothing here yet</string>
+    <string name="shell_add_source">Add a source</string>
+    <string name="shell_switch_profile">Switch Profile</string>
+    <string name="shell_channels">Channels</string>
+    <string name="shell_overview">Overview</string>
+    <string name="shell_cast">Cast</string>
+    <string name="shell_press_back">Press Back to close</string>
+    <string name="shell_exit_title">Exit LunaIPtv?</string>
+    <string name="shell_exit_msg">Are you sure you want to close the app?</string>
+    <string name="shell_exit">Exit</string>
+    <string name="shell_show_playlist">Show playlist</string>
+    <string name="shell_all_playlists">All playlists</string>
+    <string name="shell_search_categories">Search categories.</string>
+    <string name="shell_preview_hint">Your own IPTV player.</string>
+
+    <!-- ===== SIDEBAR / NAVIGATION ===== -->
+    <string name="nav_live">Live TV</string>
+    <string name="nav_movies">Movies</string>
+    <string name="nav_series">Series</string>
+    <string name="nav_search">Search</string>
+
+    <!-- ===== SERIES ===== -->
+    <string name="series_header">Series / %1$s</string>
+    <string name="series_count">%1$s (%2$s series)</string>
+    <string name="series_search">Search %1$s.</string>
+    <string name="series_no_search">No series found for \u201c%1$s\u201d</string>
+    <string name="series_empty">No series here.</string>
+    <string name="series_focus_hint">Focus a series, press OK to view episodes.</string>
+    <string name="series_press_ok">Press OK on the poster to view episodes.</string>
+    <string name="series_download_all">Download all episodes</string>
+    <string name="series_episode_focus_hint">Focus an episode to see details.</string>
+    <string name="series_next_up">Next up</string>
+    <string name="series_resume_ms">Resume %1$s</string>
+    <string name="series_favorited">Favorited</string>
+    <string name="series_favorite">Favorite</string>
+    <string name="series_show_watched">Show watched</string>
+    <string name="series_hide_watched">Hide watched</string>
+    <string name="series_no_episodes">No episodes available.</string>
+    <string name="series_season">Season %1$d</string>
+    <string name="series_season_progress">Season %1$d  \u00b7  %2$d/%3$d</string>
+    <string name="series_last_watched">Last watched</string>
+    <string name="series_reorder">Reorder series</string>
+    <string name="series_provider">Provider</string>
+    <string name="series_focus_episode">Focus an episode to see details.</string>
+    <string name="series_resume">Resume %1$s</string>
+    <string name="series_instruction">OK to play • long-press for options</string>
+    <string name="series_episode_format">S%1$d • E%2$d</string>
+    <string name="series_episode_title">S%1$d • E%2$d  %3$s</string>
+    <string name="series_season_label">Season %1$d • %2$d/%3$d</string>
+
+    <!-- ===== LIVE TV ===== -->
+    <string name="live_header">Live TV / %1$s</string>
+    <string name="live_count">%1$s (%2$s channels)</string>
+    <string name="live_search">Search %1$s.</string>
+    <string name="live_no_search">No channels found for \u201c%1$s\u201d</string>
+    <string name="live_empty">No channels here.</string>
+    <string name="live_focus_hint">Focus a channel to see it here.</string>
+    <string name="live_press_ok">Press OK to watch fullscreen</string>
+    <string name="live_reorder">Reorder channel</string>
+    <string name="live_rename">Rename</string>
+    <string name="live_hide_channel">Hide channel</string>
+    <string name="live_match_epg">Match EPG</string>
+    <string name="live_catchup">Catch-up</string>
+    <string name="live_now">NOW</string>
+    <string name="live_next">NEXT</string>
+    <string name="live_next_time">%1$s  \u00b7  %2$s</string>
+    <string name="live_later">LATER</string>
+    <string name="live_catchup_title">Catch-up \u00b7 %1$s</string>
+    <string name="live_catchup_pick">Pick a recent programme to replay from the start.</string>
+    <string name="live_catchup_no_data">No recent guide data for this channel yet \u2014 make sure its EPG is matched (long-press it, or use Match EPG).</string>
+    <string name="live_match_epg_pick">Pick the guide channel for \u201c%1$s\u201d.</string>
+    <string name="live_match_epg_current">Current: %1$s</string>
+    <string name="live_match_epg_search">Search guide channels.</string>
+    <string name="live_match_epg_no_data">No EPG data yet \u2014 add an EPG source in Settings.</string>
+    <string name="live_match_epg_no_match">No guide channels match \u201c%1$s\u201d.</string>
+    <string name="live_clear_match">Clear match</string>
+    <string name="live_rename_title">Rename channel</string>
+    <string name="live_rename_hint">Only for this profile. Leave blank to restore the original name.</string>
+    <string name="live_season">Season %1$d</string>
+    <string name="live_rewind">Rewind \u00b7 %1$s</string>
+
+    <!-- ===== MOVIES ===== -->
+    <string name="movies_header">Movies / %1$s</string>
+    <string name="movies_count">%1$s (%2$s movies)</string>
+    <string name="movies_search">Search %1$s.</string>
+    <string name="movies_provider">Provider</string>
+    <string name="movies_no_search">No movies found for \u201c%1$s\u201d</string>
+    <string name="movies_empty">No movies here.</string>
+    <string name="movies_focus_hint">Focus a movie to see details.</string>
+    <string name="movies_resume">Resume %1$s</string>
+    <string name="movies_instruction">OK to play \u00b7 long-press for options</string>
+    <string name="movies_duration_h">%1$dh %2$dm</string>
+    <string name="movies_duration_m">%1$dm</string>
+    <string name="movies_already_downloaded">Already downloaded \u2014 check the Downloads menu.</string>
+    <string name="movies_refetching">Refetching TMDB details.</string>
+    <string name="movies_researching">Re-searching TMDB.</string>
+    <string name="movies_reorder">Reorder movie</string>
+    <string name="movies_remove_fav">Remove from Favourites</string>
+    <string name="movies_add_fav">Add to Favourites</string>
+    <string name="movies_unwatched">Mark as unwatched</string>
+    <string name="movies_watched">Mark as watched</string>
+    <string name="movies_move">Move</string>
+    <string name="movies_remove_history">Remove from History</string>
+    <string name="movies_download">Download</string>
+    <string name="movies_external">Play with external player</string>
+    <string name="movies_tmdb_details">TMDB Details</string>
+    <string name="movies_play_trailer">Play Trailer</string>
+    <string name="movies_refetch_tmdb">Refetch TMDB details</string>
+    <string name="movies_set_tmdb_name">Set TMDB name</string>
+    <string name="movies_completed">V</string>
+
+    <!-- ===== HOME ===== -->
+    <string name="home_keep_watching">KEEP WATCHING</string>
+    <string name="home_empty_preview">Nothing to preview yet.</string>
+    <string name="home_empty_preview_desc">Your continue-watching items will appear here once playback is saved.</string>
+    <string name="home_empty_start">Start watching to see your activity here.</string>
+    <string name="home_empty_continue">Continue watching will show up on Home once you have playback history.</string>
+    <string name="home_all_hidden">All Home rows are hidden.</string>
+    <string name="home_turn_rows">Turn rows back on in Settings \u2192 Home screen.</string>
+    <string name="home_play_next">Play Next</string>
+
+    <!-- ===== SEARCH ===== -->
+    <string name="search_title">Search</string>
+    <string name="search_placeholder">Search channels, movies &amp; series.</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_watch_live">Watch live</string>
+    <string name="search_open_series">Open series</string>
+
+    <!-- ===== SETTINGS ===== -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_search">Search settings.</string>
+    <string name="settings_profiles">Profiles</string>
+    <string name="settings_profiles_desc">Manage viewers, kids mode &amp; PIN locks</string>
+    <string name="settings_playlists">Playlists</string>
+    <string name="settings_playlists_desc">Add, re-sync or remove M3U / Xtream sources</string>
+    <string name="settings_epg_sources">EPG Sources</string>
+    <string name="settings_epg_sources_desc">Add XMLTV guide feeds for the TV guide</string>
+    <string name="settings_customize">Customize &amp; Hidden Items</string>
+    <string name="settings_customize_desc">Hide &amp; unhide items, rename categories</string>
+    <string name="settings_home_screen">Home screen</string>
+    <string name="settings_home_screen_desc">Choose, reorder &amp; filter the rows shown on Home</string>
+    <string name="settings_metadata">Metadata (TMDB)</string>
+    <string name="settings_metadata_desc">Posters, plots, cast &amp; ratings for movies and series</string>
+    <string name="settings_download_folder">Download folder</string>
+    <string name="settings_backup">Backup &amp; Restore</string>
+    <string name="settings_backup_desc">Export or restore profile settings, favorites &amp; history</string>
+    <string name="settings_clear_history">Clear watch history</string>
+    <string name="settings_clear_history_desc">Remove this profile\'s watch history and resume positions</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_desc">Light, dark or follow the system</string>
+    <string name="settings_accent">Accent color</string>
+    <string name="settings_accent_desc">Tint the interface — presets or custom hex</string>
+    <string name="settings_ui_zoom">UI Zoom</string>
+    <string name="settings_ui_zoom_desc">Scale the whole interface</string>
+    <string name="settings_animations">Animations</string>
+    <string name="settings_animations_desc">Turn interface motion on or off</string>
+    <string name="settings_weather">Weather</string>
+    <string name="settings_weather_desc">Top-bar weather chip: show or hide, custom location, units</string>
+    <string name="settings_live_preview">Live preview</string>
+    <string name="settings_live_preview_desc">Auto-play a channel when you focus it</string>
+    <string name="settings_preview_audio">Preview audio</string>
+    <string name="settings_preview_audio_desc">Play sound in the Live preview</string>
+    <string name="settings_hdr">HDR</string>
+    <string name="settings_hdr_desc">Use HDR output when the video &amp; TV support it</string>
+    <string name="settings_surround">Surround sound</string>
+    <string name="settings_surround_desc">Decode Dolby/DTS to surround (5.1/7.1) for a real 5.1/7.1 receiver. Leave OFF for TV speakers or a stereo soundbar \u2014 multichannel can lag audio behind video on some TVs/soundbars. If it drifts, nudge the player\'s Audio menu \u2192 A/V sync.</string>
+    <string name="settings_auto_next">Auto-play next episode</string>
+    <string name="settings_auto_next_desc">When an episode ends, automatically start the next one \u2014 and roll into the next season.</string>
+    <string name="settings_catchup_time">Catch-up time</string>
+    <string name="settings_catchup_channels">%1$d channels support catch-up</string>
+    <string name="settings_video_player">Video Player Settings</string>
+    <string name="settings_video_player_desc">Decoder, subtitles, zoom, audio sync</string>
+    <string name="settings_proxy">Proxy</string>
+    <string name="settings_proxy_desc">Route all traffic &amp; playback through an HTTP proxy</string>
+    <string name="settings_app_startup">App startup</string>
+    <string name="settings_app_startup_desc">What LunaIPtv opens when it starts</string>
+    <string name="settings_updates">Check for updates</string>
+    <string name="settings_updates_desc">Get the latest version from GitHub</string>
+    <string name="settings_auto_update">Check updates on startup</string>
+    <string name="settings_auto_update_desc">Look for a new version when the app opens</string>
+    <string name="settings_about">About</string>
+    <string name="settings_about_desc">Version, license &amp; project info</string>
+    <string name="settings_no_match">No settings match "%1$s"</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_copyright">© 2026 Ashiq Hasan • GPLv3 License</string>
+    <string name="settings_telegram">Join us on Telegram</string>
+    <string name="settings_telegram_qr">Telegram group QR code</string>
+    <string name="settings_clear_history_title">Clear watch history</string>
+    <string name="settings_clear_history_confirm">Clear %1$s history?</string>
+    <string name="settings_clear_history_warning">This can\'t be undone.</string>
+    <string name="settings_ui_zoom_section">UI Zoom</string>
+    <string name="settings_ui_zoom_warning">Low zoom warning</string>
+    <string name="settings_catchup_section">Catch-up time</string>
+    <string name="settings_accent_section">Accent color</string>
+    <string name="settings_presets">Presets</string>
+    <string name="settings_palette">Palette</string>
+    <string name="settings_hex_code">Hex code</string>
+    <string name="settings_hex_field">Hex</string>
+    <string name="settings_hex_placeholder">52DBC8</string>
+    <string name="settings_apply">Apply</string>
+    <string name="settings_hex_hint">Enter 6 hex digits, e.g. 52DBC8</string>
+    <string name="settings_choose_download">Choose the download folder</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_desc">Change the app language</string>
+
+    <string name="settings_search_placeholder">Search settings\u2026</string>
+    <string name="settings_group_profile">Profile</string>
+    <string name="settings_group_content">Content</string>
+    <string name="settings_group_appearance">Appearance</string>
+    <string name="settings_group_playback">Playback</string>
+    <string name="settings_group_network">Network</string>
+    <string name="settings_group_app">App</string>
+    <string name="settings_autoplay">Auto-play</string>
+    <string name="settings_download_folder_default">App storage</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_catchup_desc">How catch-up timestamps are sent. Use your device timezone, or set the offset your provider\'s server expects.</string>
+    <string name="settings_catchup_no_channels">No catch-up channels available on this playlist</string>
+    <string name="settings_catchup_device">Device</string>
+    <string name="settings_catchup_manual">Manual</string>
+    <string name="settings_about_description">Your own IPTV player for Android TV \u2014 a free, open-source, player-only app. It provides no channels or content; you bring your own legally accessible sources.</string>
+    <string name="settings_telegram_scan">Scan the QR to join from your phone, or open the link above.</string>
+    <string name="settings_about_contributions">Contributions, bug reports &amp; stars are welcome on GitHub.</string>
+    <string name="settings_clear_history_choice_desc">Choose what to remove for this profile. Playlists, favorites and downloads are not affected.</string>
+    <string name="settings_clear_history_all">All history</string>
+    <string name="settings_ui_zoom_dialog_desc">Scale the whole interface (%1$d%%\u2013%2$d%%).</string>
+    <string name="settings_ui_zoom_warning_desc">Zoom below %1$d%% shows many more items on screen at once. On devices with limited memory (e.g. 2 GB TV sticks) this can make the app unstable or crash, especially with large playlists and EPG data.\n\nPress OK to continue, or Back to stay at %1$d%%.</string>
+    <string name="settings_ui_zoom_warning_accept">I understand and accept the risk</string>
+
+    <!-- ===== HOME SETTINGS ===== -->
+    <string name="home_settings_title">Home screen</string>
+    <string name="home_settings_sections">Sections</string>
+    <string name="home_settings_live_channels">Live channels in Keep Watching</string>
+    <string name="home_settings_live_channels_desc">Show recently watched live channels in the hero row.</string>
+    <string name="home_settings_movies">Movies in Keep Watching</string>
+    <string name="home_settings_movies_desc">Show movie resume cards in the hero row.</string>
+    <string name="home_settings_series">Series in Keep Watching</string>
+    <string name="home_settings_series_desc">Show episode resume cards in the hero row.</string>
+    <string name="home_settings_android_tv">Android TV home</string>
+    <string name="home_settings_android_tv_desc">Show Continue Watching and recent live channels on the system TV home screen.</string>
+    <string name="home_settings_refresh">Refresh now</string>
+    <string name="home_settings_refresh_desc">Rebuild the Continue Watching / recent channels on the system TV home screen.</string>
+    <string name="home_settings_mode">Mode: %1$s</string>
+    <string name="home_settings_sections_hint">Hidden sections stay listed so you can turn them back on.</string>
+    <string name="home_settings_group_keep_watching">Keep Watching</string>
+    <string name="home_settings_group_android_tv">Android TV home</string>
+    <string name="home_settings_rebuilding">Rebuilding.</string>
+    <string name="home_settings_done">Done</string>
+    <string name="home_settings_hidden">Hidden</string>
+    <string name="home_settings_hide_desc">Hide, reorder and filter rows on Home for this profile.</string>
+    <string name="home_settings_show">Show</string>
+
+    <!-- ===== MANAGE SOURCES ===== -->
+    <string name="sources_title">Sources</string>
+    <string name="sources_add">Add Source</string>
+    <string name="sources_shared">Sources are shared across all profiles.</string>
+    <string name="sources_empty">No sources yet. Add an M3U or Xtream source.</string>
+    <string name="sources_delete_confirm">Delete "%1$s"?</string>
+    <string name="sources_delete_desc">This removes the source and all its channels, movies, series, and EPG data.</string>
+    <string name="sources_preparing">Preparing catalog</string>
+    <string name="sources_import_complete">Import complete</string>
+    <string name="sources_import_failed">Import failed</string>
+    <string name="sources_resync">Re-sync</string>
+
+    <!-- ===== MANAGE PROFILES ===== -->
+    <string name="profiles_title">Profiles</string>
+    <string name="profiles_add">Add Profile</string>
+    <string name="profiles_delete_confirm">Delete "%1$s"?</string>
+    <string name="profiles_delete_desc">Removes this profile and its favorites and history.</string>
+
+    <!-- ===== EPG SOURCES ===== -->
+    <string name="epg_title">EPG Sources</string>
+    <string name="epg_add">Add EPG</string>
+    <string name="epg_empty">No EPG sources yet. Add an XMLTV link.</string>
+    <string name="epg_delete_confirm">Delete "%1$s"?</string>
+    <string name="epg_delete_desc">Removes this EPG source and its guide data. Your playlists are not affected.</string>
+    <string name="epg_resync">Re-sync</string>
+    <string name="epg_add_title">Add EPG source</string>
+    <string name="epg_edit_title">Edit EPG source</string>
+    <string name="epg_name">Name</string>
+    <string name="epg_name_placeholder">Guide name</string>
+    <string name="epg_url">XMLTV URL</string>
+    <string name="epg_fill_from_playlist">Fill from playlist</string>
+    <string name="epg_user_agent">User-Agent (optional)</string>
+    <string name="epg_add_sync">Add &amp; sync</string>
+    <string name="epg_save_sync">Save &amp; sync</string>
+    <string name="epg_auto_refresh">Auto refresh</string>
+    <string name="epg_fill_title">Fill from playlist</string>
+    <string name="epg_no_playlist_epg">None of your playlists provide an EPG URL.</string>
+    <string name="epg_sync_prompt">Sync the TV guide now?</string>
+    <string name="epg_not_now">Not now</string>
+    <string name="epg_sync_now">Sync now</string>
+    <string name="epg_syncing">Syncing TV guide.</string>
+    <string name="epg_synced">TV guide synced</string>
+    <string name="epg_sync_failed">TV guide sync failed</string>
+
+    <!-- ===== BACKUP ===== -->
+    <string name="backup_title">Backup &amp; Restore</string>
+    <string name="backup_export">Export backup</string>
+    <string name="backup_restore">Restore backup</string>
+    <string name="backup_working">Working…</string>
+    <string name="backup_what_backup">What to back up</string>
+    <string name="backup_choose_folder">Choose folder</string>
+    <string name="backup_what_restore">What to restore</string>
+    <string name="backup_restore_btn">Restore</string>
+    <string name="backup_choose_save">Choose a folder to save the backup</string>
+    <string name="backup_choose_file">Choose a backup file</string>
+    <string name="backup_everything">Everything</string>
+
+    <!-- ===== METADATA SETTINGS ===== -->
+    <string name="metadata_advanced">Advanced options</string>
+    <string name="metadata_advanced_desc">Use your own TMDB API key or a self-hosted server instead of the public worker.</string>
+    <string name="metadata_api_key">TMDB API key (v3)</string>
+    <string name="metadata_optional">optional</string>
+    <string name="metadata_self_host">Self-host server URL</string>
+    <string name="metadata_lookup">Look up a movie title</string>
+    <string name="metadata_placeholder">Oppenheimer</string>
+    <string name="metadata_test">Test</string>
+    <string name="metadata_testing">Testing…</string>
+    <string name="metadata_tmdb">TMDB</string>
+    <string name="metadata_enter_title">Enter a title to look up.</string>
+    <string name="metadata_server_error">Couldn\'t reach the metadata server — check network / key / URL.</string>
+    <string name="metadata_no_match">No TMDB match for "%1$s".</string>
+    <string name="metadata_result">%1$s • tmdb #%2$d</string>
+    <string name="metadata_lookup_failed">Lookup failed.</string>
+
+    <!-- ===== NETWORK SETTINGS ===== -->
+    <string name="network_proxy_title">Use proxy</string>
+    <string name="network_proxy_desc">Send all LunaIPtv traffic and playback through an HTTP proxy.</string>
+    <string name="network_host">Host</string>
+    <string name="network_host_placeholder">proxy.example.com</string>
+    <string name="network_port">Port</string>
+    <string name="network_port_placeholder">8080</string>
+    <string name="network_username">Username (optional)</string>
+    <string name="network_password">Password (optional)</string>
+    <string name="network_test">Test</string>
+    <string name="network_testing">Testing…</string>
+    <string name="network_invalid_proxy">Enter a valid host and port (1-65535).</string>
+    <string name="network_proxy_host_error">Can\'t reach the proxy host.</string>
+    <string name="network_proxy_timeout">Connection to the proxy timed out.</string>
+    <string name="network_proxy_connect_error">Couldn\'t connect to the proxy (check host/port).</string>
+    <string name="network_proxy_failed">Proxy test failed.</string>
+
+    <!-- ===== VIDEO PLAYER SETTINGS ===== -->
+    <string name="video_hw_decoding">Hardware decoding</string>
+    <string name="video_hw_decoding_desc">Use the TV\'s hardware decoder. Turn off if some streams are glitchy.</string>
+    <string name="video_vod_player">Movies &amp; Series player</string>
+    <string name="video_vod_player_desc">mpv (recommended) has the widest format support — DTS, TrueHD, HDR10+, Dolby Vision. ExoPlayer can be more stable on lower-end hardware.</string>
+    <string name="video_external">External player</string>
+    <string name="video_external_desc">Open movies, series, and downloads in an external app like VLC or MX Player.</string>
+    <string name="video_default_zoom">Default zoom</string>
+    <string name="video_default_zoom_desc">Aspect/zoom applied when playback starts.</string>
+    <string name="video_resume">Resume playback</string>
+    <string name="video_resume_desc">What to do when a movie or episode has a saved position.</string>
+    <string name="video_subtitle_size">Subtitle size</string>
+    <string name="video_subtitle_size_desc">Scale subtitle text.</string>
+    <string name="video_subtitle_lang">Preferred subtitle language</string>
+    <string name="video_subtitle_lang_desc">Auto-select this subtitle track when available.</string>
+    <string name="video_audio_lang">Preferred audio language</string>
+    <string name="video_audio_lang_desc">Auto-select this audio track when available.</string>
+    <string name="video_audio_sync">Audio sync</string>
+    <string name="video_audio_sync_desc">Shift audio earlier or later to match the video.</string>
+    <string name="video_search">Search.</string>
+
+    <!-- ===== WEATHER SETTINGS ===== -->
+    <string name="weather_show">Show weather</string>
+    <string name="weather_show_desc">Display the current weather in the top bar.</string>
+    <string name="weather_custom_location">Custom location</string>
+    <string name="weather_custom_location_desc">Override the city used for weather. Leave blank to auto-detect.</string>
+    <string name="weather_temp_unit">Temperature unit</string>
+    <string name="weather_temp_unit_desc">Show the temperature in Celsius or Fahrenheit.</string>
+    <string name="weather_location_title">Custom location</string>
+    <string name="weather_location_field">City or lat,lon</string>
+    <string name="weather_location_hint">Leave blank to auto-detect from your public IP. Enter a city name or "lat,lon" coordinates.</string>
+
+    <!-- ===== PLAYER HUD ===== -->
+    <string name="player_error">Playback error</string>
+    <string name="player_no_tracks">No tracks available.</string>
+    <string name="player_off">Off</string>
+    <string name="player_av_sync">A/V sync</string>
+    <string name="player_speed_title">Playback Speed</string>
+    <string name="player_speed_normal">1.0x (Normal)</string>
+    <string name="player_zoom_title">Player Zoom</string>
+    <string name="player_volume">Volume</string>
+    <string name="player_unmute">Unmute</string>
+    <string name="player_mute">Mute</string>
+
+    <!-- ===== DOWNLOADS ===== -->
+    <string name="downloads_failed">%1$d downloads failed</string>
+    <string name="downloads_failed_one">1 download failed</string>
+
+    <!-- ===== UI COMPONENTS ===== -->
+    <string name="ui_resume_title">Resume playback?</string>
+    <string name="ui_start_over">Start over</string>
+    <string name="ui_resume_btn">Resume</string>
+    <string name="ui_set_tmdb_name">Set TMDB name</string>
+    <string name="ui_title">Title</string>
+    <string name="ui_year_optional">Year (optional)</string>
+    <string name="ui_importing_channels">Importing channels.</string>
+    <string name="ui_something_wrong">Something went wrong</string>
+    <string name="ui_pick_location">Pick a location</string>
+    <string name="ui_new_folder">New folder</string>
+    <string name="ui_choose">Choose</string>
+    <string name="ui_folder_name">Folder name</string>
+    <string name="ui_hide">Hide</string>
+    <string name="ui_show">Show</string>
+    <string name="ui_save">Save</string>
+
+    <!-- ===== UPDATE ===== -->
+    <string name="update_title">App update</string>
+    <string name="update_checking">Checking for updates.</string>
+    <string name="update_whats_new">What\'s new</string>
+    <string name="update_later">Later</string>
+    <string name="update_now">Update now</string>
+    <string name="update_downloading">Downloading update. %1$d%%</string>
+    <string name="update_available">Update available</string>
+
+    <!-- ===== LANGUAGE ===== -->
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
 </resources>

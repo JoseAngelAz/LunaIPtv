@@ -25,7 +25,7 @@ android {
         // CI injects VERSION_NAME from the git tag for releases. The fallback is only ever used by
         // LOCAL builds (i.e. debug), so we pin it to 99.99.99 — that way a dev build is always "newer"
         // than any published release and the in-app updater never offers an "update" while developing.
-        versionName = System.getenv("VERSION_NAME") ?: "99.99.99"
+        versionName = System.getenv("VERSION_NAME") ?: "1.0.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.core)
 
     // Compose for TV

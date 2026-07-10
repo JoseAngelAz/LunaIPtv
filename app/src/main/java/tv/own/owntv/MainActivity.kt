@@ -7,20 +7,41 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -82,6 +103,24 @@ class MainActivity : ComponentActivity() {
         pendingDeepLink = LauncherDeepLink.parse(intent.data)
         Log.d(TAG, "onCreate deepLinkHost=${intent.data?.host} deepLinkType=${pendingDeepLink?.javaClass?.simpleName ?: "none"}")
         setContent {
+            // Splash screen state: show LunaIPtv branding for 3 seconds or until main UI is ready.
+            var showSplash by remember { mutableStateOf(true) }
+            val splashAlpha = remember { Animatable(0f) }
+
+            LaunchedEffect(Unit) {
+                // Fade in the splash
+                splashAlpha.animateTo(1f, animationSpec = tween(400))
+                // Hold for 3 seconds
+                delay(3000L)
+                // Fade out
+                splashAlpha.animateTo(0f, animationSpec = tween(400))
+                showSplash = false
+            }
+
+            if (showSplash) {
+                LunaSplashScreen(alpha = splashAlpha.value)
+                return@setContent
+            }
             // Hold the screen on while video is actually playing, so the TV screensaver doesn't
             // start mid-channel/episode; released when paused/stopped (then the screensaver is fine).
             val playing by player.isPlaying.collectAsStateWithLifecycle()
@@ -106,6 +145,12 @@ class MainActivity : ComponentActivity() {
             val selectedSection by viewModel.selectedSection.collectAsStateWithLifecycle()
             val activeProfileId by viewModel.activeProfileId.collectAsStateWithLifecycle()
             val isOnline by viewModel.isOnline.collectAsStateWithLifecycle()
+            val language by viewModel.language.collectAsStateWithLifecycle()
+
+            // Apply language when it changes
+            LaunchedEffect(language) {
+                tv.own.owntv.core.util.LocaleHelper.applyLanguageToActivity(this@MainActivity, language)
+            }
 
             val profilesVm: ProfilesViewModel = koinViewModel()
             val profiles by profilesVm.profiles.collectAsStateWithLifecycle()
@@ -191,6 +236,8 @@ class MainActivity : ComponentActivity() {
                                     // skip it). Clearing gatePassed above alone is a silent no-op in that case.
                                     switchProfileRequested = true
                                 },
+                                language = language,
+                                onSetLanguage = viewModel::setLanguage,
                                 modifier = Modifier.fillMaxSize(),
                             )
                         }
@@ -198,5 +245,34 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LunaSplashScreen(alpha: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(alpha)
+            .background(Color(0xFF0A0E27)),
+        contentAlignment = Alignment.Center,
+    ) {
+        // Spinner in the top-right corner during splash
+        CircularProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(24.dp)
+                .size(24.dp),
+            color = Color(0xFFC0C0C0),
+            strokeWidth = 2.dp,
+        )
+
+        // Main splash image — splash_luna.png fills most of the screen
+        Image(
+            painter = painterResource(id = R.drawable.splash_luna),
+            contentDescription = "LunaIPtv",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+        )
     }
 }

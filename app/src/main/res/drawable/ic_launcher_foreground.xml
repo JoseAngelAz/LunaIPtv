@@ -3,13 +3,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- OwnTV mark: cyan play triangle inside a rounded square, kept within the adaptive safe zone. -->
+    <!-- Luna crescent with metallic silver finish, within adaptive icon safe zone. -->
     <path
-        android:fillColor="#00000000"
-        android:strokeColor="#22D3EE"
-        android:strokeWidth="4"
-        android:pathData="M42,30 L66,30 A12,12 0 0 1 78,42 L78,66 A12,12 0 0 1 66,78 L42,78 A12,12 0 0 1 30,66 L30,42 A12,12 0 0 1 42,30 Z" />
+        android:fillColor="#C0C0C0"
+        android:pathData="M54,20 C35,20 20,35 20,54 C20,73 35,88 54,88 C56,88 58,87.8 60,87.5
+                         C52,85 46,78 46,70 C46,61 53,54 62,54 C64,54 66,54.5 68,55
+                         C68,53 68,51 67.5,49 C63,43 56,40 48,40 C32,40 20,52 20,68
+                         C20,86 34,100 52,100 C72,100 88,84 88,64 C88,62 87.8,60 87.5,58
+                         C82,68 71,74 59,74 C46,74 36,64 36,51 C36,38 46,28 59,28
+                         C62,28 65,28.5 68,29.5 C64,23 57,20 54,20Z" />
+    <!-- Play triangle integrated into the crescent. -->
     <path
-        android:fillColor="#22D3EE"
-        android:pathData="M47,44 L68,54 L47,64 Z" />
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,48 L58,68 L74,58 Z" />
 </vector>
