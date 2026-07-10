@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.series
+package com.lunaiptv.features.series
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -66,10 +66,10 @@ import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.MoveOrderOverlay
 import com.lunaiptv.ui.components.InAppToast
 import com.lunaiptv.ui.components.rememberInAppToast
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.PosterCard
 import com.lunaiptv.ui.components.ProgressRing
 import com.lunaiptv.ui.components.ResumeDialog
@@ -86,7 +86,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.PreviewPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 @Composable
 fun SeriesScreen(
@@ -100,7 +100,7 @@ fun SeriesScreen(
     val openedSeries by vm.openedSeries.collectAsStateWithLifecycle()
 
     // Track leaving a show so the grid can put focus back on the poster you came from (the episode
-    // view that held focus is unmounted on Back â€” focus would otherwise die and land on the sidebar).
+    // view that held focus is unmounted on Back — focus would otherwise die and land on the sidebar).
     var returnFromShow by remember { mutableStateOf(false) }
     LaunchedEffect(openedSeries) { if (openedSeries != null) returnFromShow = true }
 
@@ -115,7 +115,7 @@ fun SeriesScreen(
             modifier = modifier,
         )
     } else {
-        // Not in a show â†’ nothing episode-specific to restore; clear the flag so it doesn't linger.
+        // Not in a show ? nothing episode-specific to restore; clear the flag so it doesn't linger.
         if (restoreFocus) onRestored()
         SeriesGrid(
             vm = vm,
@@ -147,7 +147,7 @@ private fun SeriesContextMenu(
     onPlayTrailer: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -162,27 +162,27 @@ private fun SeriesContextMenu(
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(
+            LunaIPtvButton(
                 if (isFavorite) stringResource(R.string.movies_remove_fav) else stringResource(R.string.movies_add_fav),
-                onClick = onToggleFavorite, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.STAR,
+                onClick = onToggleFavorite, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.STAR,
                 modifier = Modifier.fillMaxWidth().focusRequester(focus),
             )
-            if (canMove) OwnTVButton(stringResource(R.string.movies_move), onClick = onMove, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            if (isHistory) OwnTVButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton(stringResource(R.string.hide), onClick = onHide, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton(stringResource(R.string.series_download_all), onClick = onDownload, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth())
+            if (canMove) LunaIPtvButton(stringResource(R.string.movies_move), onClick = onMove, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (isHistory) LunaIPtvButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.hide), onClick = onHide, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.series_download_all), onClick = onDownload, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth())
             if (hasTmdbDetails) {
-                OwnTVButton(stringResource(R.string.movies_tmdb_details), onClick = onShowDetails, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.MENU, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_tmdb_details), onClick = onShowDetails, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.MENU, modifier = Modifier.fillMaxWidth())
             }
             trailerKey?.let { key ->
-                OwnTVButton(stringResource(R.string.movies_play_trailer), onClick = { onPlayTrailer(key) }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_play_trailer), onClick = { onPlayTrailer(key) }, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             }
             if (canRefetchTmdb) {
-                OwnTVButton(stringResource(R.string.movies_refetch_tmdb), onClick = onRefetch, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-                OwnTVButton(stringResource(R.string.movies_set_tmdb_name), onClick = onSetTmdbName, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_refetch_tmdb), onClick = onRefetch, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_set_tmdb_name), onClick = onSetTmdbName, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             }
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -211,11 +211,11 @@ private fun SeriesGrid(
     val series = vm.series.collectAsLazyPagingItems()
     val moveState by vm.moveState.collectAsStateWithLifecycle()
     var contextSeries by remember { mutableStateOf<com.lunaiptv.core.database.entity.SeriesEntity?>(null) }
-    // "Set TMDB name" dialog target (Â§11.2 U5b); null = closed.
+    // "Set TMDB name" dialog target (§11.2 U5b); null = closed.
     var setTmdbNameSeries by remember { mutableStateOf<com.lunaiptv.core.database.entity.SeriesEntity?>(null) }
-    // In-app trailer playback (Â§7.3 U4); non-null = fullscreen player open with this YouTube key.
+    // In-app trailer playback (§7.3 U4); non-null = fullscreen player open with this YouTube key.
     var trailerVideoKey by remember { mutableStateOf<String?>(null) }
-    // Fullscreen TMDB details window (Â§11.1); null = closed.
+    // Fullscreen TMDB details window (§11.1); null = closed.
     var detailsSeries by remember { mutableStateOf<com.lunaiptv.core.database.entity.SeriesEntity?>(null) }
     // Id + list position of the series the context menu was opened on. The id re-focuses the same item
     // when it survives (Favourite/Download/Cancel); when the item is REMOVED (Remove from history, or
@@ -260,7 +260,7 @@ private fun SeriesGrid(
         // Opening the TMDB Details window closes the menu; let the window keep focus (it traps focus and
         // refocuses the series on close), don't yank it back to the grid here.
         if (detailsSeries != null) return@LaunchedEffect
-        // Same for the "Set TMDB name" dialog â€” it refocuses the series itself when it closes.
+        // Same for the "Set TMDB name" dialog — it refocuses the series itself when it closes.
         if (setTmdbNameSeries != null) return@LaunchedEffect
         // Same for the trailer player.
         if (trailerVideoKey != null) return@LaunchedEffect
@@ -318,25 +318,25 @@ private fun SeriesGrid(
                     }
                 }
                 // Held Up/Down can outrun the lazy grid's composition and escape this pane
-                // (landing on the top bar) â€” trap vertical exits; Left/Right/Back leave normally.
+                // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
                 .trapVerticalFocusExit()
                 .focusGroup()
                 .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
         ) {
-            Text(stringResource(R.string.series_header, selectedItem?.title ?: stringResource(R.string.common_all)), style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+            Text(stringResource(R.string.series_header, selectedItem?.title ?: stringResource(R.string.common_all)), style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface)
             Spacer(Modifier.height(4.dp))
-            Text(stringResource(R.string.series_count, selectedItem?.abbr ?: "ALL", formatCount(count)), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.primary, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.series_count, selectedItem?.abbr ?: "ALL", formatCount(count)), style = MaterialTheme.typography.titleMedium, color = LunaIPtvTheme.colors.primary, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SearchBar(query = searchQuery, onQueryChange = vm::setSearchQuery, placeholder = stringResource(R.string.series_search, selectedItem?.title ?: stringResource(R.string.common_series)), modifier = Modifier.weight(1f))
                 Spacer(Modifier.width(10.dp))
                 SortChip(mode = sortMode, onToggle = vm::toggleSort, playlistLabel = stringResource(R.string.movies_provider))
                 Spacer(Modifier.width(10.dp))
-                com.lunaiptv.ui.components.OwnTVButton(
+                com.lunaiptv.ui.components.LunaIPtvButton(
                     label = viewMode.label,
                     onClick = vm::toggleViewMode,
-                    icon = if (viewMode == SettingsRepository.VodViewMode.GRID) OwnTVIcon.MENU else OwnTVIcon.SERIES,
-                    style = com.lunaiptv.ui.components.OwnTVButtonStyle.SECONDARY,
+                    icon = if (viewMode == SettingsRepository.VodViewMode.GRID) LunaIPtvIcon.MENU else LunaIPtvIcon.SERIES,
+                    style = com.lunaiptv.ui.components.LunaIPtvButtonStyle.SECONDARY,
                 )
             }
             Spacer(Modifier.height(14.dp))
@@ -345,7 +345,7 @@ private fun SeriesGrid(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         if (searchQuery.isNotBlank()) stringResource(R.string.series_no_search, searchQuery.trim()) else stringResource(R.string.series_empty),
-                        style = MaterialTheme.typography.bodyLarge, color = OwnTVTheme.colors.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyLarge, color = LunaIPtvTheme.colors.onSurfaceVariant,
                     )
                 }
             } else if (viewMode == SettingsRepository.VodViewMode.LIST) {
@@ -416,7 +416,7 @@ private fun SeriesGrid(
             if (s == null) {
                 PreviewPane(hint = stringResource(R.string.series_focus_hint))
             } else {
-                // Gap-fill merge (Â§7.1/Â§4.1): provider wins unless the mode is TMDB-only.
+                // Gap-fill merge (§7.1/§4.1): provider wins unless the mode is TMDB-only.
                 val meta = selectedSeriesMeta?.takeIf { it.seriesId == s.id }?.cache
                 val tmdbWins = metadataMode.tmdbWins
                 val providerPoster = s.posterUrl?.takeIf { it.isNotBlank() }
@@ -432,9 +432,9 @@ private fun SeriesGrid(
                 val genres = remember(meta?.genresJson) { jsonStringList(meta?.genresJson) }
                 val cast = remember(meta?.castJson) { jsonStringList(meta?.castJson) }
                 Column(
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Dimens.CardCorner)).background(OwnTVTheme.colors.panel).verticalScroll(rememberScrollState()).padding(Dimens.GapLarge),
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Dimens.CardCorner)).background(LunaIPtvTheme.colors.panel).verticalScroll(rememberScrollState()).padding(Dimens.GapLarge),
                 ) {
-                    // Non-focusable status strip â€” only present while this series' episodes are downloading.
+                    // Non-focusable status strip — only present while this series' episodes are downloading.
                     com.lunaiptv.ui.components.downloadStripFor(selectedSeriesDownloads)?.let {
                         com.lunaiptv.ui.components.DownloadStatusStrip(it)
                         Spacer(Modifier.height(12.dp))
@@ -442,45 +442,45 @@ private fun SeriesGrid(
                     // Tall portrait poster (like the list / a phone screen), centred in the pane.
                     Box(modifier = Modifier.fillMaxWidth().height(340.dp), contentAlignment = Alignment.Center) {
                         Box(
-                            modifier = Modifier.fillMaxHeight().aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(OwnTVTheme.colors.surfaceContainerLowest),
+                            modifier = Modifier.fillMaxHeight().aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(LunaIPtvTheme.colors.surfaceContainerLowest),
                             contentAlignment = Alignment.Center,
                         ) {
                             if (!art.isNullOrBlank()) {
                                 AsyncImage(model = art, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                             } else {
-                                OwnTVIcon(OwnTVIcon.SERIES, tint = OwnTVTheme.colors.onSurfaceVariant, modifier = Modifier.height(48.dp))
+                                LunaIPtvIcon(LunaIPtvIcon.SERIES, tint = LunaIPtvTheme.colors.onSurfaceVariant, modifier = Modifier.height(48.dp))
                             }
                         }
                     }
                     Spacer(Modifier.height(14.dp))
-                    Text(s.name, style = MaterialTheme.typography.titleLarge, color = OwnTVTheme.colors.onSurface)
-                    val metaBits = listOfNotNull(year?.toString(), rating?.let { "â˜… %.1f".format(it) })
+                    Text(s.name, style = MaterialTheme.typography.titleLarge, color = LunaIPtvTheme.colors.onSurface)
+                    val metaBits = listOfNotNull(year?.toString(), rating?.let { "? %.1f".format(it) })
                     if (metaBits.isNotEmpty()) {
                         Spacer(Modifier.height(4.dp))
-                        Text(metaBits.joinToString("  â€¢  "), style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant)
+                        Text(metaBits.joinToString("  •  "), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
                     }
                     if (genres.isNotEmpty()) {
                         Spacer(Modifier.height(6.dp))
-                        Text(genres.joinToString(" Â· "), style = MaterialTheme.typography.labelMedium, color = OwnTVTheme.colors.primary)
+                        Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.primary)
                     }
                     if (!plot.isNullOrBlank()) {
                         Spacer(Modifier.height(12.dp))
-                        Text(plot, style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant, maxLines = 8)
+                        Text(plot, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant, maxLines = 8)
                     }
                     if (cast.isNotEmpty()) {
                         Spacer(Modifier.height(12.dp))
-                        Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = OwnTVTheme.colors.onSurface)
+                        Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.onSurface)
                         Spacer(Modifier.height(2.dp))
-                        Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = OwnTVTheme.colors.onSurfaceVariant, maxLines = 2)
+                        Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = LunaIPtvTheme.colors.onSurfaceVariant, maxLines = 2)
                     }
                     Spacer(Modifier.height(16.dp))
-                    Text(stringResource(R.string.series_press_ok), style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.primary)
+                    Text(stringResource(R.string.series_press_ok), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.primary)
                 }
             }
         }
     }
 
-    // Long-press a series â†’ context menu.
+    // Long-press a series ? context menu.
     contextSeries?.let { s ->
         val cacheForS = selectedSeriesMeta?.takeIf { it.seriesId == s.id }?.cache
         SeriesContextMenu(
@@ -508,7 +508,7 @@ private fun SeriesGrid(
         )
     }
 
-    // Fullscreen TMDB details window (Â§11.1) â€” read-only, Back exits; refocus the series on close.
+    // Fullscreen TMDB details window (§11.1) — read-only, Back exits; refocus the series on close.
     LaunchedEffect(detailsSeries) {
         if (detailsSeries == null && contextSeriesId != null) {
             withFrameNanos { }
@@ -523,7 +523,7 @@ private fun SeriesGrid(
         )
     }
 
-    // "Set TMDB name" override dialog (Â§11.2 U5b). Prefill once per target (saved override, else cleaned title).
+    // "Set TMDB name" override dialog (§11.2 U5b). Prefill once per target (saved override, else cleaned title).
     LaunchedEffect(setTmdbNameSeries) {
         if (setTmdbNameSeries == null && contextSeriesId != null) {
             withFrameNanos { }
@@ -553,7 +553,7 @@ private fun SeriesGrid(
         }
     }
 
-    // In-app trailer player (Â§7.3 U4) â€” fullscreen over everything; Back/Exit closes and refocuses the series.
+    // In-app trailer player (§7.3 U4) — fullscreen over everything; Back/Exit closes and refocuses the series.
     LaunchedEffect(trailerVideoKey) {
         if (trailerVideoKey == null && contextSeriesId != null) {
             withFrameNanos { }
@@ -589,7 +589,7 @@ private fun jsonStringList(json: String?): List<String> {
     }.getOrDefault(emptyList())
 }
 
-/** Build the fullscreen TMDB-details payload for a series, applying the Â§7.1/Â§4.1 merge precedence. */
+/** Build the fullscreen TMDB-details payload for a series, applying the §7.1/§4.1 merge precedence. */
 private fun buildSeriesDetails(
     s: SeriesEntity,
     meta: com.lunaiptv.core.database.entity.MetadataCacheEntity?,
@@ -604,7 +604,7 @@ private fun buildSeriesDetails(
     val year = if (tmdbWins) meta?.year ?: s.year else s.year ?: meta?.year
     val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: s.rating?.takeIf { it > 0 }
         else s.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
-    val metaLine = listOfNotNull(year?.toString(), rating?.let { "â˜… %.1f".format(it) }).joinToString("  â€¢  ")
+    val metaLine = listOfNotNull(year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString("  •  ")
     return com.lunaiptv.features.shell.components.MediaDetailsUi(
         title = s.name,
         backdropUrl = backdrop,
@@ -616,7 +616,7 @@ private fun buildSeriesDetails(
     )
 }
 
-/** Right-hand pane for the focused episode (Option B): 16:9 TMDB still, name, S/E Â· year Â· rating, plot. */
+/** Right-hand pane for the focused episode (Option B): 16:9 TMDB still, name, S/E · year · rating, plot. */
 @Composable
 private fun EpisodeDetailPane(
     episode: EpisodeEntity?,
@@ -627,7 +627,7 @@ private fun EpisodeDetailPane(
     onPlayNextUp: () -> Unit,
     downloadStrip: com.lunaiptv.ui.components.DownloadStripState? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
         if (episode == null) {
         PreviewPane(hint = stringResource(R.string.series_episode_focus_hint))
         return
@@ -637,17 +637,17 @@ private fun EpisodeDetailPane(
     val plot = if (tmdbWins) meta?.overview ?: episode.plot?.takeIf { it.isNotBlank() }
         else episode.plot?.takeIf { it.isNotBlank() } ?: meta?.overview
     val bits = listOfNotNull(
-        "S${episode.seasonNumber} Â· E${episode.episodeNumber}",
+        "S${episode.seasonNumber} · E${episode.episodeNumber}",
         meta?.year?.toString(),
-        meta?.rating?.takeIf { it > 0 }?.let { "â˜… %.1f".format(it) },
+        meta?.rating?.takeIf { it > 0 }?.let { "? %.1f".format(it) },
     )
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Dimens.GapLarge)) {
-        // Non-focusable status strip â€” the focused episode's own download, else the series' aggregate.
+        // Non-focusable status strip — the focused episode's own download, else the series' aggregate.
         if (downloadStrip != null) {
             com.lunaiptv.ui.components.DownloadStatusStrip(downloadStrip)
             Spacer(Modifier.height(14.dp))
         }
-        // "Next up" Play card â€” the series' resume/continue target. Hidden when there's no next-up (all
+        // "Next up" Play card — the series' resume/continue target. Hidden when there's no next-up (all
         // caught up) or when it's the same episode already focused (OK plays it anyway).
         nextUpEpisode?.takeIf { it.id != episode.id }?.let { nup ->
             Column(
@@ -656,13 +656,13 @@ private fun EpisodeDetailPane(
             ) {
                 Text(stringResource(R.string.series_next_up), style = MaterialTheme.typography.labelSmall, color = colors.primary)
                 Spacer(Modifier.height(4.dp))
-                Text("S${nup.seasonNumber} Â· E${nup.episodeNumber}  ${nup.name}", style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text("S${nup.seasonNumber} · E${nup.episodeNumber}  ${nup.name}", style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (nextUpPositionMs > 0) {
                     Spacer(Modifier.height(2.dp))
                     Text(stringResource(R.string.series_resume_ms, formatTimestamp(nextUpPositionMs)), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(10.dp))
-                OwnTVButton(label = stringResource(R.string.play), onClick = onPlayNextUp, icon = OwnTVIcon.PLAY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(label = stringResource(R.string.play), onClick = onPlayNextUp, icon = LunaIPtvIcon.PLAY, modifier = Modifier.fillMaxWidth())
             }
             Spacer(Modifier.height(14.dp))
         }
@@ -673,13 +673,13 @@ private fun EpisodeDetailPane(
             if (!still.isNullOrBlank()) {
                 AsyncImage(model = still, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             } else {
-                OwnTVIcon(OwnTVIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.height(40.dp))
+                LunaIPtvIcon(LunaIPtvIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.height(40.dp))
             }
         }
         Spacer(Modifier.height(14.dp))
         Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
         Spacer(Modifier.height(4.dp))
-        Text(bits.joinToString("  â€¢  "), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        Text(bits.joinToString("  •  "), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         if (!plot.isNullOrBlank()) {
             Spacer(Modifier.height(12.dp))
             Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
@@ -703,7 +703,7 @@ private fun EpisodeContextMenu(
     onRefetch: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -717,22 +717,22 @@ private fun EpisodeContextMenu(
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(stringResource(R.string.movies_download), onClick = onDownload, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth().focusRequester(focus))
-            OwnTVButton(stringResource(R.string.movies_external), onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton(
+            LunaIPtvButton(stringResource(R.string.movies_download), onClick = onDownload, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.DOWNLOADS, modifier = Modifier.fillMaxWidth().focusRequester(focus))
+            LunaIPtvButton(stringResource(R.string.movies_external), onClick = onPlayExternal, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.PLAY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(
                 if (watched) stringResource(R.string.movies_unwatched) else stringResource(R.string.movies_watched),
                 onClick = onToggleWatched,
-                style = OwnTVButtonStyle.SECONDARY,
+                style = LunaIPtvButtonStyle.SECONDARY,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (hasTmdbDetails) {
-                OwnTVButton(stringResource(R.string.movies_tmdb_details), onClick = onShowDetails, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.MENU, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_tmdb_details), onClick = onShowDetails, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.MENU, modifier = Modifier.fillMaxWidth())
             }
             if (canRefetchTmdb) {
-                OwnTVButton(stringResource(R.string.movies_refetch_tmdb), onClick = onRefetch, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.movies_refetch_tmdb), onClick = onRefetch, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             }
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -746,10 +746,10 @@ private fun buildEpisodeDetails(
     val still = com.lunaiptv.core.metadata.MetadataImages.backdrop(meta?.backdropPath ?: meta?.posterPath)
     val title = if (tmdbWins) meta?.title?.takeIf { it.isNotBlank() } ?: ep.name else ep.name
     val plot = if (tmdbWins) meta?.overview ?: ep.plot else ep.plot?.takeIf { it.isNotBlank() } ?: meta?.overview
-    val metaLine = listOfNotNull(meta?.year?.toString(), meta?.rating?.takeIf { it > 0 }?.let { "â˜… %.1f".format(it) }).joinToString("  â€¢  ")
+    val metaLine = listOfNotNull(meta?.year?.toString(), meta?.rating?.takeIf { it > 0 }?.let { "? %.1f".format(it) }).joinToString("  •  ")
     return com.lunaiptv.features.shell.components.MediaDetailsUi(
         title = title,
-        subtitle = "S${ep.seasonNumber} Â· E${ep.episodeNumber}",
+        subtitle = "S${ep.seasonNumber} · E${ep.episodeNumber}",
         backdropUrl = still,
         posterUrl = null,
         metaLine = metaLine,
@@ -783,7 +783,7 @@ private fun EpisodeView(
     val hideWatched by vm.hideWatched.collectAsStateWithLifecycle()
     val nextUpId by vm.nextUpEpisodeId.collectAsStateWithLifecycle()
     val epListState = androidx.compose.foundation.lazy.rememberLazyListState()
-    // Season selector rail state â€” long-running shows can have more seasons than fit on one line
+    // Season selector rail state — long-running shows can have more seasons than fit on one line
     // (12+); the selector scrolls chip-by-chip with D-pad focus and keeps the active season in view.
     val seasonRowState = androidx.compose.foundation.lazy.rememberLazyListState()
     val selFocus = remember { androidx.compose.ui.focus.FocusRequester() }
@@ -792,7 +792,7 @@ private fun EpisodeView(
     var contextEpisode by remember { mutableStateOf<EpisodeEntity?>(null) }
     var detailsEpisode by remember { mutableStateOf<EpisodeEntity?>(null) }
     // Long-press target's id + its row's FocusRequester: refocus the episode row when the context menu
-    // (or a window it opened) closes â€” otherwise focus dies with the menu and falls to the sidebar.
+    // (or a window it opened) closes — otherwise focus dies with the menu and falls to the sidebar.
     var contextEpisodeId by remember { mutableStateOf<Long?>(null) }
     val epContextFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -803,7 +803,7 @@ private fun EpisodeView(
     val seasons = episodes.map { it.seasonNumber }.distinct().sorted()
     val activeSeason = if (seasons.contains(selectedSeason)) selectedSeason else seasons.firstOrNull() ?: 1
     val seasonEpisodes = episodes.filter { it.seasonNumber == activeSeason }
-    // "Hide watched" filter â€” drops episodes watched to â‰¥95%. Focus-index math below uses this list so a
+    // "Hide watched" filter — drops episodes watched to =95%. Focus-index math below uses this list so a
     // filtered-out last-watched episode falls back to the first visible one instead of losing focus.
     val visibleEpisodes = remember(seasonEpisodes, hideWatched, completedIds) {
         if (hideWatched) seasonEpisodes.filterNot { it.id in completedIds } else seasonEpisodes
@@ -812,7 +812,7 @@ private fun EpisodeView(
     // Opening a show: grab focus on the LAST-WATCHED episode if there is one (#22), else the first
     // episode (the grid that had focus is unmounted, so focus would otherwise die and fall back to the
     // sidebar). Waits for !loading so the seeded last-watched id/season from the VM is settled. When
-    // entering via player-return, mark done WITHOUT focusing â€” the restore below owns focus.
+    // entering via player-return, mark done WITHOUT focusing — the restore below owns focus.
     LaunchedEffect(loading, seasonEpisodes.isNotEmpty(), restoreFocus) {
         if (initialFocused) return@LaunchedEffect
         if (restoreFocus) { initialFocused = true; return@LaunchedEffect }
@@ -830,7 +830,7 @@ private fun EpisodeView(
         }
     }
 
-    // Resume flow: AUTO continues silently, ASK prompts (â‰¥10s saved), NEVER starts from zero.
+    // Resume flow: AUTO continues silently, ASK prompts (=10s saved), NEVER starts from zero.
     val resumeMode by vm.resumeMode.collectAsStateWithLifecycle()
     // Global external-player toggle: never mount the fullscreen in-app player (it spins up mpv)
     // when playback is handed to an external app.
@@ -862,7 +862,7 @@ private fun EpisodeView(
     }
 
     // Keep the active season scrolled into view in the season rail (opening on a deep season, or after
-    // the user switches season). Without this a show that opens on, say, season 8 would still show 1â€“7.
+    // the user switches season). Without this a show that opens on, say, season 8 would still show 1–7.
     LaunchedEffect(activeSeason, seasons.size) {
         if (seasons.size > 1) {
             val idx = seasons.indexOf(activeSeason)
@@ -871,29 +871,29 @@ private fun EpisodeView(
     }
 
     Column(
-        // Same rounded content panel as the series grid â€” the episode list was the one view drawn
+        // Same rounded content panel as the series grid — the episode list was the one view drawn
         // without a panel background.
         modifier = modifier.fillMaxSize().onFocusChanged { if (it.hasFocus) onChildFocused() }
             .roundedPanel(fillColor = ContentPanelFill)
             .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OwnTVButton(label = stringResource(R.string.back), onClick = { vm.closeSeries() }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.CHEVRON)
-            Text(series.name, style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+            LunaIPtvButton(label = stringResource(R.string.back), onClick = { vm.closeSeries() }, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.CHEVRON)
+            Text(series.name, style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton(
+            LunaIPtvButton(
                 label = if (favoriteIds.contains(series.id)) stringResource(R.string.series_favorited) else stringResource(R.string.series_favorite),
                 onClick = { vm.toggleFavorite(series) },
-                style = OwnTVButtonStyle.SECONDARY,
-                icon = OwnTVIcon.STAR,
+                style = LunaIPtvButtonStyle.SECONDARY,
+                icon = LunaIPtvIcon.STAR,
             )
             // "Hide watched" toggle (moved up from the season rail). Shown only once the series has at
             // least one watched episode; filters the active season's episode list.
             if (completedIds.isNotEmpty()) {
-                OwnTVButton(
+                LunaIPtvButton(
                     label = if (hideWatched) stringResource(R.string.series_show_watched) else stringResource(R.string.series_hide_watched),
                     onClick = { vm.setHideWatched(!hideWatched) },
-                    style = OwnTVButtonStyle.SECONDARY,
+                    style = LunaIPtvButtonStyle.SECONDARY,
                 )
             }
         }
@@ -901,13 +901,13 @@ private fun EpisodeView(
 
         when {
             loading && episodes.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                OwnTVSpinner(sizeDp = 48)
+                LunaIPtvSpinner(sizeDp = 48)
             }
             episodes.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.series_no_episodes), style = MaterialTheme.typography.bodyLarge, color = OwnTVTheme.colors.onSurfaceVariant)
+                Text(stringResource(R.string.series_no_episodes), style = MaterialTheme.typography.bodyLarge, color = LunaIPtvTheme.colors.onSurfaceVariant)
             }
             else -> {
-                // Option B (Â§11.1): episode list on the left, focused-episode detail pane on the right.
+                // Option B (§11.1): episode list on the left, focused-episode detail pane on the right.
                 Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column(modifier = Modifier.weight(1.4f).fillMaxHeight()) {
                         if (seasons.size > 1) {
@@ -956,7 +956,7 @@ private fun EpisodeView(
                             }
                         }
                     }
-                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(Dimens.CardCorner)).background(OwnTVTheme.colors.panel)) {
+                    Box(modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(Dimens.CardCorner)).background(LunaIPtvTheme.colors.panel)) {
                         val ep = selectedEpisode
                         val meta = selectedEpisodeMeta?.takeIf { it.episodeId == ep?.id }?.cache
                         val nextUpEp = nextUpId?.let { id -> episodes.firstOrNull { it.id == id } }
@@ -979,7 +979,7 @@ private fun EpisodeView(
     }
 
     // When the episode context menu closes (action or dismiss), put focus back on the episode row it was
-    // opened from â€” unless a window the menu opened (TMDB Details) now owns focus; it refocuses on close.
+    // opened from — unless a window the menu opened (TMDB Details) now owns focus; it refocuses on close.
     LaunchedEffect(contextEpisode) {
         if (contextEpisode != null) return@LaunchedEffect
         if (detailsEpisode != null) return@LaunchedEffect
@@ -995,12 +995,12 @@ private fun EpisodeView(
         }
     }
 
-    // Long-press an episode â†’ context menu (Download idempotent + toast; TMDB Details when matched).
+    // Long-press an episode ? context menu (Download idempotent + toast; TMDB Details when matched).
     contextEpisode?.let { ep ->
         val cacheForEp = selectedEpisodeMeta?.takeIf { it.episodeId == ep.id }?.cache
         val alreadyDownloaded = downloads[ep.id] != null
         EpisodeContextMenu(
-            title = "S${ep.seasonNumber} Â· E${ep.episodeNumber}  ${ep.name}",
+            title = "S${ep.seasonNumber} · E${ep.episodeNumber}  ${ep.name}",
             watched = ep.id in completedIds,
             hasTmdbDetails = metadataMode.enrich && cacheForEp != null,
             canRefetchTmdb = metadataMode.enrich,
@@ -1025,7 +1025,7 @@ private fun EpisodeView(
         )
     }
 
-    // Fullscreen TMDB details window for the episode (Â§11.1) â€” read-only, Back exits.
+    // Fullscreen TMDB details window for the episode (§11.1) — read-only, Back exits.
     detailsEpisode?.let { ep ->
         val cache = selectedEpisodeMeta?.takeIf { it.episodeId == ep.id }?.cache
         com.lunaiptv.features.shell.components.MediaDetailsScreen(
@@ -1048,7 +1048,7 @@ private fun EpisodeView(
 
 @Composable
 private fun SeasonChip(season: Int, selected: Boolean, completedCount: Int, totalCount: Int, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val label = if (totalCount > 0) stringResource(R.string.series_season_progress, season, completedCount, totalCount) else stringResource(R.string.series_season, season)
     FocusableSurface(
         onClick = onClick,
@@ -1079,10 +1079,10 @@ private fun EpisodeRow(
     onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     // Row is clean text (number + name + last-watched). Play = single-press; Download / TMDB Details
-    // moved to long-press (Â§11.1). The focused episode drives the right detail pane. Watched state:
-    // âœ“ + dimmed name when completed (â‰¥95%); a thin progress bar hugging the bottom edge when part-watched.
+    // moved to long-press (§11.1). The focused episode drives the right detail pane. Watched state:
+    // ? + dimmed name when completed (=95%); a thin progress bar hugging the bottom edge when part-watched.
     FocusableSurface(
         onClick = onClick,
         onLongClick = onLongClick,
@@ -1098,7 +1098,7 @@ private fun EpisodeRow(
                     contentAlignment = Alignment.Center,
                 ) {
                     if (completed) {
-                        Text("âœ“", style = MaterialTheme.typography.titleMedium, color = colors.onPrimaryContainer)
+                        Text("?", style = MaterialTheme.typography.titleMedium, color = colors.onPrimaryContainer)
                     } else {
                         Text(episode.episodeNumber.toString(), style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
                     }
@@ -1135,7 +1135,7 @@ private fun EpisodeRow(
     }
 }
 
-/** Compact one-line row used by the List view mode â€” fits many series on screen at once (#10). */
+/** Compact one-line row used by the List view mode — fits many series on screen at once (#10). */
 @Composable
 private fun SeriesListRow(
     series: SeriesEntity,
@@ -1145,7 +1145,7 @@ private fun SeriesListRow(
     onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         onLongClick = onLongClick,
@@ -1166,7 +1166,7 @@ private fun SeriesListRow(
                 if (!series.posterUrl.isNullOrBlank()) {
                     AsyncImage(model = series.posterUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
                 } else {
-                    OwnTVIcon(OwnTVIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                    LunaIPtvIcon(LunaIPtvIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
                 }
             }
             Column(Modifier.weight(1f)) {
@@ -1179,14 +1179,14 @@ private fun SeriesListRow(
                 )
                 val meta = buildList {
                     series.year?.let { add(it.toString()) }
-                    series.rating?.takeIf { it > 0 }?.let { add("â˜… %.1f".format(it)) }
-                }.joinToString("  â€¢  ")
+                    series.rating?.takeIf { it > 0 }?.let { add("? %.1f".format(it)) }
+                }.joinToString("  •  ")
                 if (meta.isNotBlank()) {
                     Text(meta, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, maxLines = 1)
                 }
             }
             if (isFavorite) {
-                OwnTVIcon(OwnTVIcon.STAR, tint = colors.primary, modifier = Modifier.size(18.dp))
+                LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.primary, modifier = Modifier.size(18.dp))
             }
         }
     }

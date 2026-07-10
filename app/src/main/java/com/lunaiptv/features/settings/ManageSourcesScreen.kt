@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -48,13 +48,13 @@ import com.lunaiptv.core.sync.syncProgressCountsLabel
 import com.lunaiptv.core.sync.work.CatalogSyncState
 import com.lunaiptv.features.settings.data.PlaylistAutoRefresh
 import com.lunaiptv.features.setup.AddSourceScreen
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Phase 13 â€” list / add / re-sync / delete the active profile's IPTV sources. */
+/** Phase 13 — list / add / re-sync / delete the active profile's IPTV sources. */
 @Composable
 fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val vm: SettingsViewModel = koinViewModel()
@@ -64,7 +64,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val playlistAutoRefresh by vm.playlistAutoRefresh.collectAsStateWithLifecycle()
     val defaultId by vm.defaultSourceId.collectAsStateWithLifecycle()
     val epgSync by vm.epgSync.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
 
     var showAdd by remember { mutableStateOf(false) }
@@ -78,7 +78,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             kotlinx.coroutines.delay(120); runCatching { addFocus.requestFocus() }
         }
     }
-    // A failed import/re-sync swaps the form for an error screen â€” move focus onto its action button.
+    // A failed import/re-sync swaps the form for an error screen — move focus onto its action button.
     LaunchedEffect(importState) {
         if (importState is SettingsViewModel.ImportState.Failed) {
             kotlinx.coroutines.delay(50); runCatching { errorFocus.requestFocus() }
@@ -120,14 +120,14 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 showDefaultToggle = sources.isNotEmpty(),
                 onBack = { showAdd = false },
                 modifier = modifier,
-                initial = vm.lastFailedSource, // pre-fill on retry â€” no re-typing after a typo
+                initial = vm.lastFailedSource, // pre-fill on retry — no re-typing after a typo
             )
             SettingsViewModel.ImportState.Running -> CenterStatus {
                 val display = progress?.importProgressDisplay(context)
-                OwnTVSpinner(sizeDp = 56)
+                LunaIPtvSpinner(sizeDp = 56)
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    display?.title ?: "Importing catalogâ€¦",
+                    display?.title ?: "Importing catalog…",
                     style = MaterialTheme.typography.titleMedium,
                     color = colors.onSurface,
                 )
@@ -136,10 +136,10 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(4.dp))
                 Text(display?.detail ?: "Preparing catalog", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(20.dp))
-                OwnTVButton(stringResource(R.string.cancel), onClick = { showAdd = false; vm.cancelImport() }, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = { showAdd = false; vm.cancelImport() }, style = LunaIPtvButtonStyle.SECONDARY)
             }
             is SettingsViewModel.ImportState.Success -> {
-                // Semi-auto EPG: ask â†’ sync (with a live count, like the import) â†’ done, before returning.
+                // Semi-auto EPG: ask ? sync (with a live count, like the import) ? done, before returning.
                 if (epgSync !is EpgSyncUi.Hidden) {
                     EpgSyncDialog(state = epgSync, onSync = vm::syncPendingEpg, onDismiss = vm::dismissPendingEpg)
                 } else if (s.summary.contains("Imported with warnings:")) {
@@ -148,7 +148,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                         Spacer(Modifier.height(8.dp))
                         Text(s.summary, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                         Spacer(Modifier.height(20.dp))
-                        OwnTVButton(stringResource(R.string.done), onClick = { showAdd = false; vm.resetImport() })
+                        LunaIPtvButton(stringResource(R.string.done), onClick = { showAdd = false; vm.resetImport() })
                     }
                 } else {
                     LaunchedEffect(Unit) { showAdd = false; vm.resetImport() }
@@ -160,8 +160,8 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 Text(s.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(20.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OwnTVButton(stringResource(R.string.back), onClick = { showAdd = false; vm.resetImport() }, style = OwnTVButtonStyle.SECONDARY)
-                    OwnTVButton(stringResource(R.string.try_again), onClick = { vm.resetImport() }, modifier = Modifier.focusRequester(errorFocus))
+                    LunaIPtvButton(stringResource(R.string.back), onClick = { showAdd = false; vm.resetImport() }, style = LunaIPtvButtonStyle.SECONDARY)
+                    LunaIPtvButton(stringResource(R.string.try_again), onClick = { vm.resetImport() }, modifier = Modifier.focusRequester(errorFocus))
                 }
             }
         }
@@ -172,7 +172,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // Spatial D-pad entry from the sidebar would land mid-list â€” route it to "Add Source".
+            // Spatial D-pad entry from the sidebar would land mid-list — route it to "Add Source".
             // onEnter fires only for directional entry from outside; internal focus moves and
             // programmatic restores never re-trigger it (an onFocusChanged redirect did, freezing focus).
             .focusProperties { onEnter = { runCatching { addFocus.requestFocus() } } }
@@ -182,7 +182,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.sources_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton(stringResource(R.string.sources_add), onClick = { showAdd = true }, icon = com.lunaiptv.ui.components.OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
+            LunaIPtvButton(stringResource(R.string.sources_add), onClick = { showAdd = true }, icon = com.lunaiptv.ui.components.LunaIPtvIcon.ADD, modifier = Modifier.focusRequester(addFocus))
         }
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.sources_shared), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
@@ -218,7 +218,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     confirmDelete?.let { src ->
         ConfirmDialog(
-            title = "Delete â€œ${src.name}â€?",
+            title = "Delete “${src.name}”?",
             message = "This removes the source and all its channels, movies and series from every profile.",
             onConfirm = { vm.delete(src); confirmDelete = null },
             onDismiss = { confirmDelete = null },
@@ -238,7 +238,7 @@ private fun SourceRow(
     onCancelSync: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
     val activeSync = syncState as? CatalogSyncState.Syncing
     val activeCountsLabel = activeSync?.countsLabel(context, source.type, counts)
@@ -270,28 +270,28 @@ private fun SourceRow(
             }
             Text(
                 buildString {
-                    append(when (source.type) { SourceType.XTREAM -> "Xtream â€¢ ${source.url}"; SourceType.M3U -> "M3U â€¢ ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
-                    if (autoRefresh != PlaylistAutoRefresh.OFF) append("  â€¢  âŸ³ ${autoRefresh.label}")
+                    append(when (source.type) { SourceType.XTREAM -> "Xtream • ${source.url}"; SourceType.M3U -> "M3U • ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
+                    if (autoRefresh != PlaylistAutoRefresh.OFF) append("  •  ? ${autoRefresh.label}")
                     val visibleCounts = if (activeSync == null) counts?.breakdown else activeCountsLabel
                     if (!visibleCounts.isNullOrBlank()) {
-                        append("  â€¢  $visibleCounts")
+                        append("  •  $visibleCounts")
                     } else if (activeSync != null) {
-                        append("  â€¢  Preparing catalog")
+                        append("  •  Preparing catalog")
                     }
                 },
                 style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1,
             )
         }
         Spacer(Modifier.width(12.dp))
-        OwnTVButton(stringResource(R.string.edit), onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton(stringResource(R.string.edit), onClick = onEdit, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(10.dp))
         if (syncState.isActive) {
-            OwnTVButton(stringResource(R.string.cancel), onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.cancel), onClick = onCancelSync, style = LunaIPtvButtonStyle.SECONDARY)
         } else {
-            OwnTVButton(stringResource(R.string.sources_resync), onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.sources_resync), onClick = onResync, style = LunaIPtvButtonStyle.SECONDARY)
         }
         Spacer(Modifier.width(10.dp))
-        OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton(stringResource(R.string.delete), onClick = onDelete, style = LunaIPtvButtonStyle.SECONDARY)
     }
 }
 
@@ -340,7 +340,7 @@ private fun CenterStatus(content: @Composable androidx.compose.foundation.layout
 
 @Composable
 internal fun ConfirmDialog(title: String, message: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -351,9 +351,9 @@ internal fun ConfirmDialog(title: String, message: String, onConfirm: () -> Unit
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.focusRequester(focus))
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.focusRequester(focus))
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.delete), onClick = onConfirm)
+                LunaIPtvButton(stringResource(R.string.delete), onClick = onConfirm)
             }
         }
     }

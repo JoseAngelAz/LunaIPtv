@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.live
+package com.lunaiptv.features.live
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -57,10 +57,10 @@ import com.lunaiptv.features.shell.components.RailCategory
 import com.lunaiptv.ui.components.longPressMenuGuard
 import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.SearchBar
 import com.lunaiptv.ui.components.SortChip
 import com.lunaiptv.ui.components.TextInputDialog
@@ -70,9 +70,9 @@ import com.lunaiptv.ui.components.PreviewPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.format.rememberSystemTimeFormatter
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Layer 2â€“4 for Live TV: real category rail, Paging channel list, and a live preview pane. */
+/** Layer 2–4 for Live TV: real category rail, Paging channel list, and a live preview pane. */
 @Composable
 fun LiveScreen(
     onFullscreen: () -> Unit,
@@ -98,14 +98,14 @@ fun LiveScreen(
     // Preview runs only when the player isn't busy (previewEnabled) AND the user hasn't turned it off.
     val effectivePreview = previewEnabled && livePreviewSetting
 
-    // NOTE: do NOT stop the player when LiveScreen leaves composition â€” going fullscreen disposes
+    // NOTE: do NOT stop the player when LiveScreen leaves composition — going fullscreen disposes
     // this screen, and stopping here would abort the stream that was just started. Playback is
     // stopped on fullscreen exit (shell BackHandler) instead.
 
     // In-pane preview: play the focused channel after the focus settles (700ms). Disabled while the
     // fullscreen/mini player owns the surface (previewEnabled=false) to avoid two surfaces fighting.
     LaunchedEffect(previewChannel?.id, effectivePreview, previewArmed) {
-        // previewArmed gates the case where the last channel was restored on startup â€” we don't auto-preview
+        // previewArmed gates the case where the last channel was restored on startup — we don't auto-preview
         // it until the user actually focuses a channel (then it plays normally).
         if (!effectivePreview || !previewArmed) return@LaunchedEffect
         val ch = previewChannel ?: return@LaunchedEffect
@@ -121,7 +121,7 @@ fun LiveScreen(
     var catchupChannel by remember { mutableStateOf<ChannelEntity?>(null) }
     var contextChannel by remember { mutableStateOf<ChannelEntity?>(null) } // long-press quick menu
     // When the long-press menu closes (Cancel, Favourite, Hide) WITHOUT opening another dialog, return focus
-    // to the channel it was opened from â€” otherwise focus falls back to the nav panel.
+    // to the channel it was opened from — otherwise focus falls back to the nav panel.
     var contextMenuOpen by remember { mutableStateOf(false) }
     // Id of the channel the context menu was opened on, plus a dedicated requester bound to that row.
     // The previous restore was racy (delay(60) + selFocus bound to the *previewed* channel): when the
@@ -137,7 +137,7 @@ fun LiveScreen(
         if (opened) { contextMenuOpen = true; return@LaunchedEffect }
         if (!contextMenuOpen) return@LaunchedEffect
         contextMenuOpen = false
-        // A follow-up dialog (rename / match EPG / catch-up / move) grabs focus itself â€” only restore
+        // A follow-up dialog (rename / match EPG / catch-up / move) grabs focus itself — only restore
         // for plain closes (Cancel, Favourite, Hide, Close).
         if (renaming != null || matchingEpg != null || catchupChannel != null || enteringMoveMode) return@LaunchedEffect
 
@@ -150,13 +150,13 @@ fun LiveScreen(
             withFrameNanos { } // wait one frame so the row is laid out and contextFocus is attached
             runCatching { contextFocus.requestFocus() }
         } else {
-            // Row is gone (e.g. "Hide channel" removed it) â€” clear the anchor and land on the first row.
+            // Row is gone (e.g. "Hide channel" removed it) — clear the anchor and land on the first row.
             contextChannelId = null
             runCatching { firstItemFocus.requestFocus() }
         }
     }
     // Returning from fullscreen: scroll to and focus the channel you were watching (waits for the list to load).
-    // Also used by "Startup â†’ Live Â· Favorites": there's no remembered channel yet, so land on the first row
+    // Also used by "Startup ? Live · Favorites": there's no remembered channel yet, so land on the first row
     // (not the nav panel).
     LaunchedEffect(restoreFocus, channels.itemCount) {
         if (!restoreFocus || channels.itemCount == 0) return@LaunchedEffect
@@ -186,13 +186,13 @@ fun LiveScreen(
             categories = railItems.map { RailCategory(it.abbr, it.title, it.icon) },
             selectedIndex = selectedIndex,
             onSelect = { idx -> railItems.getOrNull(idx)?.let { vm.select(it.key) } },
-            // Focusing a folder stops the in-pane preview â€” but only when a preview is actually running.
+            // Focusing a folder stops the in-pane preview — but only when a preview is actually running.
             // When the player is docked (live PiP) or fullscreen, previewEnabled is false and stopPreview
             // would kill that stream (e.g. while navigating left to leave Live), so we skip it.
             onFocused = { if (previewEnabled) vm.stopPreview() },
         )
 
-        // Layer 3 â€” header + channel list (fixed-width column; the preview pane fills the rest)
+        // Layer 3 — header + channel list (fixed-width column; the preview pane fills the rest)
         Column(
             modifier = Modifier
                 .width(Dimens.ChannelListWidth)
@@ -209,7 +209,7 @@ fun LiveScreen(
                     }
                 }
                 // Held Up/Down can outrun the lazy list's composition and escape this pane
-                // (landing on the top bar) â€” trap vertical exits; Left/Right/Back leave normally.
+                // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
                 .trapVerticalFocusExit()
                 .focusGroup()
                 .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
@@ -217,7 +217,7 @@ fun LiveScreen(
             Text(
                 stringResource(R.string.live_header, selectedItem?.title ?: stringResource(R.string.common_all)),
                 style = MaterialTheme.typography.headlineMedium,
-                color = OwnTVTheme.colors.onSurface,
+                color = LunaIPtvTheme.colors.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -225,7 +225,7 @@ fun LiveScreen(
             Text(
                 stringResource(R.string.live_count, selectedItem?.abbr ?: "ALL", formatCount(count)),
                 style = MaterialTheme.typography.titleMedium,
-                color = OwnTVTheme.colors.primary,
+                color = LunaIPtvTheme.colors.primary,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.height(14.dp))
@@ -247,7 +247,7 @@ fun LiveScreen(
                     Text(
                         if (searchQuery.isNotBlank()) stringResource(R.string.live_no_search, searchQuery.trim()) else stringResource(R.string.live_empty),
                         style = MaterialTheme.typography.bodyLarge,
-                        color = OwnTVTheme.colors.onSurfaceVariant,
+                        color = LunaIPtvTheme.colors.onSurfaceVariant,
                     )
                 }
             } else {
@@ -281,7 +281,7 @@ fun LiveScreen(
             }
         }
 
-        // Layer 4 â€” preview pane
+        // Layer 4 — preview pane
         Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).padding(Dimens.GapLarge)) {
             LivePreviewPane(
                 channel = previewChannel,
@@ -328,7 +328,7 @@ fun LiveScreen(
         )
     }
 
-    // Long-press a channel â†’ quick actions.
+    // Long-press a channel ? quick actions.
     contextChannel?.let { ch ->
         ChannelContextMenu(
             channelName = ch.name,
@@ -347,7 +347,7 @@ fun LiveScreen(
         )
     }
 
-    // Move mode overlay â€” intercepts D-pad Up/Down/OK/Back while reordering.
+    // Move mode overlay — intercepts D-pad Up/Down/OK/Back while reordering.
     moveState?.let { ms ->
         MoveOrderOverlay(
             title = stringResource(R.string.live_reorder),
@@ -370,7 +370,7 @@ private fun ChannelRow(
     onLongClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         onLongClick = onLongClick,
@@ -392,7 +392,7 @@ private fun ChannelRow(
                 if (!channel.logoUrl.isNullOrBlank()) {
                     AsyncImage(model = channel.logoUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
                 } else {
-                    OwnTVIcon(OwnTVIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
+                    LunaIPtvIcon(LunaIPtvIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
                 }
             }
             Text(
@@ -402,7 +402,7 @@ private fun ChannelRow(
                 modifier = Modifier.weight(1f),
             )
             if (isFavorite) {
-                OwnTVIcon(OwnTVIcon.STAR, tint = colors.favorite, filled = true, modifier = Modifier.size(20.dp))
+                LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.favorite, filled = true, modifier = Modifier.size(20.dp))
             }
         }
     }
@@ -425,13 +425,13 @@ private fun ChannelContextMenu(
     onRemoveFromHistory: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { androidx.compose.ui.focus.FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     androidx.activity.compose.BackHandler { onDismiss() }
     Box(
         modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f))
-            .longPressMenuGuard(), // the long-press OK is still held â€” don't let it auto-click a menu item
+            .longPressMenuGuard(), // the long-press OK is still held — don't let it auto-click a menu item
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -440,19 +440,19 @@ private fun ChannelContextMenu(
         ) {
             Text(channelName, style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(
+            LunaIPtvButton(
                 if (isFavorite) stringResource(R.string.movies_remove_fav) else stringResource(R.string.movies_add_fav),
-                onClick = onToggleFavorite, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.STAR,
+                onClick = onToggleFavorite, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.STAR,
                 modifier = Modifier.fillMaxWidth().focusRequester(focus),
             )
-            OwnTVButton(stringResource(R.string.live_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton(stringResource(R.string.live_hide_channel), onClick = onHide, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            OwnTVButton(stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.EPG, modifier = Modifier.fillMaxWidth())
-            if (hasCatchup) OwnTVButton(stringResource(R.string.live_catchup), onClick = onCatchup, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            if (canMove) OwnTVButton(stringResource(R.string.movies_move), onClick = onMove, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
-            if (isHistory) OwnTVButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.live_rename), onClick = onRename, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.live_hide_channel), onClick = onHide, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.EPG, modifier = Modifier.fillMaxWidth())
+            if (hasCatchup) LunaIPtvButton(stringResource(R.string.live_catchup), onClick = onCatchup, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (canMove) LunaIPtvButton(stringResource(R.string.movies_move), onClick = onMove, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+            if (isHistory) LunaIPtvButton(stringResource(R.string.movies_remove_history), onClick = onRemoveFromHistory, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
             Spacer(Modifier.height(4.dp))
-            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -470,7 +470,7 @@ private fun LivePreviewPane(
     onMatchEpg: () -> Unit,
     onCatchup: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val previewState by previewEngine.state.collectAsStateWithLifecycle()
     val previewHeight by previewEngine.videoHeight.collectAsStateWithLifecycle()
     val streamChips by previewEngine.streamChips.collectAsStateWithLifecycle()
@@ -485,7 +485,7 @@ private fun LivePreviewPane(
     }
     Column(
         // Scrollable so the action buttons are never clipped when the EPG (Now/Next/Later) makes the
-        // pane taller than the screen â€” focusing a button brings it into view.
+        // pane taller than the screen — focusing a button brings it into view.
         // Outer preview Box carries the rounded panel (Phase 6); no clip/background here.
         modifier = Modifier.fillMaxSize()
             .verticalScroll(rememberScrollState()).padding(Dimens.GapLarge),
@@ -498,15 +498,15 @@ private fun LivePreviewPane(
             if (!channel.logoUrl.isNullOrBlank()) {
                 AsyncImage(model = channel.logoUrl, contentDescription = null, modifier = Modifier.size(120.dp))
             } else {
-                OwnTVIcon(OwnTVIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(56.dp))
+                LunaIPtvIcon(LunaIPtvIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(56.dp))
             }
             if (previewPlaying) {
                 com.lunaiptv.player.ExoPreviewSurface(engine = previewEngine, modifier = Modifier.fillMaxSize())
             }
             if (previewLoading) {
-                OwnTVSpinner(sizeDp = 28)
+                LunaIPtvSpinner(sizeDp = 28)
             }
-            // Real stream spec â€” aspect Â· resolution Â· fps Â· audio. The channel NAME often lies ("â€¦4K"),
+            // Real stream spec — aspect · resolution · fps · audio. The channel NAME often lies ("…4K"),
             // so this shows what you'll actually get before you commit to watching. Falls back to just the
             // resolution until the full format is known.
             val chips = streamChips.takeIf { it.isNotEmpty() } ?: videoRes?.let { listOf(it) }.orEmpty()
@@ -535,23 +535,23 @@ private fun LivePreviewPane(
         // Catch-up channels: jump straight to a recent programme to replay it (no Guide gymnastics).
         if (channel.catchup) {
             Spacer(Modifier.height(16.dp))
-            OwnTVButton(label = stringResource(R.string.live_catchup), onClick = onCatchup, icon = OwnTVIcon.HISTORY)
+            LunaIPtvButton(label = stringResource(R.string.live_catchup), onClick = onCatchup, icon = LunaIPtvIcon.HISTORY)
         }
 
         Spacer(Modifier.height(16.dp))
-        OwnTVButton(
+        LunaIPtvButton(
             label = if (isFavorite) stringResource(R.string.series_favorited) else stringResource(R.string.series_favorite),
             onClick = onToggleFavorite,
-            style = OwnTVButtonStyle.SECONDARY,
-            icon = OwnTVIcon.STAR,
+            style = LunaIPtvButtonStyle.SECONDARY,
+            icon = LunaIPtvIcon.STAR,
         )
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            OwnTVButton(label = stringResource(R.string.live_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY)
-            OwnTVButton(label = stringResource(R.string.hide), onClick = onHide, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(label = stringResource(R.string.live_rename), onClick = onRename, style = LunaIPtvButtonStyle.SECONDARY)
+            LunaIPtvButton(label = stringResource(R.string.hide), onClick = onHide, style = LunaIPtvButtonStyle.SECONDARY)
         }
         Spacer(Modifier.height(10.dp))
-        OwnTVButton(label = stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.EPG)
+        LunaIPtvButton(label = stringResource(R.string.live_match_epg), onClick = onMatchEpg, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.EPG)
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.live_press_ok), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
     }
@@ -560,7 +560,7 @@ private fun LivePreviewPane(
 /** Now-playing (with progress) + up-next, from the channel's short EPG. Hidden when no guide exists. */
 @Composable
 private fun EpgSection(nowNext: EpgNowNext?) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val formatTime = rememberSystemTimeFormatter()
     val now = nowNext?.now
     val next = nowNext?.next
@@ -585,7 +585,7 @@ private fun EpgSection(nowNext: EpgNowNext?) {
                 Box(Modifier.fillMaxWidth(progress).height(4.dp).clip(RoundedCornerShape(2.dp)).background(colors.primary))
             }
             Text(
-                "${formatTime(now.startMs)} â€“ ${formatTime(now.stopMs)}",
+                "${formatTime(now.startMs)} – ${formatTime(now.stopMs)}",
                 style = MaterialTheme.typography.labelSmall,
                 color = colors.onSurfaceVariant,
             )
@@ -601,7 +601,7 @@ private fun EpgSection(nowNext: EpgNowNext?) {
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        // Upcoming programmes after "next" â€” see what's on later without opening the Guide (#11).
+        // Upcoming programmes after "next" — see what's on later without opening the Guide (#11).
         val later = nowNext?.upcoming ?: emptyList()
         if (later.isNotEmpty()) {
             Spacer(Modifier.height(6.dp))
@@ -622,7 +622,7 @@ private fun formatCatchupTime(
     formatTime: (Long) -> String,
 ): String {
     val day = java.text.SimpleDateFormat("EEE", java.util.Locale.getDefault()).format(java.util.Date(startMs))
-    return "$day ${formatTime(startMs)} â€“ ${formatTime(stopMs)}"
+    return "$day ${formatTime(startMs)} – ${formatTime(stopMs)}"
 }
 
 /** Live TV catch-up: pick a recent (already-aired) programme on a catch-up channel to replay from start. */
@@ -633,7 +633,7 @@ private fun CatchupDialog(
     onPick: (com.lunaiptv.core.database.entity.EpgProgrammeEntity) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val formatTime = rememberSystemTimeFormatter()
     val list by androidx.compose.runtime.produceState<List<com.lunaiptv.core.database.entity.EpgProgrammeEntity>?>(initialValue = null) {
         value = runCatching { loadProgrammes() }.getOrDefault(emptyList())
@@ -654,7 +654,7 @@ private fun CatchupDialog(
             Text(stringResource(R.string.live_catchup_pick), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
             when (val progs = list) {
-                null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
+                null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { LunaIPtvSpinner(sizeDp = 28) }
                 else -> if (progs.isEmpty()) {
                     Text(
                         stringResource(R.string.live_catchup_no_data),
@@ -679,13 +679,13 @@ private fun CatchupDialog(
                 }
             }
             Spacer(Modifier.height(16.dp))
-            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
         }
     }
 }
 
 /** Manual EPG matching: pick which guide channel this channel uses (search across all EPG feeds).
- *  Shared with the Guide screen (long-press a channel â†’ Match EPG). */
+ *  Shared with the Guide screen (long-press a channel ? Match EPG). */
 @Composable
 internal fun EpgMatchDialog(
     channelName: String,
@@ -695,7 +695,7 @@ internal fun EpgMatchDialog(
     onClear: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var query by remember { mutableStateOf("") }
     val results by androidx.compose.runtime.produceState<List<com.lunaiptv.core.database.entity.EpgChannelEntity>?>(initialValue = null, query) {
         kotlinx.coroutines.delay(250)
@@ -732,7 +732,7 @@ internal fun EpgMatchDialog(
             Spacer(Modifier.height(12.dp))
             val list = results
             when {
-                list == null -> androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
+                list == null -> androidx.compose.foundation.layout.Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { LunaIPtvSpinner(sizeDp = 28) }
                 list.isEmpty() -> Text(
                     if (query.isBlank()) stringResource(R.string.live_match_epg_no_data) else stringResource(R.string.live_match_epg_no_match, query),
                     style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
@@ -755,8 +755,8 @@ internal fun EpgMatchDialog(
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                if (currentMatch != null) OwnTVButton(stringResource(R.string.live_clear_match), onClick = onClear, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
+                if (currentMatch != null) LunaIPtvButton(stringResource(R.string.live_clear_match), onClick = onClear, style = LunaIPtvButtonStyle.SECONDARY)
             }
         }
     }

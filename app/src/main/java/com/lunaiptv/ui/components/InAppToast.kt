@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,13 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * A small in-app toast: a transient, themed message pinned to the bottom-center of the screen â€” nicer than a
- * system [android.widget.Toast] on a TV (legible app font, OwnTV colors). Auto-dismisses after ~2.2s.
+ * A small in-app toast: a transient, themed message pinned to the bottom-center of the screen — nicer than a
+ * system [android.widget.Toast] on a TV (legible app font, LunaIPtv colors). Auto-dismisses after ~2.2s.
  *
- * Usage: `val toast = rememberInAppToast()` near the top of a screen; call `toast.show("â€¦")` from a click
+ * Usage: `val toast = rememberInAppToast()` near the top of a screen; call `toast.show("…")` from a click
  * lambda; render [InAppToast] once as a sibling overlay (it stacks like the long-press menus). Emits nothing
  * while idle, so it costs nothing and never intercepts D-pad focus when there's no message.
  */
@@ -66,10 +66,10 @@ fun InAppToast(state: InAppToastState) {
             msg,
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(OwnTVTheme.colors.surfaceContainerHigh)
+                .background(LunaIPtvTheme.colors.surfaceContainerHigh)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
             style = MaterialTheme.typography.titleMedium,
-            color = OwnTVTheme.colors.onSurface,
+            color = LunaIPtvTheme.colors.onSurface,
         )
     }
 }

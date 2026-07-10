@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.home
+package com.lunaiptv.features.home
 
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
@@ -80,16 +80,16 @@ import com.lunaiptv.core.launcher.LauncherContinuationItem
 import com.lunaiptv.core.launcher.LauncherWatchNextType
 import com.lunaiptv.player.HeroPreviewEngine
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.PosterCard
 import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.format.formatSystemTime
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.compose.foundation.layout.widthIn
@@ -121,7 +121,7 @@ fun HomeScreen(
         HomeRow.entries.associateWith { FocusRequester() }
     }
     // Nothing starts expanded: a hero card earns its wide (16:9) state only after 3s of continuous focus
-    // (see the dwell effect below). Moving focus â€” to another card or out of the row â€” collapses it again.
+    // (see the dwell effect below). Moving focus — to another card or out of the row — collapses it again.
     var expandedHeroIndex by remember { mutableStateOf(-1) }
     var focusedHeroIndex by remember { mutableStateOf(-1) }
     val orderedRows = state.config.visibleOrder
@@ -215,7 +215,7 @@ fun HomeScreen(
     }
 
     // Cold-start "structure first": Home's queries are indexed and profile-scoped, but their first reads
-    // still come off cold eMMC before the OS page cache warms â€” so there's a brief gap between the shell
+    // still come off cold eMMC before the OS page cache warms — so there's a brief gap between the shell
     // painting and `home-data` arriving. During it we render the skeleton (instant) rather than flashing the
     // empty state, which would look wrong (and momentarily disappear) for a user who actually has history.
     // isLoading is true only for the initial state; it flips false on the first load and never goes back.
@@ -444,7 +444,7 @@ private fun HeroRowSection(
     onPlay: (HeroItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
     val density = LocalDensity.current
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
@@ -625,7 +625,7 @@ private fun HeroRowSection(
                         ) { focused ->
                             if (isExpanded) {
                                 // No blurred backdrop here: the preview overlay covers this card as soon
-                                // as previewRectInRowPx is known and renders the blur itself â€” doubling the
+                                // as previewRectInRowPx is known and renders the blur itself — doubling the
                                 // blur underneath just costs frames on TV hardware.
                                 Box(Modifier.fillMaxSize().background(Color.Black)) {
                                     val cardImageUrl = expandedImageUrl ?: imageUrl
@@ -660,11 +660,11 @@ private fun HeroRowSection(
                                             contentAlignment = Alignment.Center,
                                         ) {
                                             val fallback = when (item) {
-                                                is HeroItem.MovieHero -> OwnTVIcon.MOVIES
-                                                is HeroItem.SeriesHero -> OwnTVIcon.SERIES
-                                                is HeroItem.LiveHero -> OwnTVIcon.LIVE_TV
+                                                is HeroItem.MovieHero -> LunaIPtvIcon.MOVIES
+                                                is HeroItem.SeriesHero -> LunaIPtvIcon.SERIES
+                                                is HeroItem.LiveHero -> LunaIPtvIcon.LIVE_TV
                                             }
-                                            OwnTVIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(64.dp))
+                                            LunaIPtvIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(64.dp))
                                         }
                                     }
                                 }
@@ -703,11 +703,11 @@ private fun HeroRowSection(
                                             }
                                         } else {
                                             val fallback = when (item) {
-                                                is HeroItem.MovieHero -> OwnTVIcon.MOVIES
-                                                is HeroItem.SeriesHero -> OwnTVIcon.SERIES
-                                                is HeroItem.LiveHero -> OwnTVIcon.LIVE_TV
+                                                is HeroItem.MovieHero -> LunaIPtvIcon.MOVIES
+                                                is HeroItem.SeriesHero -> LunaIPtvIcon.SERIES
+                                                is HeroItem.LiveHero -> LunaIPtvIcon.LIVE_TV
                                             }
-                                            OwnTVIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(42.dp))
+                                            LunaIPtvIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(42.dp))
                                         }
                                     }
 
@@ -808,11 +808,11 @@ private fun HeroRowSection(
                                     }
                                 } else {
                                     val fallback = when (expandedItem) {
-                                        is HeroItem.MovieHero -> OwnTVIcon.MOVIES
-                                        is HeroItem.SeriesHero -> OwnTVIcon.SERIES
-                                        is HeroItem.LiveHero -> OwnTVIcon.LIVE_TV
+                                        is HeroItem.MovieHero -> LunaIPtvIcon.MOVIES
+                                        is HeroItem.SeriesHero -> LunaIPtvIcon.SERIES
+                                        is HeroItem.LiveHero -> LunaIPtvIcon.LIVE_TV
                                     }
-                                    OwnTVIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(64.dp))
+                                    LunaIPtvIcon(fallback, tint = colors.onSurfaceVariant, modifier = Modifier.size(64.dp))
                                 }
                             }
                         }
@@ -905,7 +905,7 @@ private fun HeroRowSection(
                             }
 
                             Spacer(Modifier.height(10.dp))
-                            OwnTVButton(
+                            LunaIPtvButton(
                                 label = when (expandedItem.watchNextType) {
                                     LauncherWatchNextType.NEXT -> stringResource(R.string.home_play_next)
                                     LauncherWatchNextType.CONTINUE ->
@@ -913,7 +913,7 @@ private fun HeroRowSection(
                                 },
                                 onClick = { onPlay(expandedItem) },
                                 modifier = Modifier.focusProperties { canFocus = false },
-                                style = OwnTVButtonStyle.SECONDARY,
+                                style = LunaIPtvButtonStyle.SECONDARY,
                                 enabled = true,
                             )
                         }
@@ -937,7 +937,7 @@ private fun HeroRowSection(
                         }
 
                         if (engineState == HeroPreviewEngine.State.LOADING) {
-                            OwnTVSpinner(
+                            LunaIPtvSpinner(
                                 sizeDp = 18,
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
@@ -1048,7 +1048,7 @@ private fun ContinueWatchingRow(
         Text(
             text = title.uppercase(),
             style = MaterialTheme.typography.titleSmall,
-            color = OwnTVTheme.colors.primary,
+            color = LunaIPtvTheme.colors.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = Dimens.HomeRowPaddingH),
         )
@@ -1124,7 +1124,7 @@ private fun LandscapeContinuationCard(
     onFocus: () -> Unit,
     onClick: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.onFocusChanged { if (it.hasFocus) onFocus() },
@@ -1153,7 +1153,7 @@ private fun LandscapeContinuationCard(
                     )
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        OwnTVIcon(OwnTVIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(36.dp))
+                        LunaIPtvIcon(LunaIPtvIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(36.dp))
                     }
                 }
 
@@ -1209,7 +1209,7 @@ private fun HeroFallbackPane(
     focusRequester: FocusRequester,
     onChildFocused: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(
         modifier = modifier
             .aspectRatio(16f / 9f)
@@ -1252,7 +1252,7 @@ private fun HeroFallbackPane(
 private fun EmptyHomeState(
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(
         modifier = modifier
             .focusProperties { canFocus = false }
@@ -1289,7 +1289,7 @@ private fun EmptyHomeState(
 private fun AllRowsHiddenState(
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(
         modifier = modifier
             .focusProperties { canFocus = false }
@@ -1324,13 +1324,13 @@ private fun AllRowsHiddenState(
 
 /**
  * Instant structure painted while Home's data loads on a cold start (see [HomeViewModel.HomeUiState.isLoading]).
- * Static placeholders only â€” no shimmer/animation, on purpose: this is a low-end-TV first paint, where an
+ * Static placeholders only — no shimmer/animation, on purpose: this is a low-end-TV first paint, where an
  * animating skeleton would just compete with the cold DB reads for the same weak CPU/GPU we're trying to
- * unblock. Spacing/shape reuse the real rows' Dimens so the skeletonâ†’content hand-off doesn't visibly jump.
+ * unblock. Spacing/shape reuse the real rows' Dimens so the skeleton?content hand-off doesn't visibly jump.
  */
 @Composable
 private fun HomeSkeleton(modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier
             .background(colors.surface)
@@ -1357,7 +1357,7 @@ private fun SkeletonRowPlaceholder(
     cardHeight: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val placeholder = OwnTVTheme.colors.surfaceContainerLowest
+    val placeholder = LunaIPtvTheme.colors.surfaceContainerLowest
     Column(modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier

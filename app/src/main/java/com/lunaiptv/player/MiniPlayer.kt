@@ -23,7 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 
 /**
  * The docked mini-player (dock-to-corner model). The mpv surface is rendered behind this by the shell;
@@ -52,16 +52,16 @@ fun MiniPlayer(player: PlaybackEngine, onExpand: () -> Unit, onClose: () -> Unit
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            MiniBtn(if (isPlaying) OwnTVIcon.PAUSE else OwnTVIcon.PLAY) { player.togglePlayPause() }
+            MiniBtn(if (isPlaying) LunaIPtvIcon.PAUSE else LunaIPtvIcon.PLAY) { player.togglePlayPause() }
             Spacer(Modifier.weight(1f))
-            MiniBtn(OwnTVIcon.FULLSCREEN, onClick = onExpand)
-            MiniBtn(OwnTVIcon.CLOSE, onClick = onClose)
+            MiniBtn(LunaIPtvIcon.FULLSCREEN, onClick = onExpand)
+            MiniBtn(LunaIPtvIcon.CLOSE, onClick = onClose)
         }
     }
 }
 
 @Composable
-private fun MiniBtn(icon: OwnTVIcon, onClick: () -> Unit) {
+private fun MiniBtn(icon: LunaIPtvIcon, onClick: () -> Unit) {
     FocusableSurface(
         onClick = onClick,
         modifier = Modifier.size(34.dp),
@@ -72,6 +72,6 @@ private fun MiniBtn(icon: OwnTVIcon, onClick: () -> Unit) {
         selectedContainerColor = Color.White.copy(alpha = 0.12f),
         contentAlignment = Alignment.Center,
     ) { _ ->
-        OwnTVIcon(icon, tint = Color.White, filled = true, modifier = Modifier.size(18.dp))
+        LunaIPtvIcon(icon, tint = Color.White, filled = true, modifier = Modifier.size(18.dp))
     }
 }

@@ -48,7 +48,7 @@ class BackupManager(
     }
 
     /**
-     * Writes the chosen [sections] into [folder] as owntv-backup.json; returns the file path.
+     * Writes the chosen [sections] into [folder] as LunaIPtv-backup.json; returns the file path.
      *
      * Secret fields (source passwords, proxy password) are NEVER written as plaintext. When
      * [backupPassword] is a non-blank passphrase, they are encrypted field-by-field (AES-GCM) and a

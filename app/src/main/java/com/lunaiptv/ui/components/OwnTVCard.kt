@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -7,15 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Generic focusable content card (poster, channel tile, etc.) built on [FocusableSurface].
  * Scales up a touch on focus for the classic "10-foot" pop. Real poster/channel cards in phases
- * 7–9 wrap this and add their own inner layout.
+ * 7�9 wrap this and add their own inner layout.
  */
 @Composable
-fun OwnTVCard(
+fun LunaIPtvCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selected: Boolean = false,
@@ -28,9 +28,9 @@ fun OwnTVCard(
         shape = RoundedCornerShape(14.dp),
         focusedScale = 1.06f,
         glowElevation = 14,
-        focusedContainerColor = OwnTVTheme.colors.card,
-        unfocusedContainerColor = OwnTVTheme.colors.card,
-        selectedContainerColor = OwnTVTheme.colors.card,
+        focusedContainerColor = LunaIPtvTheme.colors.card,
+        unfocusedContainerColor = LunaIPtvTheme.colors.card,
+        selectedContainerColor = LunaIPtvTheme.colors.card,
         contentAlignment = Alignment.Center,
     ) { focused ->
         Box(modifier = Modifier) {

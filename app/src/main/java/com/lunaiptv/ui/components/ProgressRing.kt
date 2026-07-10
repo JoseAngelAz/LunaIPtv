@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
@@ -8,15 +8,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /** A circular progress ring (0..1). Used for inline download progress. */
 @Composable
 fun ProgressRing(
     fraction: Float,
     modifier: Modifier = Modifier,
-    color: Color = OwnTVTheme.colors.primary,
-    trackColor: Color = OwnTVTheme.colors.surfaceContainerHighest,
+    color: Color = LunaIPtvTheme.colors.primary,
+    trackColor: Color = LunaIPtvTheme.colors.surfaceContainerHighest,
 ) {
     Canvas(modifier = modifier) {
         val stroke = size.minDimension * 0.13f

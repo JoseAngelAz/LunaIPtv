@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "OwnTV"
+rootProject.name = "LunaIPtv"
 include(":app")
  

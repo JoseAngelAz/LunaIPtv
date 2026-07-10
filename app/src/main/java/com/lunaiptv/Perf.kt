@@ -5,7 +5,7 @@ import android.util.Log
 
 /**
  * Tiny startup/menu perf tracer. [begin] sets the zero point (called as the first thing in
- * [OwnTVApp.onCreate]); [stamp] logs the elapsed milliseconds since. Filter logcat with `-s OwnTVPerf` for a
+ * [LunaIPtvApp.onCreate]); [stamp] logs the elapsed milliseconds since. Filter logcat with `-s LunaIPtvPerf` for a
  * clean timeline of what runs at cold start and where the milliseconds actually go — Koin init, DB open /
  * migration, shell render, the Home landing screen's data, the EPG pre-warm. This is what tells us *why* a
  * first launch (cold boot / after TV power-cycle) is slower than later ones: the OS + SQLite page caches are

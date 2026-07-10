@@ -3,12 +3,12 @@ package com.lunaiptv.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Material You-style accent presets. OwnTV can't rely on true wallpaper-based dynamic color (a phone
+ * Material You-style accent presets. LunaIPtv can't rely on true wallpaper-based dynamic color (a phone
  * feature that isn't dependable on Android TV), so instead the user picks an accent and the M3 color
  * scheme is seeded from it. Each preset carries its tonal `primary` / `primaryContainer` roles for
  * both dark and light themes (M3 uses lighter tones on dark surfaces, darker tones on light).
  *
- * Neutrals (background, surface containers, text, outline) are theme-only and live in [OwnTVColors].
+ * Neutrals (background, surface containers, text, outline) are theme-only and live in [LunaIPtvColors].
  */
 enum class AccentColor(
     val label: String,
@@ -55,6 +55,41 @@ enum class AccentColor(
         primaryContainerDark = Color(0xFF624000), onPrimaryContainerDark = Color(0xFFFFDDB3),
         primaryLight = Color(0xFF8A5100), onPrimaryLight = Color(0xFFFFFFFF),
         primaryContainerLight = Color(0xFFFFDDB3), onPrimaryContainerLight = Color(0xFF2C1600),
+    ),
+    ROSE(
+        "Rose",
+        primaryDark = Color(0xFFFFB1C8), onPrimaryDark = Color(0xFF621234),
+        primaryContainerDark = Color(0xFF7D2A4A), onPrimaryContainerDark = Color(0xFFFFD9E5),
+        primaryLight = Color(0xFF9C4066), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFFFD9E5), onPrimaryContainerLight = Color(0xFF3E0021),
+    ),
+    CRIMSON(
+        "Crimson",
+        primaryDark = Color(0xFFFFB4AB), onPrimaryDark = Color(0xFF690005),
+        primaryContainerDark = Color(0xFF93000A), onPrimaryContainerDark = Color(0xFFFFDAD6),
+        primaryLight = Color(0xFFBA1A1A), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFFFDAD6), onPrimaryContainerLight = Color(0xFF410002),
+    ),
+    INDIGO(
+        "Indigo",
+        primaryDark = Color(0xFFBEC6FF), onPrimaryDark = Color(0xFF271B6B),
+        primaryContainerDark = Color(0xFF3D3382), onPrimaryContainerDark = Color(0xFFDADEFF),
+        primaryLight = Color(0xFF5B57A8), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFE3DEFF), onPrimaryContainerLight = Color(0xFF170062),
+    ),
+    LIME(
+        "Lime",
+        primaryDark = Color(0xFFA6D46A), onPrimaryDark = Color(0xFF1F3607),
+        primaryContainerDark = Color(0xFF364E1C), onPrimaryContainerDark = Color(0xFFC1EB84),
+        primaryLight = Color(0xFF4D6B23), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFC1EB84), onPrimaryContainerLight = Color(0xFF0D2000),
+    ),
+    ORANGE(
+        "Orange",
+        primaryDark = Color(0xFFFFB68C), onPrimaryDark = Color(0xFF4F2600),
+        primaryContainerDark = Color(0xFF6E3A00), onPrimaryContainerDark = Color(0xFFFFDCBE),
+        primaryLight = Color(0xFF8C4D00), onPrimaryLight = Color(0xFFFFFFFF),
+        primaryContainerLight = Color(0xFFFFDCBE), onPrimaryContainerLight = Color(0xFF2E1500),
     );
 
     fun primary(isDark: Boolean) = if (isDark) primaryDark else primaryLight

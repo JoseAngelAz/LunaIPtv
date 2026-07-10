@@ -7,7 +7,7 @@ data class WeatherInfo(
     val weatherCode: Int,  // WMO weather code
     val isDay: Boolean,    // from Open-Meteo — drives day/night icon choice
 ) {
-    /** Maps WMO code + day/night → symbol key (matches owntv_weather_canvas_symbols_api_v2.html). */
+    /** Maps WMO code + day/night → symbol key (matches LunaIPtv_weather_canvas_symbols_api_v2.html). */
     fun symbolKey(): String = when {
         weatherCode == 0 && isDay -> "sunny"
         weatherCode == 0 && !isDay -> "clearNight"

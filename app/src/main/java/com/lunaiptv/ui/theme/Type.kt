@@ -11,7 +11,7 @@ import androidx.tv.material3.Typography
  * stays legible from across the room. Uses the platform default family for now; a custom
  * brand font can be dropped into res/font and swapped here later.
  */
-val OwnTVTypography = Typography(
+val LunaIPtvTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,

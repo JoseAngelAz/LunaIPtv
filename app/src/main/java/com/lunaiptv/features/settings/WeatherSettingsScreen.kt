@@ -22,7 +22,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.TextInputDialog
 import com.lunaiptv.ui.components.roundedPanel
 
@@ -76,14 +76,14 @@ fun WeatherSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         GroupLabel("Top bar weather")
         Row2(
-            icon = OwnTVIcon.EPG, title = "Show weather",
+            icon = LunaIPtvIcon.EPG, title = "Show weather",
             desc = "Display the current weather in the top bar.",
             chip = if (enabled) "On" else "Off", primaryChip = enabled,
             modifier = Modifier.focusRequester(firstFocus),
             onClick = { vm.setWeatherEnabled(!enabled) },
         )
         Row2(
-            icon = OwnTVIcon.EPG, title = "Custom location",
+            icon = LunaIPtvIcon.EPG, title = "Custom location",
             desc = "Override the city used for weather. Leave blank to auto-detect, or enter a city " +
                 "(e.g. London) or \"lat,lon\" (e.g. 51.5,-0.12). Useful on a VPN, where auto-detect " +
                 "resolves to the server's city.",
@@ -92,7 +92,7 @@ fun WeatherSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             onClick = { showLocation = true },
         )
         Row2(
-            icon = OwnTVIcon.EPG, title = "Temperature unit",
+            icon = LunaIPtvIcon.EPG, title = "Temperature unit",
             desc = "Show the temperature in Celsius or Fahrenheit.",
             chip = if (fahrenheit) "°F" else "°C", primaryChip = true,
             onClick = { vm.setWeatherFahrenheit(!fahrenheit) },

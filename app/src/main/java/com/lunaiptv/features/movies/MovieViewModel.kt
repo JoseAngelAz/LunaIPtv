@@ -58,8 +58,8 @@ import com.lunaiptv.core.download.DownloadManager
 import com.lunaiptv.core.storage.StorageAccess
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.settings.data.SettingsRepository
-import com.lunaiptv.player.OwnTVPlayer
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.player.LunaIPtvPlayer
+import com.lunaiptv.ui.components.LunaIPtvIcon
 
 class MovieViewModel(
     private val movieDao: MovieDao,
@@ -71,7 +71,7 @@ class MovieViewModel(
     private val sourceDao: SourceDao,
     private val settings: SettingsRepository,
     private val customize: CustomizationStore,
-    private val player: OwnTVPlayer,
+    private val player: LunaIPtvPlayer,
     private val downloadManager: DownloadManager,
     private val launcherIntegrationRepository: LauncherIntegrationRepository,
     private val contentOrderDao: ContentOrderDao,
@@ -346,7 +346,7 @@ class MovieViewModel(
             // External player (global toggle): hand the stream URL to an external app and skip the
             // in-app engine entirely. History is still recorded (recently-watched); resume position
             // and the playing-movie HUD/progress tick are intentionally not — the external app owns
-            // playback and OwnTV can't observe it.
+            // playback and LunaIPtv can't observe it.
             if (settings.externalPlayer.first()) {
                 Log.d(TAG, "play movieId=${movie.id} -> external player")
                 externalPlayerLauncher.launch(movie.streamUrl, movie.name)
@@ -584,8 +584,8 @@ class MovieViewModel(
     private companion object {
         const val TAG = "LunaIPtvHome"
         val defaultRail = listOf(
-            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", OwnTVIcon.STAR),
-            LiveRailItem(LiveKey.History, "HIS", "History", OwnTVIcon.HISTORY),
+            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", LunaIPtvIcon.STAR),
+            LiveRailItem(LiveKey.History, "HIS", "History", LunaIPtvIcon.HISTORY),
             LiveRailItem(LiveKey.All, "ALL", "All Movies"),
         )
     }

@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -26,14 +26,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /** Lightweight indeterminate spinner drawn with Canvas (no Material dependency). */
 @Composable
-fun OwnTVSpinner(
+fun LunaIPtvSpinner(
     modifier: Modifier = Modifier,
     sizeDp: Int = 44,
-    color: Color = OwnTVTheme.colors.accent,
+    color: Color = LunaIPtvTheme.colors.accent,
 ) {
     val transition = rememberInfiniteTransition(label = "spinner")
     val angle by transition.animateFloat(
@@ -57,7 +57,7 @@ fun OwnTVSpinner(
     }
 }
 
-/** Centered loading state: spinner + message (e.g. "Importing channels…"). */
+/** Centered loading state: spinner + message (e.g. "Importing channels�"). */
 @Composable
 fun LoadingState(
     message: String,
@@ -68,12 +68,12 @@ fun LoadingState(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        OwnTVSpinner()
+        LunaIPtvSpinner()
         Spacer(Modifier.height(16.dp))
         Text(
             text = message,
             style = MaterialTheme.typography.bodyLarge,
-            color = OwnTVTheme.colors.textSecondary,
+            color = LunaIPtvTheme.colors.textSecondary,
             textAlign = TextAlign.Center,
         )
     }
@@ -88,7 +88,7 @@ fun ErrorState(
     retryLabel: String = "Retry",
     onRetry: (() -> Unit)? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,7 +105,7 @@ fun ErrorState(
         )
         if (onRetry != null) {
             Spacer(Modifier.height(20.dp))
-            OwnTVButton(label = retryLabel, onClick = onRetry, icon = OwnTVIcon.HISTORY)
+            LunaIPtvButton(label = retryLabel, onClick = onRetry, icon = LunaIPtvIcon.HISTORY)
         }
     }
 }
@@ -113,20 +113,20 @@ fun ErrorState(
 /** Centered empty state: icon + title + message + optional call-to-action button. */
 @Composable
 fun EmptyState(
-    icon: OwnTVIcon,
+    icon: LunaIPtvIcon,
     title: String,
     message: String,
     modifier: Modifier = Modifier,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        OwnTVIcon(icon = icon, tint = colors.textSecondary, modifier = Modifier.size(56.dp))
+        LunaIPtvIcon(icon = icon, tint = colors.textSecondary, modifier = Modifier.size(56.dp))
         Spacer(Modifier.height(16.dp))
         Text(
             text = title,
@@ -144,7 +144,7 @@ fun EmptyState(
         )
         if (actionLabel != null && onAction != null) {
             Spacer(Modifier.height(20.dp))
-            OwnTVButton(label = actionLabel, onClick = onAction, icon = OwnTVIcon.MENU)
+            LunaIPtvButton(label = actionLabel, onClick = onAction, icon = LunaIPtvIcon.MENU)
         }
     }
 }

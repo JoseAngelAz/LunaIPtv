@@ -10,15 +10,15 @@ import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
 
 /**
- * Available OwnTV themes. Persisted via DataStore and selectable from Settings → Theme.
+ * Available LunaIPtv themes. Persisted via DataStore and selectable from Settings → Theme.
  * SYSTEM follows the platform dark/light setting.
  */
 enum class ThemeMode { SYSTEM, DARK, LIGHT }
 
 val LocalThemeMode = staticCompositionLocalOf { ThemeMode.DARK }
 
-/** Map the resolved OwnTV tokens onto a tv-material3 M3 [ColorScheme]. */
-private fun schemeFrom(c: OwnTVColors): ColorScheme =
+/** Map the resolved LunaIPtv tokens onto a tv-material3 M3 [ColorScheme]. */
+private fun schemeFrom(c: LunaIPtvColors): ColorScheme =
     if (c.isDark) {
         darkColorScheme(
             primary = c.primary,
@@ -68,7 +68,7 @@ private fun schemeFrom(c: OwnTVColors): ColorScheme =
     }
 
 @Composable
-fun OwnTVTheme(
+fun LunaIPtvTheme(
     themeMode: ThemeMode,
     accent: AccentColor,
     systemInDarkTheme: Boolean,
@@ -82,25 +82,25 @@ fun OwnTVTheme(
         ThemeMode.SYSTEM -> systemInDarkTheme
     }
 
-    val colors = ownTvColors(isDark = useDark, accent = accent, customAccent = customAccent)
+    val colors = LunaIPtvColors(isDark = useDark, accent = accent, customAccent = customAccent)
 
     CompositionLocalProvider(
-        LocalOwnTVColors provides colors,
+        LocalLunaIPtvColors provides colors,
         LocalThemeMode provides themeMode,
         LocalAnimationLevel provides animationLevel,
     ) {
         MaterialTheme(
             colorScheme = schemeFrom(colors),
-            typography = OwnTVTypography,
+            typography = LunaIPtvTypography,
             content = content,
         )
     }
 }
 
-/** Convenience accessor: `OwnTVTheme.colors.focusBorder`. */
-object OwnTVTheme {
-    val colors: OwnTVColors
+/** Convenience accessor: `LunaIPtvTheme.colors.focusBorder`. */
+object LunaIPtvTheme {
+    val colors: LunaIPtvColors
         @Composable
         @ReadOnlyComposable
-        get() = LocalOwnTVColors.current
+        get() = LocalLunaIPtvColors.current
 }

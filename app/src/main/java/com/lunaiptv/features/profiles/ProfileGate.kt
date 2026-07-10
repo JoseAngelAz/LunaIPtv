@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.profiles
+package com.lunaiptv.features.profiles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -36,19 +36,19 @@ import androidx.tv.material3.Text
 import com.lunaiptv.core.database.entity.ProfileEntity
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.R
-import com.lunaiptv.ui.components.OwnTVAvatar
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.components.LunaIPtvAvatar
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Phase 6.5 â€” the "Who's watching?" launch gate. Shown when more than one profile exists. Picking a
+ * Phase 6.5 — the "Who's watching?" launch gate. Shown when more than one profile exists. Picking a
  * profile makes it active (and prompts for a PIN if it's locked); [onEnter] proceeds into the shell.
  */
 @Composable
 fun ProfileGate(onEnter: () -> Unit, onAddProfile: () -> Unit, modifier: Modifier = Modifier) {
     val vm: ProfilesViewModel = koinViewModel()
     val profiles by vm.profiles.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     var pinFor by remember { mutableStateOf<ProfileEntity?>(null) }
     var pinError by remember { mutableStateOf(false) }
@@ -87,7 +87,7 @@ fun ProfileGate(onEnter: () -> Unit, onAddProfile: () -> Unit, modifier: Modifie
 
     pinFor?.let { p ->
         PinDialog(
-            title = if (pinError) "Wrong PIN â€” try again" else "Enter PIN for ${p.name}",
+            title = if (pinError) "Wrong PIN — try again" else "Enter PIN for ${p.name}",
             onSubmit = { pin ->
                 if (vm.verifyPin(p, pin)) { vm.switchTo(p, onEnter) } else pinError = true
             },
@@ -98,7 +98,7 @@ fun ProfileGate(onEnter: () -> Unit, onAddProfile: () -> Unit, modifier: Modifie
 
 @Composable
 private fun ProfileTile(profile: ProfileEntity, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         FocusableSurface(
             onClick = onClick,
@@ -107,10 +107,10 @@ private fun ProfileTile(profile: ProfileEntity, modifier: Modifier = Modifier, o
             contentAlignment = Alignment.Center,
         ) { _ ->
             Box(contentAlignment = Alignment.TopEnd) {
-                OwnTVAvatar(avatarId = profile.avatarId, modifier = Modifier.size(104.dp))
+                LunaIPtvAvatar(avatarId = profile.avatarId, modifier = Modifier.size(104.dp))
                 if (profile.pinHash != null) {
                     Box(Modifier.size(26.dp).clip(CircleShape).background(colors.surfaceContainerHighest), contentAlignment = Alignment.Center) {
-                        OwnTVIcon(OwnTVIcon.SETTINGS, tint = colors.onSurface, modifier = Modifier.size(14.dp))
+                        LunaIPtvIcon(LunaIPtvIcon.SETTINGS, tint = colors.onSurface, modifier = Modifier.size(14.dp))
                     }
                 }
             }
@@ -125,7 +125,7 @@ private fun ProfileTile(profile: ProfileEntity, modifier: Modifier = Modifier, o
 
 @Composable
 private fun AddTile(onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         FocusableSurface(
             onClick = onClick,
@@ -137,7 +137,7 @@ private fun AddTile(onClick: () -> Unit) {
                 modifier = Modifier.size(104.dp).clip(CircleShape).background(colors.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) {
-                OwnTVIcon(OwnTVIcon.ADD, tint = colors.onSurfaceVariant, modifier = Modifier.size(40.dp))
+                LunaIPtvIcon(LunaIPtvIcon.ADD, tint = colors.onSurfaceVariant, modifier = Modifier.size(40.dp))
             }
         }
         Spacer(Modifier.height(10.dp))

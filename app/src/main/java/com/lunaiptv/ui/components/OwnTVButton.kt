@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -11,29 +11,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Visual emphasis for [OwnTVButton]. */
-enum class OwnTVButtonStyle { PRIMARY, SECONDARY }
+/** Visual emphasis for [LunaIPtvButton]. */
+enum class LunaIPtvButtonStyle { PRIMARY, SECONDARY }
 
 /**
  * Remote-friendly TV button built on [FocusableSurface]. PRIMARY fills with the brand accent;
  * SECONDARY is an outline that fills on focus.
  */
 @Composable
-fun OwnTVButton(
+fun LunaIPtvButton(
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    style: OwnTVButtonStyle = OwnTVButtonStyle.PRIMARY,
-    icon: OwnTVIcon? = null,
+    style: LunaIPtvButtonStyle = LunaIPtvButtonStyle.PRIMARY,
+    icon: LunaIPtvIcon? = null,
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val shape = RoundedCornerShape(50) // M3 full/pill button
 
-    val primary = style == OwnTVButtonStyle.PRIMARY
+    val primary = style == LunaIPtvButtonStyle.PRIMARY
 
     FocusableSurface(
         onClick = onClick,
@@ -60,7 +60,7 @@ fun OwnTVButton(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (icon != null) {
-                OwnTVIcon(icon = icon, tint = contentColor, filled = true, modifier = Modifier.size(20.dp))
+                LunaIPtvIcon(icon = icon, tint = contentColor, filled = true, modifier = Modifier.size(20.dp))
             }
             Text(
                 text = label,

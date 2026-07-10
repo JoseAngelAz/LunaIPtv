@@ -16,21 +16,21 @@ import androidx.compose.ui.graphics.drawscope.Fill
 
 /**
  * An object-themed avatar drawn entirely with Canvas — no image assets, fully scalable. There are
- * exactly [OwnTVAvatars.COUNT] presets (lightning, sword, tree, car, football, rocket, crown, heart,
+ * exactly [LunaIPtvAvatars.COUNT] presets (lightning, sword, tree, car, football, rocket, crown, heart,
  * music, gamepad); pass an id and the matching icon-on-color tile is drawn deterministically.
  */
-object OwnTVAvatars {
+object LunaIPtvAvatars {
     const val COUNT = 10
 }
 
 @Composable
-fun OwnTVAvatar(avatarId: Int, modifier: Modifier = Modifier) {
+fun LunaIPtvAvatar(avatarId: Int, modifier: Modifier = Modifier) {
     // Phase 7 — avatarId -1 = "no avatar" → show the Rank 1 ProfileIcon as a default silhouette.
     if (avatarId == -1) {
         ProfileIcon(color = Color(0xFF54F2E2), modifier = modifier.padding(4.dp))
         return
     }
-    val i = ((avatarId % OwnTVAvatars.COUNT) + OwnTVAvatars.COUNT) % OwnTVAvatars.COUNT
+    val i = ((avatarId % LunaIPtvAvatars.COUNT) + LunaIPtvAvatars.COUNT) % LunaIPtvAvatars.COUNT
     Canvas(modifier = modifier) { drawAvatar(i) }
 }
 

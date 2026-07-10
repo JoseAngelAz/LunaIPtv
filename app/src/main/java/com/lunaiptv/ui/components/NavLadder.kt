@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lunaiptv.ui.theme.OwnTVTheme
-import com.lunaiptv.ui.theme.ownTvTween
+import com.lunaiptv.ui.theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.lunaIptvTween
 
 /**
  * The single 4-state visual "ladder" shared by every top-level navigation surface (the [Sidebar]
@@ -26,15 +26,15 @@ import com.lunaiptv.ui.theme.ownTvTween
  *
  * Standard TV `ListItem` colours collapse "selected" and "focused" into one visual, which makes it
  * impossible to tell "the section I'm actually in" from "the item my cursor is hovering". This ladder
- * keeps them distinct, strongest â†’ weakest:
+ * keeps them distinct, strongest ? weakest:
  *
- *  1. **selected + focused** â€” full [primaryContainer] fill, [onPrimaryContainer] content: the peak.
- *  2. **focused, unselected** â€” surface fill + teal focus outline, bright [onSurface] content: the cursor.
- *  3. **selected, unfocused** â€” soft [secondaryContainer] tonal fill + accent content + a left accent
+ *  1. **selected + focused** — full [primaryContainer] fill, [onPrimaryContainer] content: the peak.
+ *  2. **focused, unselected** — surface fill + teal focus outline, bright [onSurface] content: the cursor.
+ *  3. **selected, unfocused** — soft [secondaryContainer] tonal fill + accent content + a left accent
  *     bar: a persistent, colour-independent marker of the active section while focus is elsewhere.
- *  4. **idle** â€” transparent, muted [onSurfaceVariant] content.
+ *  4. **idle** — transparent, muted [onSurfaceVariant] content.
  *
- * Colours animate on the shared [ownTvTween]. [showAccentBar] and [focusBorder] are booleans/nullable
+ * Colours animate on the shared [lunaIptvTween]. [showAccentBar] and [focusBorder] are booleans/nullable
  * the call site draws itself (bar via [NavAccentBar], outline via `Modifier.border`).
  */
 data class NavLadderColors(
@@ -48,7 +48,7 @@ data class NavLadderColors(
 
 @Composable
 fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColors {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val activeSelected = selected && focused
 
     val container by animateColorAsState(
@@ -58,7 +58,7 @@ fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColor
             selected -> colors.secondaryContainer.copy(alpha = 0.45f)
             else -> Color.Transparent
         },
-        animationSpec = ownTvTween(140),
+        animationSpec = lunaIptvTween(140),
         label = "navLadderBg",
     )
     val content by animateColorAsState(
@@ -68,7 +68,7 @@ fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColor
             selected -> colors.accent         // accent cyan = "this is active"
             else -> colors.onSurfaceVariant
         },
-        animationSpec = ownTvTween(140),
+        animationSpec = lunaIptvTween(140),
         label = "navLadderFg",
     )
     val icon by animateColorAsState(
@@ -78,7 +78,7 @@ fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColor
             selected -> colors.accent
             else -> colors.onSurfaceVariant
         },
-        animationSpec = ownTvTween(140),
+        animationSpec = lunaIptvTween(140),
         label = "navLadderIcon",
     )
 
@@ -92,17 +92,17 @@ fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColor
 }
 
 /**
- * The persistent left accent bar drawn on a [selected][NavLadderColors.showAccentBar] nav surface â€”
+ * The persistent left accent bar drawn on a [selected][NavLadderColors.showAccentBar] nav surface —
  * a thin vertical accent-coloured pill on the left edge that marks the active section regardless of
  * colour contrast (a spatial/shape cue for low-contrast panels and colour-blind users). Animates its
  * width so it slides in/out instead of popping. Must be called inside a [Box].
  */
 @Composable
 fun BoxScope.NavAccentBar(visible: Boolean, height: Dp = 22.dp, modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val width by animateDpAsState(
         if (visible) 3.dp else 0.dp,
-        animationSpec = ownTvTween(160),
+        animationSpec = lunaIptvTween(160),
         label = "navAccentBar",
     )
     if (width > 0.dp) {

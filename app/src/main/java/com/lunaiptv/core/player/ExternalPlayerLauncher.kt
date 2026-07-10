@@ -9,7 +9,7 @@ import java.io.File
 
 // Hands a stream URL (or a downloaded file path) to an external video player (VLC, MX Player, etc.)
 // via ACTION_VIEW. When it fires, the in-app player is bypassed entirely (the fullscreen player
-// never opens, because OwnTVPlayer is never told to play).
+// never opens, because LunaIPtvPlayer is never told to play).
 //
 // Network URLs (http/https/rtsp/rtmp/udp/mms) are handed over verbatim. Local download paths are
 // shared through the app FileProvider with a read permission grant.

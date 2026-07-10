@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,8 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.ownTvTween
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.lunaIptvTween
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 @Composable
 fun FocusableSurface(
@@ -34,9 +34,9 @@ fun FocusableSurface(
     enabled: Boolean = true,
     onLongClick: (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(Dimens.CardCorner),
-    focusedContainerColor: Color = OwnTVTheme.colors.card,
+    focusedContainerColor: Color = LunaIPtvTheme.colors.card,
     unfocusedContainerColor: Color = Color.Transparent,
-    selectedContainerColor: Color = OwnTVTheme.colors.card,
+    selectedContainerColor: Color = LunaIPtvTheme.colors.card,
     focusedScale: Float = 1f,
     glowElevation: Int = 10,
     // When false, this surface never draws the built-in focus/selected outline, so the caller can
@@ -45,15 +45,15 @@ fun FocusableSurface(
     contentAlignment: Alignment = Alignment.Center,
     content: @Composable BoxScope.(focused: Boolean) -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
 
-    // Skip scale animation when focusedScale is 1f (default for list rows) — halves animation objects per item.
+    // Skip scale animation when focusedScale is 1f (default for list rows) � halves animation objects per item.
     val animateScale = focusedScale > 1f
     val scale by animateFloatAsState(
         if (!animateScale) 1f else if (focused) focusedScale else 1f,
-        animationSpec = ownTvTween(140),
+        animationSpec = lunaIptvTween(140),
         label = "focusScale",
     )
     val container by animateColorAsState(
@@ -62,7 +62,7 @@ fun FocusableSurface(
             selected -> selectedContainerColor
             else -> unfocusedContainerColor
         },
-        animationSpec = ownTvTween(140),
+        animationSpec = lunaIptvTween(140),
         label = "focusContainer",
     )
     val showBorder = showFocusBorder && (focused || selected)

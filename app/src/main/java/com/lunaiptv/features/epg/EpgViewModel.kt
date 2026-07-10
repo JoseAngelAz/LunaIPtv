@@ -44,7 +44,7 @@ import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.core.repository.activeSourceIds
 import com.lunaiptv.core.util.friendlySyncError
 import com.lunaiptv.features.settings.data.SettingsRepository
-import com.lunaiptv.player.OwnTVPlayer
+import com.lunaiptv.player.LunaIPtvPlayer
 
 data class EpgUiState(
     /** All channels with guide data in the window; each row loads its own programmes lazily. */
@@ -83,7 +83,7 @@ class EpgViewModel(
     private val historyDao: HistoryDao,
     private val sourceDao: SourceDao,
     private val xtream: XtreamClient,
-    val player: OwnTVPlayer,
+    val player: LunaIPtvPlayer,
     private val favoriteDao: com.lunaiptv.core.database.dao.FavoriteDao,
     private val categoryDao: com.lunaiptv.core.database.dao.CategoryDao,
 ) : ViewModel() {

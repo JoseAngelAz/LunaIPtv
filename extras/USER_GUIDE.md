@@ -1,6 +1,6 @@
-# OwnTV — User Guide & Hidden Features
+# LunaIPtv — User Guide & Hidden Features
 
-A quick tour of everything OwnTV can do. Most of these are **TV‑remote (D‑pad) shortcuts** that aren't
+A quick tour of everything LunaIPtv can do. Most of these are **TV‑remote (D‑pad) shortcuts** that aren't
 obvious at first glance — once you know them, the app is a lot faster to live in.
 
 > **v4.0.0+ UI Update**: The app now features a completely redesigned shell with a **fixed sidebar** nav,
@@ -20,7 +20,7 @@ obvious at first glance — once you know them, the app is a lot faster to live 
   background**, even if you leave the screen or the device goes to sleep.
 - **Re-syncs are incremental**: refreshing a playlist only writes what actually changed on the
   provider, so re-syncing big playlists is much faster.
-- **M3U playlists can carry movies and series too** — tag entries in the playlist and OwnTV sorts
+- **M3U playlists can carry movies and series too** — tag entries in the playlist and LunaIPtv sorts
   them into the right tab:
   - `type="vod"`, `type="movie"` or `tvg-type="movie"` → the **Movies** grid.
   - `type="series"` or `tvg-type="series"` → the **Series** tab. Per-episode lines like
@@ -31,7 +31,7 @@ obvious at first glance — once you know them, the app is a lot faster to live 
 
 ## 🗂️ Multiple playlists — switch & set a default
 
-Have more than one playlist (e.g. a main one and a backup)? OwnTV can show them **all merged together**,
+Have more than one playlist (e.g. a main one and a backup)? LunaIPtv can show them **all merged together**,
 or **narrow the whole app to just one**.
 
 - **Quick switcher (top bar):** when you have 2+ playlists, the **playlist chip in the top‑right** becomes a
@@ -94,10 +94,10 @@ or **narrow the whole app to just one**.
 - 🔧 **Compatibility mode (two playback engines)**: live channels play on the fast **ExoPlayer** engine by
   default. If a channel shows **UHD artifacts**, won't open, or stutters, bring up the controls and press the
   **engine toggle (the ⇄ MPV/EXO pill)** — this **pins that channel to the mpv engine**. The pill always shows
-  the engine that's **actually playing** (teal while on mpv, whether you pinned it or OwnTV auto‑switched), and
+  the engine that's **actually playing** (teal while on mpv, whether you pinned it or LunaIPtv auto‑switched), and
   **one tap always flips** the engine — a small "Switched to MPV/ExoPlayer" note confirms it. It's **remembered
   per channel**, so that one channel always uses mpv while everything else stays fast.
-- 🔇 **Audio with no picture**: if a channel ever plays sound but shows a black screen, OwnTV now detects this
+- 🔇 **Audio with no picture**: if a channel ever plays sound but shows a black screen, LunaIPtv now detects this
   automatically and switches engines for you (briefly shows a loading spinner). If neither engine can render
   video for that stream, you'll see a clear on‑screen message instead of a silent black screen.
 - ⏪ **Catch‑up / rewind live**: on a channel that supports catch‑up (look for the marker, or use the
@@ -188,7 +188,7 @@ or **narrow the whole app to just one**.
   key means you're never affected by shared-server rate limits. Create one at
   [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api), paste it into **Settings →
   Metadata → TMDB API key (v3)**, and hit **Test lookup**.
-- 🌐 **Self-host your own metadata server (free):** the exact Cloudflare Worker OwnTV's shared server runs
+- 🌐 **Self-host your own metadata server (free):** the exact Cloudflare Worker LunaIPtv's shared server runs
   is in the repo at [`worker/`](../worker/) — [`worker/README.md`](../worker/README.md) has the full
   step-by-step (deploy with `wrangler`, set your TMDB key as a secret via
   [`worker/wrangler.toml`](../worker/wrangler.toml) + `wrangler secret put TMDB_KEY`, then paste your
@@ -216,8 +216,8 @@ or **narrow the whole app to just one**.
   7-day "no match" cache).
 - 🎞️ **Trailers:** long-press a movie or series → **Play Trailer** (shown only when TMDB has one). The trailer
   plays in a floating window: **Back or Exit** closes it, **◀/▶** seeks ±10 seconds. If the built-in player
-  can't run on your box, OwnTV opens the trailer in the YouTube app instead.
-- **Attribution:** OwnTV uses the TMDB API but is not endorsed or certified by TMDB.
+  can't run on your box, LunaIPtv opens the trailer in the YouTube app instead.
+- **Attribution:** LunaIPtv uses the TMDB API but is not endorsed or certified by TMDB.
 
 ---
 
@@ -345,11 +345,11 @@ Bring up the controls in any full‑screen player (press OK / a direction). The 
 
 ## 🛠️ Building your own custom M3U playlist
 
-Making your own `.m3u`/`.m3u8` by hand (or with a script)? OwnTV decides which tab each entry lands in
+Making your own `.m3u`/`.m3u8` by hand (or with a script)? LunaIPtv decides which tab each entry lands in
 **purely from the `#EXTINF` line** — the tag you put on it, not the file it points to. Get the line right
 and your content sorts itself into **Live TV**, **Movies** or **Series** automatically.
 
-**The rule OwnTV uses (in order):**
+**The rule LunaIPtv uses (in order):**
 
 1. If the entry is tagged **series** → it goes to the **Series** tab.
 2. Otherwise, if it's tagged as a **movie/VOD** → it goes to the **Movies** grid.
@@ -400,7 +400,7 @@ http://your-server/movie/inception.mkv
 ### Series example — this is the important one
 
 Tag each **episode line** with `type="series"`, and put the **season/episode marker in the Display Name**.
-OwnTV reads the marker to group episodes into shows, seasons and episodes:
+LunaIPtv reads the marker to group episodes into shows, seasons and episodes:
 
 ```
 #EXTINF:-1 type="series" group-title="Drama",Stranger Things S01E01
@@ -436,5 +436,5 @@ http://your-server/series/st-s02e01.mkv
 - **Guide looks blank when you first open it?** (especially with catch‑up channels) Try: **Settings → EPG** → tap Edit → delete your EPG source(s), then **add them again** and sync fresh. The v4.0.0 update changed how EPG loads, and old cached data needs to be cleared and reimported. Once done, the guide displays immediately.
 
 ---
-*OwnTV is free, open‑source and ad‑free, forever. Found something confusing or missing from this guide?
+*LunaIPtv is free, open‑source and ad‑free, forever. Found something confusing or missing from this guide?
 Open an issue on GitHub.*

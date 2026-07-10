@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -41,17 +41,17 @@ import com.lunaiptv.R
 import com.lunaiptv.core.epg.EpgSource
 import com.lunaiptv.features.settings.data.EpgAutoRefresh
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
-import com.lunaiptv.ui.components.OwnTVTextField
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
+import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import com.lunaiptv.core.sync.work.EpgSyncState
 
 /**
- * Settings â†’ EPG Sources: standalone XMLTV feeds that fill the guide, independent of playlists.
+ * Settings ? EPG Sources: standalone XMLTV feeds that fill the guide, independent of playlists.
  * Add (auto-syncs) / Edit / Re-sync / Delete. [startOnAdd] opens the add form immediately (deep-link
  * from the Guide's "Add EPG" button).
  */
@@ -60,7 +60,7 @@ fun EpgSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier, startOnA
     val vm: EpgSourcesViewModel = koinViewModel()
     val sources by vm.sources.collectAsStateWithLifecycle()
     val autoRefreshMap by vm.autoRefresh.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     var editing by remember { mutableStateOf<EpgSource?>(null) }
     var adding by remember { mutableStateOf(startOnAdd) }
@@ -106,7 +106,7 @@ fun EpgSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier, startOnA
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.epg_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton(stringResource(R.string.epg_add), onClick = { adding = true }, icon = OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
+            LunaIPtvButton(stringResource(R.string.epg_add), onClick = { adding = true }, icon = LunaIPtvIcon.ADD, modifier = Modifier.focusRequester(addFocus))
         }
         Spacer(Modifier.height(8.dp))
         Text(
@@ -162,7 +162,7 @@ private fun EpgRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val count by produceState<Triple<Int, Int, Int>?>(initialValue = null, source.id, source.lastSyncAt, source.lastError) {
         value = runCatching { counts() }.getOrNull()
     }
@@ -195,7 +195,7 @@ private fun EpgRow(
                 if (autoRefresh != EpgAutoRefresh.OFF) {
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "âŸ³ ${autoRefresh.label}",
+                        "? ${autoRefresh.label}",
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.onPrimaryContainer,
                         modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(colors.surfaceContainerHighest).padding(horizontal = 8.dp, vertical = 2.dp),
@@ -205,15 +205,15 @@ private fun EpgRow(
             }
             Text(source.url, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1)
             Spacer(Modifier.height(4.dp))
-            val catchupNote = count?.third?.takeIf { it > 0 }?.let { " Â· $it with catch-up" } ?: ""
+            val catchupNote = count?.third?.takeIf { it > 0 }?.let { " · $it with catch-up" } ?: ""
             val status = when {
                 activeSync != null -> when {
-                    activeSync.programmes > 0 -> "${activeSync.channels} channels Â· ${activeSync.programmes} programmes"
+                    activeSync.programmes > 0 -> "${activeSync.channels} channels · ${activeSync.programmes} programmes"
                     activeSync.channels > 0 -> "${activeSync.channels} channels"
-                    else -> "Connectingâ€¦"
+                    else -> "Connecting…"
                 }
-                source.lastError != null -> "âš  ${source.lastError}"
-                count != null && count!!.second > 0 -> "âœ“ ${count!!.first} channels Â· ${count!!.second} programmes$catchupNote"
+                source.lastError != null -> "? ${source.lastError}"
+                count != null && count!!.second > 0 -> "? ${count!!.first} channels · ${count!!.second} programmes$catchupNote"
                 source.lastSyncAt != null -> "Synced, no programmes in window$catchupNote"
                 else -> "Not synced yet"
             }
@@ -222,12 +222,12 @@ private fun EpgRow(
         Spacer(Modifier.width(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (syncState.isActive) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onCancelSync, style = LunaIPtvButtonStyle.SECONDARY)
             } else {
-                OwnTVButton(stringResource(R.string.epg_resync), onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.epg_resync), onClick = onResync, style = LunaIPtvButtonStyle.SECONDARY)
             }
-            OwnTVButton(stringResource(R.string.edit), onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
-            OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.edit), onClick = onEdit, style = LunaIPtvButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.delete), onClick = onDelete, style = LunaIPtvButtonStyle.SECONDARY)
         }
     }
 }
@@ -241,7 +241,7 @@ internal fun EpgSourceForm(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var name by remember { mutableStateOf(initial?.name ?: "") }
     var url by remember { mutableStateOf(initial?.url ?: "") }
     var ua by remember { mutableStateOf(initial?.userAgent ?: "") }
@@ -257,24 +257,24 @@ internal fun EpgSourceForm(
     ) {
         Text(if (initial == null) stringResource(R.string.epg_add_title) else stringResource(R.string.epg_edit_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(20.dp))
-        OwnTVTextField(name, { name = it }, label = stringResource(R.string.epg_name), placeholder = "e.g. UK Guide", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusRequester(firstFocus))
+        LunaIPtvTextField(name, { name = it }, label = stringResource(R.string.epg_name), placeholder = "e.g. UK Guide", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusRequester(firstFocus))
         Spacer(Modifier.height(14.dp))
         val fillButtonFocus = remember { FocusRequester() }
-        OwnTVTextField(url, { url = it }, label = stringResource(R.string.epg_url), placeholder = "https://â€¦/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
+        LunaIPtvTextField(url, { url = it }, label = stringResource(R.string.epg_url), placeholder = "https://…/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
         Spacer(Modifier.height(8.dp))
-        OwnTVButton(stringResource(R.string.epg_fill_from_playlist), onClick = { showPlaylistPicker = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAYLIST, modifier = Modifier.focusRequester(fillButtonFocus))
+        LunaIPtvButton(stringResource(R.string.epg_fill_from_playlist), onClick = { showPlaylistPicker = true }, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.PLAYLIST, modifier = Modifier.focusRequester(fillButtonFocus))
         Spacer(Modifier.height(14.dp))
-        OwnTVTextField(ua, { ua = it }, label = stringResource(R.string.epg_user_agent), placeholder = stringResource(R.string.epg_user_agent_placeholder), modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp))
+        LunaIPtvTextField(ua, { ua = it }, label = stringResource(R.string.epg_user_agent), placeholder = stringResource(R.string.epg_user_agent_placeholder), modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp))
 
         Spacer(Modifier.height(14.dp))
-        // Auto-refresh dropdown â€” same Off/Startup/staleness-threshold semantics as playlist sources.
+        // Auto-refresh dropdown — same Off/Startup/staleness-threshold semantics as playlist sources.
         EpgAutoRefreshRow(selected = autoRefresh) { showAutoRefreshPicker = true }
 
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton(stringResource(R.string.cancel), onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.cancel), onClick = onCancel, style = LunaIPtvButtonStyle.SECONDARY)
             val syncLabel = if (initial == null) stringResource(R.string.epg_add_sync) else stringResource(R.string.epg_save_sync)
-            OwnTVButton(syncLabel, onClick = { onSave(name, url, ua, autoRefresh) }, enabled = url.isNotBlank())
+            LunaIPtvButton(syncLabel, onClick = { onSave(name, url, ua, autoRefresh) }, enabled = url.isNotBlank())
         }
     }
 
@@ -302,7 +302,7 @@ internal fun EpgSourceForm(
 /** A focusable settings row showing the current EPG auto-refresh selection; opens a picker on click. */
 @Composable
 private fun EpgAutoRefreshRow(selected: EpgAutoRefresh, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp),
@@ -333,7 +333,7 @@ private fun PlaylistEpgPicker(
     onPick: (EpgSourcesViewModel.PlaylistEpg) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val options by produceState<List<EpgSourcesViewModel.PlaylistEpg>?>(initialValue = null) { value = runCatching { load() }.getOrDefault(emptyList()) }
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(options) { if (!options.isNullOrEmpty()) runCatching { firstFocus.requestFocus() } }
@@ -345,7 +345,7 @@ private fun PlaylistEpgPicker(
             Spacer(Modifier.height(14.dp))
             val opts = options
             when {
-                opts == null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
+                opts == null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { LunaIPtvSpinner(sizeDp = 28) }
                 opts.isEmpty() -> Text(stringResource(R.string.epg_no_playlist_epg), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 else -> LazyColumn(Modifier.fillMaxWidth().height(280.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(opts) { opt ->
@@ -365,7 +365,7 @@ private fun PlaylistEpgPicker(
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
             }
         }
     }

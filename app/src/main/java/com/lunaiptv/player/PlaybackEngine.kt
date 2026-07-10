@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * What the player HUD needs from "whichever engine is currently playing" — mpv ([OwnTVPlayer], via
+ * What the player HUD needs from "whichever engine is currently playing" — mpv ([LunaIPtvPlayer], via
  * [MpvPlaybackEngine]) or the ExoPlayer live engine ([LivePreviewEngine] when a Live preview is promoted to
  * full-screen). VOD-only controls (seek/speed/prev-next/position) have no-op defaults so a live engine need
  * only implement the live-relevant members.
@@ -73,8 +73,8 @@ interface PlaybackEngine {
     }
 }
 
-/** Adapts the full mpv player to [PlaybackEngine] (delegation only — keeps [OwnTVPlayer] untouched). */
-class MpvPlaybackEngine(private val p: OwnTVPlayer) : PlaybackEngine {
+/** Adapts the full mpv player to [PlaybackEngine] (delegation only — keeps [LunaIPtvPlayer] untouched). */
+class MpvPlaybackEngine(private val p: LunaIPtvPlayer) : PlaybackEngine {
     override val isPlaying get() = p.isPlaying
     override val buffering get() = p.buffering
     override val error get() = p.error

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -60,15 +60,15 @@ import com.lunaiptv.features.settings.VideoPlayerSettingsScreen
 import com.lunaiptv.features.shell.MainSection
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVTextField
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvTextField
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.components.StorageBrowser
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import com.lunaiptv.ui.theme.ThemeMode
 import com.lunaiptv.ui.theme.UiZoom
 
@@ -108,8 +108,8 @@ fun SettingsScreen(
     var showStartup by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
 
-    // Batch 4 Â· Settings search + quick toggles. Empty query = normal grouped list; a non-blank
-    // query swaps the list for flat results that carry their group context ("Playback â€º HDR").
+    // Batch 4 · Settings search + quick toggles. Empty query = normal grouped list; a non-blank
+    // query swaps the list for flat results that carry their group context ("Playback › HDR").
     var searchQuery by remember { mutableStateOf("") }
     val searchFieldFocus = remember { FocusRequester() }
     // While searching, Back clears the query (and returns focus to the field) instead of leaving Settings.
@@ -132,7 +132,7 @@ fun SettingsScreen(
     val startupRowFocus = remember { FocusRequester() }
     val languageRowFocus = remember { FocusRequester() }
     // NOTE: this restore request crosses INTO the root focus group from outside (the dialog), so
-    // the group's onEnter intercepts it â€” onEnter must consult dialogReturn first (it does, below)
+    // the group's onEnter intercepts it — onEnter must consult dialogReturn first (it does, below)
     // or it would hijack the restore to its own default target. dialogReturn is cleared by onEnter.
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     LaunchedEffect(showZoom, showTheme, showAccent, showFolderPicker, showUpdate, showAbout, showCatchupTime, showClearHistory, showAnimations, showStartup, showLanguage) {
@@ -199,7 +199,7 @@ fun SettingsScreen(
         SettingsTab.ROOT -> Unit
     }
 
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -229,7 +229,7 @@ fun SettingsScreen(
 
         // --- Batch 4: quick toggles (most-used settings, one-press) ---
         // NOTE: the four here are the current "most-used" set; making this list user-configurable
-        // is deferred (see DESIGN_PLAN_v4.0.3 Batch 4 Â· B).
+        // is deferred (see DESIGN_PLAN_v4.0.3 Batch 4 · B).
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -238,16 +238,16 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            QuickToggleChip(stringResource(R.string.settings_live_preview), livePreview, OwnTVIcon.LIVE_TV) { settingsVm.setLivePreviewEnabled(!livePreview) }
-            QuickToggleChip(stringResource(R.string.settings_preview_audio), previewAudio, OwnTVIcon.AUDIO) { settingsVm.setLivePreviewAudio(!previewAudio) }
-            QuickToggleChip(stringResource(R.string.settings_hdr), hdr, OwnTVIcon.VIDEO) { settingsVm.setHdrEnabled(!hdr) }
-            QuickToggleChip(stringResource(R.string.settings_autoplay), autoPlayNext, OwnTVIcon.SKIP_NEXT) { settingsVm.setAutoPlayNext(!autoPlayNext) }
-            QuickToggleChip(stringResource(R.string.settings_updates), updateCheckOnStart, OwnTVIcon.DOWNLOADS) { settingsVm.setUpdateCheckOnStart(!updateCheckOnStart) }
+            QuickToggleChip(stringResource(R.string.settings_live_preview), livePreview, LunaIPtvIcon.LIVE_TV) { settingsVm.setLivePreviewEnabled(!livePreview) }
+            QuickToggleChip(stringResource(R.string.settings_preview_audio), previewAudio, LunaIPtvIcon.AUDIO) { settingsVm.setLivePreviewAudio(!previewAudio) }
+            QuickToggleChip(stringResource(R.string.settings_hdr), hdr, LunaIPtvIcon.VIDEO) { settingsVm.setHdrEnabled(!hdr) }
+            QuickToggleChip(stringResource(R.string.settings_autoplay), autoPlayNext, LunaIPtvIcon.SKIP_NEXT) { settingsVm.setAutoPlayNext(!autoPlayNext) }
+            QuickToggleChip(stringResource(R.string.settings_updates), updateCheckOnStart, LunaIPtvIcon.DOWNLOADS) { settingsVm.setUpdateCheckOnStart(!updateCheckOnStart) }
         }
         Spacer(Modifier.height(8.dp))
 
         // --- Batch 4: settings search ---
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
             label = stringResource(R.string.settings_search),
@@ -262,7 +262,7 @@ fun SettingsScreen(
         if (searchQuery.isBlank()) {
         GroupLabel(stringResource(R.string.settings_group_profile))
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.PERSON,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.PERSON,
             title = stringResource(R.string.settings_profiles), desc = stringResource(R.string.settings_profiles_desc),
             onClick = { open(SettingsTab.PROFILES) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.PROFILES)),
@@ -270,37 +270,37 @@ fun SettingsScreen(
         SectionDivider()
         GroupLabel(stringResource(R.string.settings_group_content))
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.PLAYLIST,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.PLAYLIST,
             title = stringResource(R.string.settings_playlists), desc = stringResource(R.string.settings_playlists_desc),
             onClick = { open(SettingsTab.SOURCES) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.SOURCES)),
         )
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.EPG,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.EPG,
             title = stringResource(R.string.settings_epg_sources), desc = stringResource(R.string.settings_epg_sources_desc),
             onClick = { open(SettingsTab.EPG) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.EPG)),
         )
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.SORT,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.SORT,
             title = stringResource(R.string.settings_customize), desc = stringResource(R.string.settings_customize_desc),
             onClick = { open(SettingsTab.CUSTOMIZE) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.CUSTOMIZE)),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.HOME,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.HOME,
             title = stringResource(R.string.settings_home_screen), desc = stringResource(R.string.settings_home_screen_desc),
             onClick = { open(SettingsTab.HOME) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.HOME)),
         )
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.VIDEO,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.VIDEO,
             title = stringResource(R.string.settings_metadata), desc = stringResource(R.string.settings_metadata_desc),
             onClick = { open(SettingsTab.METADATA) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.METADATA)),
         )
         SettingsRow(
-            tone = TileTone.TERTIARY, icon = OwnTVIcon.DOWNLOADS,
+            tone = TileTone.TERTIARY, icon = LunaIPtvIcon.DOWNLOADS,
             title = stringResource(R.string.settings_download_folder),
             chip = downloadRoot.ifBlank { stringResource(R.string.settings_download_folder_default) }.let { java.io.File(it).name.ifBlank { it } },
             chipTone = TileTone.TERTIARY,
@@ -308,13 +308,13 @@ fun SettingsScreen(
             modifier = Modifier.focusRequester(folderRowFocus),
         )
         SettingsRow(
-            tone = TileTone.TERTIARY, icon = OwnTVIcon.DOWNLOADS,
+            tone = TileTone.TERTIARY, icon = LunaIPtvIcon.DOWNLOADS,
             title = stringResource(R.string.settings_backup), desc = stringResource(R.string.settings_backup_desc),
             onClick = { open(SettingsTab.BACKUP) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.BACKUP)),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.HISTORY,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.HISTORY,
             title = stringResource(R.string.settings_clear_history), desc = stringResource(R.string.settings_clear_history_desc),
             onClick = { dialogReturn = clearHistoryRowFocus; showClearHistory = true }, showChevron = true,
             modifier = Modifier.focusRequester(clearHistoryRowFocus),
@@ -322,14 +322,14 @@ fun SettingsScreen(
         SectionDivider()
         GroupLabel(stringResource(R.string.settings_group_appearance))
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.THEME,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.THEME,
             title = stringResource(R.string.settings_theme), desc = stringResource(R.string.settings_theme_desc),
             chip = themeLabel(themeMode), chipTone = TileTone.PRIMARY,
             onClick = { dialogReturn = themeRowFocus; showTheme = true }, showChevron = true,
             modifier = Modifier.focusRequester(themeRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.PALETTE,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.PALETTE,
             title = stringResource(R.string.settings_accent), desc = stringResource(R.string.settings_accent_desc),
             chip = if (customAccent.isNotBlank()) customAccent.uppercase() else accent.label,
             chipTone = TileTone.SECONDARY,
@@ -337,28 +337,28 @@ fun SettingsScreen(
             modifier = Modifier.focusRequester(accentRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.ZOOM,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.ZOOM,
             title = stringResource(R.string.settings_ui_zoom), desc = stringResource(R.string.settings_ui_zoom_desc),
             chip = UiZoom.label(uiZoomPercent), chipTone = TileTone.SECONDARY,
             onClick = { dialogReturn = zoomRowFocus; showZoom = true }, showChevron = true,
             modifier = Modifier.focusRequester(zoomRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.THEME,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.THEME,
             title = stringResource(R.string.settings_animations), desc = stringResource(R.string.settings_animations_desc),
             chip = animationLevel.label, chipTone = TileTone.SECONDARY,
             onClick = { dialogReturn = animationsRowFocus; showAnimations = true }, showChevron = true,
             modifier = Modifier.focusRequester(animationsRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.THEME,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.THEME,
             title = stringResource(R.string.settings_language), desc = stringResource(R.string.settings_language_desc),
-            chip = if (language == "es") "EspaÃ±ol" else "English", chipTone = TileTone.SECONDARY,
+            chip = if (language == "es") "Español" else "English", chipTone = TileTone.SECONDARY,
             onClick = { dialogReturn = languageRowFocus; showLanguage = true }, showChevron = true,
             modifier = Modifier.focusRequester(languageRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.EPG,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.EPG,
             title = stringResource(R.string.settings_weather),
             desc = stringResource(R.string.settings_weather_desc),
             chip = if (weatherEnabled) stringResource(R.string.on) else stringResource(R.string.off),
@@ -370,7 +370,7 @@ fun SettingsScreen(
         SectionDivider()
         GroupLabel(stringResource(R.string.settings_group_playback))
         SettingsRow(
-            tone = TileTone.TERTIARY, icon = OwnTVIcon.LIVE_TV,
+            tone = TileTone.TERTIARY, icon = LunaIPtvIcon.LIVE_TV,
             title = stringResource(R.string.settings_live_preview), desc = stringResource(R.string.settings_live_preview_desc),
             chip = if (livePreview) stringResource(R.string.on) else stringResource(R.string.off),
             chipTone = if (livePreview) TileTone.PRIMARY else TileTone.SECONDARY,
@@ -378,7 +378,7 @@ fun SettingsScreen(
         )
         if (livePreview) {
             SettingsRow(
-                tone = TileTone.SECONDARY, icon = OwnTVIcon.AUDIO,
+                tone = TileTone.SECONDARY, icon = LunaIPtvIcon.AUDIO,
                 title = stringResource(R.string.settings_preview_audio), desc = stringResource(R.string.settings_preview_audio_desc),
                 chip = if (previewAudio) stringResource(R.string.on) else stringResource(R.string.off),
                 chipTone = if (previewAudio) TileTone.PRIMARY else TileTone.SECONDARY,
@@ -386,14 +386,14 @@ fun SettingsScreen(
             )
         }
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.VIDEO,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.VIDEO,
             title = stringResource(R.string.settings_hdr), desc = stringResource(R.string.settings_hdr_desc),
             chip = if (hdr) stringResource(R.string.on) else stringResource(R.string.off),
             chipTone = if (hdr) TileTone.PRIMARY else TileTone.SECONDARY,
             onClick = { settingsVm.setHdrEnabled(!hdr) },
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.AUDIO,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.AUDIO,
             title = stringResource(R.string.settings_surround),
             desc = stringResource(R.string.settings_surround_desc),
             chip = if (surroundSound) stringResource(R.string.on) else stringResource(R.string.off),
@@ -401,7 +401,7 @@ fun SettingsScreen(
             onClick = { settingsVm.setSurroundSound(!surroundSound) },
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.SKIP_NEXT,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.SKIP_NEXT,
             title = stringResource(R.string.settings_auto_next),
             desc = stringResource(R.string.settings_auto_next_desc),
             chip = if (autoPlayNext) stringResource(R.string.on) else stringResource(R.string.off),
@@ -409,7 +409,7 @@ fun SettingsScreen(
             onClick = { settingsVm.setAutoPlayNext(!autoPlayNext) },
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.EPG,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.EPG,
             title = stringResource(R.string.settings_catchup_time),
             desc = if (catchupChannels > 0) stringResource(R.string.settings_catchup_channels, catchupChannels)
                 else stringResource(R.string.settings_catchup_no_channels),
@@ -422,7 +422,7 @@ fun SettingsScreen(
             modifier = Modifier.focusRequester(catchupRowFocus),
         )
         SettingsRow(
-            tone = TileTone.TERTIARY, icon = OwnTVIcon.VIDEO,
+            tone = TileTone.TERTIARY, icon = LunaIPtvIcon.VIDEO,
             title = stringResource(R.string.settings_video_player), desc = stringResource(R.string.settings_video_player_desc),
             onClick = { open(SettingsTab.VIDEO) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.VIDEO)),
@@ -431,7 +431,7 @@ fun SettingsScreen(
         SectionDivider()
         GroupLabel(stringResource(R.string.settings_group_network))
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.SHARE,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.SHARE,
             title = stringResource(R.string.settings_proxy), desc = stringResource(R.string.settings_proxy_desc),
             onClick = { open(SettingsTab.NETWORK) }, showChevron = true,
             modifier = Modifier.focusRequester(rowFocus.getValue(SettingsTab.NETWORK)),
@@ -440,82 +440,82 @@ fun SettingsScreen(
         SectionDivider()
         GroupLabel(stringResource(R.string.settings_group_app))
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.HOME,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.HOME,
             title = stringResource(R.string.settings_app_startup), desc = stringResource(R.string.settings_app_startup_desc),
             chip = startupMode.label, chipTone = TileTone.PRIMARY,
             onClick = { dialogReturn = startupRowFocus; showStartup = true }, showChevron = true,
             modifier = Modifier.focusRequester(startupRowFocus),
         )
         SettingsRow(
-            tone = TileTone.PRIMARY, icon = OwnTVIcon.DOWNLOADS,
+            tone = TileTone.PRIMARY, icon = LunaIPtvIcon.DOWNLOADS,
             title = stringResource(R.string.settings_updates), desc = stringResource(R.string.settings_updates_desc),
             chip = "v${com.lunaiptv.BuildConfig.VERSION_NAME}",
             onClick = { dialogReturn = updateRowFocus; showUpdate = true }, showChevron = true,
             modifier = Modifier.focusRequester(updateRowFocus),
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.HISTORY,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.HISTORY,
             title = stringResource(R.string.settings_auto_update), desc = stringResource(R.string.settings_auto_update_desc),
             chip = if (updateCheckOnStart) stringResource(R.string.on) else stringResource(R.string.off),
             chipTone = if (updateCheckOnStart) TileTone.PRIMARY else TileTone.SECONDARY,
             onClick = { settingsVm.setUpdateCheckOnStart(!updateCheckOnStart) },
         )
         SettingsRow(
-            tone = TileTone.SECONDARY, icon = OwnTVIcon.MENU,
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.MENU,
             title = stringResource(R.string.settings_about), desc = stringResource(R.string.settings_about_desc),
             onClick = { dialogReturn = aboutRowFocus; showAbout = true }, showChevron = true,
             modifier = Modifier.focusRequester(aboutRowFocus),
         )
         } else {
-            // Batch 4 Â· search results â€” flat, group-context-prefixed rows ("Playback â€º HDR").
+            // Batch 4 · search results — flat, group-context-prefixed rows ("Playback › HDR").
             // Dialog-opening entries return focus to the search field on close (their normal row
             // isn't composed while searching). Toggle entries keep the results visible so the chip
             // updates live.
             val entries = listOf(
-                SettingsSearchEntry(stringResource(R.string.settings_group_profile), stringResource(R.string.settings_profiles), "viewers kids mode pin lock account espectadores niÃ±os modo pin", OwnTVIcon.PERSON, TileTone.SECONDARY) { open(SettingsTab.PROFILES) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_playlists), "m3u xtream source sync add remove listas fuentes", OwnTVIcon.PLAYLIST, TileTone.PRIMARY) { open(SettingsTab.SOURCES) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_epg_sources), "xmltv guide feed program guÃ­a", OwnTVIcon.EPG, TileTone.PRIMARY) { open(SettingsTab.EPG) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_customize), "hide unhide rename reorder categories ocultar mostrar renombrar categorÃ­as", OwnTVIcon.SORT, TileTone.PRIMARY) { open(SettingsTab.CUSTOMIZE) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_home_screen), "rows hero reorder filter filas inicio", OwnTVIcon.HOME, TileTone.SECONDARY) { open(SettingsTab.HOME) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_metadata), "posters plots cast ratings pÃ³sters sinopsis reparto", OwnTVIcon.VIDEO, TileTone.PRIMARY) { open(SettingsTab.METADATA) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_download_folder), "storage path directory almacenamiento ruta", OwnTVIcon.DOWNLOADS, TileTone.TERTIARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_profile), stringResource(R.string.settings_profiles), "viewers kids mode pin lock account espectadores niños modo pin", LunaIPtvIcon.PERSON, TileTone.SECONDARY) { open(SettingsTab.PROFILES) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_playlists), "m3u xtream source sync add remove listas fuentes", LunaIPtvIcon.PLAYLIST, TileTone.PRIMARY) { open(SettingsTab.SOURCES) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_epg_sources), "xmltv guide feed program guía", LunaIPtvIcon.EPG, TileTone.PRIMARY) { open(SettingsTab.EPG) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_customize), "hide unhide rename reorder categories ocultar mostrar renombrar categorías", LunaIPtvIcon.SORT, TileTone.PRIMARY) { open(SettingsTab.CUSTOMIZE) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_home_screen), "rows hero reorder filter filas inicio", LunaIPtvIcon.HOME, TileTone.SECONDARY) { open(SettingsTab.HOME) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_metadata), "posters plots cast ratings pósters sinopsis reparto", LunaIPtvIcon.VIDEO, TileTone.PRIMARY) { open(SettingsTab.METADATA) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_download_folder), "storage path directory almacenamiento ruta", LunaIPtvIcon.DOWNLOADS, TileTone.TERTIARY,
                     chip = downloadRoot.ifBlank { stringResource(R.string.settings_download_folder_default) }.let { java.io.File(it).name.ifBlank { it } }, chipTone = TileTone.TERTIARY) { dialogReturn = searchFieldFocus; showFolderPicker = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_backup), "export import profiles sources exportar importar", OwnTVIcon.DOWNLOADS, TileTone.TERTIARY) { open(SettingsTab.BACKUP) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_clear_history), "recently watched continue remove historial reciente continuar", OwnTVIcon.HISTORY, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showClearHistory = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_theme), "light dark system claro oscuro", OwnTVIcon.THEME, TileTone.PRIMARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_backup), "export import profiles sources exportar importar", LunaIPtvIcon.DOWNLOADS, TileTone.TERTIARY) { open(SettingsTab.BACKUP) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_clear_history), "recently watched continue remove historial reciente continuar", LunaIPtvIcon.HISTORY, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showClearHistory = true },
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_theme), "light dark system claro oscuro", LunaIPtvIcon.THEME, TileTone.PRIMARY,
                     chip = themeLabel(themeMode)) { dialogReturn = searchFieldFocus; showTheme = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_accent), "tint palette hex preset color acento paleta", OwnTVIcon.PALETTE, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_accent), "tint palette hex preset color acento paleta", LunaIPtvIcon.PALETTE, TileTone.SECONDARY,
                     chip = if (customAccent.isNotBlank()) customAccent.uppercase() else accent.label, chipTone = TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAccent = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_ui_zoom), "scale interface size escalar interfaz", OwnTVIcon.ZOOM, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_ui_zoom), "scale interface size escalar interfaz", LunaIPtvIcon.ZOOM, TileTone.SECONDARY,
                     chip = UiZoom.label(uiZoomPercent), chipTone = TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showZoom = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_animations), "motion snappier performance movimiento animaciones", OwnTVIcon.THEME, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_animations), "motion snappier performance movimiento animaciones", LunaIPtvIcon.THEME, TileTone.SECONDARY,
                     chip = animationLevel.label, chipTone = TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAnimations = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_weather), "top bar chip location celsius fahrenheit clima ubicaciÃ³n", OwnTVIcon.EPG, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_weather), "top bar chip location celsius fahrenheit clima ubicación", LunaIPtvIcon.EPG, TileTone.SECONDARY,
                     chip = if (weatherEnabled) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (weatherEnabled) TileTone.PRIMARY else TileTone.SECONDARY) { open(SettingsTab.WEATHER) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_live_preview), "auto play focus channel reproducciÃ³n enfocar canal", OwnTVIcon.LIVE_TV, TileTone.TERTIARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_live_preview), "auto play focus channel reproducción enfocar canal", LunaIPtvIcon.LIVE_TV, TileTone.TERTIARY,
                     chip = if (livePreview) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (livePreview) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setLivePreviewEnabled(!livePreview) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_preview_audio), "sound live preview sonido vista previa", OwnTVIcon.AUDIO, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_preview_audio), "sound live preview sonido vista previa", LunaIPtvIcon.AUDIO, TileTone.SECONDARY,
                     chip = if (previewAudio) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (previewAudio) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setLivePreviewAudio(!previewAudio) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_hdr), "high dynamic range output rango dinÃ¡mico", OwnTVIcon.VIDEO, TileTone.PRIMARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_hdr), "high dynamic range output rango dinámico", LunaIPtvIcon.VIDEO, TileTone.PRIMARY,
                     chip = if (hdr) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (hdr) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setHdrEnabled(!hdr) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_surround), "dolby dts 5.1 7.1 receiver audio envolvente", OwnTVIcon.AUDIO, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_surround), "dolby dts 5.1 7.1 receiver audio envolvente", LunaIPtvIcon.AUDIO, TileTone.SECONDARY,
                     chip = if (surroundSound) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (surroundSound) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setSurroundSound(!surroundSound) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_auto_next), "autoplay series season episodio siguiente", OwnTVIcon.SKIP_NEXT, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_auto_next), "autoplay series season episodio siguiente", LunaIPtvIcon.SKIP_NEXT, TileTone.SECONDARY,
                     chip = if (autoPlayNext) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (autoPlayNext) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setAutoPlayNext(!autoPlayNext) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_catchup_time), "archive timezone offset repeticiÃ³n zona horaria", OwnTVIcon.EPG, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_catchup_time), "archive timezone offset repetición zona horaria", LunaIPtvIcon.EPG, TileTone.SECONDARY,
                     chip = when (catchupTz) {
                         SettingsRepository.CatchupTimezone.DEVICE -> stringResource(R.string.settings_catchup_device)
                         SettingsRepository.CatchupTimezone.MANUAL -> utcOffsetLabel(catchupOffset)
                     }) { dialogReturn = searchFieldFocus; showCatchupTime = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_video_player), "decoder subtitles sync decodificador subtÃ­tulos", OwnTVIcon.VIDEO, TileTone.TERTIARY) { open(SettingsTab.VIDEO) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_network), stringResource(R.string.settings_proxy), "http traffic route trÃ¡fico", OwnTVIcon.SHARE, TileTone.SECONDARY) { open(SettingsTab.NETWORK) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_app_startup), "launch open landing iniciar abrir", OwnTVIcon.HOME, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_video_player), "decoder subtitles sync decodificador subtítulos", LunaIPtvIcon.VIDEO, TileTone.TERTIARY) { open(SettingsTab.VIDEO) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_network), stringResource(R.string.settings_proxy), "http traffic route tráfico", LunaIPtvIcon.SHARE, TileTone.SECONDARY) { open(SettingsTab.NETWORK) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_app_startup), "launch open landing iniciar abrir", LunaIPtvIcon.HOME, TileTone.SECONDARY,
                     chip = startupMode.label) { dialogReturn = searchFieldFocus; showStartup = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_updates), "github release version actualizaciÃ³n", OwnTVIcon.DOWNLOADS, TileTone.PRIMARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_updates), "github release version actualización", LunaIPtvIcon.DOWNLOADS, TileTone.PRIMARY,
                     chip = "v${com.lunaiptv.BuildConfig.VERSION_NAME}") { dialogReturn = searchFieldFocus; showUpdate = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_auto_update), "auto update new version actualizar iniciar", OwnTVIcon.HISTORY, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_auto_update), "auto update new version actualizar iniciar", LunaIPtvIcon.HISTORY, TileTone.SECONDARY,
                     chip = if (updateCheckOnStart) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (updateCheckOnStart) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setUpdateCheckOnStart(!updateCheckOnStart) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_about), "version license project info versiÃ³n licencia", OwnTVIcon.MENU, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAbout = true },
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_about), "version license project info versión licencia", LunaIPtvIcon.MENU, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAbout = true },
             )
             val tokens = searchQuery.trim().lowercase().split(" ").filter { it.isNotBlank() }
             val results = entries.filter { e -> tokens.all { t -> e.haystack.contains(t) } }
@@ -530,7 +530,7 @@ fun SettingsScreen(
                 results.forEach { e ->
                     SettingsRow(
                         tone = e.tone, icon = e.icon,
-                        title = "${e.group} â€º ${e.title}",
+                        title = "${e.group} › ${e.title}",
                         chip = e.chip, chipTone = e.chipTone,
                         showChevron = e.showChevron,
                         onClick = e.onClick,
@@ -639,7 +639,7 @@ private fun AccentPaletteDialog(
     onPickCustom: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val isDark = colors.isDark
     val firstFocus = remember { FocusRequester() }
     var hexInput by remember { mutableStateOf(customAccent.removePrefix("#")) }
@@ -700,14 +700,14 @@ private fun AccentPaletteDialog(
             Spacer(Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("#", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
-                com.lunaiptv.ui.components.OwnTVTextField(
+                com.lunaiptv.ui.components.LunaIPtvTextField(
                     value = hexInput,
                     onValueChange = { hexInput = it.take(6); hexError = false },
                     label = stringResource(R.string.settings_hex_field),
                     placeholder = "52DBC8",
                     modifier = Modifier.width(200.dp),
                 )
-                OwnTVButton(stringResource(R.string.settings_apply), onClick = {
+                LunaIPtvButton(stringResource(R.string.settings_apply), onClick = {
                     val parsed = com.lunaiptv.ui.theme.parseAccentHex(hexInput)
                     if (parsed != null) {
                         onPickCustom("#" + hexInput.trim().removePrefix("#").uppercase())
@@ -723,7 +723,7 @@ private fun AccentPaletteDialog(
 
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
             }
         }
     }
@@ -738,7 +738,7 @@ private fun Swatch(
     modifier: Modifier = Modifier,
     sizeDp: Int = 44,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.size((sizeDp + 14).dp),
@@ -764,7 +764,7 @@ private fun Swatch(
 /** About LunaIPtv: version, license and author info. */
 @Composable
 private fun AboutDialog(onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -794,7 +794,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
             Spacer(Modifier.height(14.dp))
             Text(stringResource(R.string.settings_copyright), style = MaterialTheme.typography.bodyMedium, color = colors.onSurface)
             Spacer(Modifier.height(20.dp))
-            OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+            LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
         }
     }
 }
@@ -808,7 +808,7 @@ private fun ClearHistoryDialog(
     onClear: (com.lunaiptv.core.model.MediaType?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     // null = still choosing a scope; non-null = confirming that scope (type + label; type null = everything).
     var pending by remember { mutableStateOf<Pair<com.lunaiptv.core.model.MediaType?, String>?>(null) }
     val firstFocus = remember { FocusRequester() }
@@ -831,23 +831,23 @@ private fun ClearHistoryDialog(
                     style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center,
                 )
                 Spacer(Modifier.height(20.dp))
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth().focusRequester(firstFocus))
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth().focusRequester(firstFocus))
                 Spacer(Modifier.height(10.dp))
-                OwnTVButton(stringResource(R.string.nav_live), onClick = { pending = com.lunaiptv.core.model.MediaType.LIVE to "Live TV" }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.nav_live), onClick = { pending = com.lunaiptv.core.model.MediaType.LIVE to "Live TV" }, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
-                OwnTVButton(stringResource(R.string.nav_movies), onClick = { pending = com.lunaiptv.core.model.MediaType.MOVIE to "Movies" }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.nav_movies), onClick = { pending = com.lunaiptv.core.model.MediaType.MOVIE to "Movies" }, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
-                OwnTVButton(stringResource(R.string.nav_series), onClick = { pending = com.lunaiptv.core.model.MediaType.SERIES to "Series" }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.nav_series), onClick = { pending = com.lunaiptv.core.model.MediaType.SERIES to "Series" }, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
-                OwnTVButton(stringResource(R.string.settings_clear_history_all), onClick = { pending = (null as com.lunaiptv.core.model.MediaType?) to "all" }, modifier = Modifier.fillMaxWidth())
+                LunaIPtvButton(stringResource(R.string.settings_clear_history_all), onClick = { pending = (null as com.lunaiptv.core.model.MediaType?) to "all" }, modifier = Modifier.fillMaxWidth())
             } else {
                 Text(stringResource(R.string.settings_clear_history_confirm, p.second), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(R.string.settings_clear_history_warning), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
                 Spacer(Modifier.height(24.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OwnTVButton(stringResource(R.string.no), onClick = { pending = null }, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.focusRequester(firstFocus))
-                    OwnTVButton(stringResource(R.string.yes_clear), onClick = { onClear(p.first) })
+                    LunaIPtvButton(stringResource(R.string.no), onClick = { pending = null }, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.focusRequester(firstFocus))
+                    LunaIPtvButton(stringResource(R.string.yes_clear), onClick = { onClear(p.first) })
                 }
             }
         }
@@ -857,11 +857,11 @@ private fun ClearHistoryDialog(
 /** A stepper for the global UI scale. Changes apply live (the whole UI re-scales as you adjust). */
 @Composable
 private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
     // Zoom below LOW_RAM_WARN doubles the on-screen item count, which can OOM-crash 2 GB devices
-    // (#51) â€” the first step under it is gated behind an accept-the-risk warning. Accepting once
+    // (#51) — the first step under it is gated behind an accept-the-risk warning. Accepting once
     // arms the rest of this dialog session; if it was opened already below the line, don't nag.
     var lowZoomAccepted by remember { mutableStateOf(current < UiZoom.LOW_RAM_WARN) }
     var pendingLowZoom by remember { mutableStateOf<Int?>(null) }
@@ -883,11 +883,11 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                 // Initial focus lands on the DECREASE button: the dialog is most often opened to escape an
-                // over-zoomed screen (where everything's too big to navigate), so "â€“" must be first under
+                // over-zoomed screen (where everything's too big to navigate), so "–" must be first under
                 // the cursor. The buttons stay focusable at the limits (clamped + dimmed, never disabled)
-                // so focus always lands inside the dialog â€” a disabled "+" at MAX zoom was leaving focus
+                // so focus always lands inside the dialog — a disabled "+" at MAX zoom was leaving focus
                 // stranded outside, trapping the user at high zoom.
-                StepButton("â€“", dimmed = current <= UiZoom.MIN, modifier = Modifier.focusRequester(firstFocus)) {
+                StepButton("–", dimmed = current <= UiZoom.MIN, modifier = Modifier.focusRequester(firstFocus)) {
                     val next = UiZoom.clamp(current - UiZoom.STEP)
                     if (next < UiZoom.LOW_RAM_WARN && !lowZoomAccepted) pendingLowZoom = next else onSet(next)
                 }
@@ -904,14 +904,14 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
             }
             Spacer(Modifier.height(24.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.reset), onClick = { onSet(UiZoom.DEFAULT) }, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.reset), onClick = { onSet(UiZoom.DEFAULT) }, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.done), onClick = onDismiss)
+                LunaIPtvButton(stringResource(R.string.done), onClick = onDismiss)
             }
         }
 
         // Accept-the-risk gate for zoom below LOW_RAM_WARN (#51). One button, focus locked (all
-        // D-pad directions cancelled) â€” OK accepts and applies the pending step, Back cancels.
+        // D-pad directions cancelled) — OK accepts and applies the pending step, Back cancels.
         pendingLowZoom?.let { target ->
             val acceptFocus = remember { FocusRequester() }
             LaunchedEffect(Unit) { runCatching { acceptFocus.requestFocus() } }
@@ -935,7 +935,7 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
                         style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(20.dp))
-                    OwnTVButton(
+                    LunaIPtvButton(
                         stringResource(R.string.settings_ui_zoom_warning_accept),
                         onClick = {
                             lowZoomAccepted = true
@@ -958,7 +958,7 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
     }
 }
 
-/** "UTC", "UTC+05:00", "UTC-03:30" â€” labels a UTC offset (in minutes) for catch-up. */
+/** "UTC", "UTC+05:00", "UTC-03:30" — labels a UTC offset (in minutes) for catch-up. */
 private fun utcOffsetLabel(minutes: Int): String {
     if (minutes == 0) return "UTC"
     val sign = if (minutes < 0) "-" else "+"
@@ -975,7 +975,7 @@ private fun CatchupTimeDialog(
     onAdjustOffset: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -998,22 +998,22 @@ private fun CatchupTimeDialog(
             Spacer(Modifier.height(20.dp))
             // Mode toggle: Device / Manual.
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.settings_catchup_device),
                     onClick = { onSetMode(SettingsRepository.CatchupTimezone.DEVICE) },
-                    style = if (!manual) OwnTVButtonStyle.PRIMARY else OwnTVButtonStyle.SECONDARY,
+                    style = if (!manual) LunaIPtvButtonStyle.PRIMARY else LunaIPtvButtonStyle.SECONDARY,
                     modifier = Modifier.focusRequester(firstFocus),
                 )
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.settings_catchup_manual),
                     onClick = { onSetMode(SettingsRepository.CatchupTimezone.MANUAL) },
-                    style = if (manual) OwnTVButtonStyle.PRIMARY else OwnTVButtonStyle.SECONDARY,
+                    style = if (manual) LunaIPtvButtonStyle.PRIMARY else LunaIPtvButtonStyle.SECONDARY,
                 )
             }
             if (manual) {
                 Spacer(Modifier.height(22.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    StepButton("â€“", enabled = offsetMinutes > offsetRange.first) { onAdjustOffset(-60) }
+                    StepButton("–", enabled = offsetMinutes > offsetRange.first) { onAdjustOffset(-60) }
                     Text(
                         utcOffsetLabel(offsetMinutes),
                         style = MaterialTheme.typography.headlineMedium,
@@ -1025,7 +1025,7 @@ private fun CatchupTimeDialog(
                 }
             }
             Spacer(Modifier.height(24.dp))
-            OwnTVButton(stringResource(R.string.done), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
+            LunaIPtvButton(stringResource(R.string.done), onClick = onDismiss, modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -1038,7 +1038,7 @@ private fun StepButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         enabled = enabled,
@@ -1055,7 +1055,7 @@ private fun GroupLabel(text: String) {
     Text(
         text = text.uppercase(),
         style = MaterialTheme.typography.labelMedium,
-        color = OwnTVTheme.colors.onSurfaceVariant,
+        color = LunaIPtvTheme.colors.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp),
     )
@@ -1068,14 +1068,14 @@ private fun SectionDivider() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(1.dp)
-            .background(OwnTVTheme.colors.outlineVariant),
+            .background(LunaIPtvTheme.colors.outlineVariant),
     )
 }
 
 @Composable
 private fun SettingsRow(
     tone: TileTone,
-    icon: OwnTVIcon,
+    icon: LunaIPtvIcon,
     title: String,
     desc: String? = null,
     chip: String? = null,
@@ -1085,7 +1085,7 @@ private fun SettingsRow(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -1108,7 +1108,7 @@ private fun SettingsRow(
                     .background(tileBg),
                 contentAlignment = Alignment.Center,
             ) {
-                OwnTVIcon(icon = icon, tint = tileOn, modifier = Modifier.size(22.dp))
+                LunaIPtvIcon(icon = icon, tint = tileOn, modifier = Modifier.size(22.dp))
             }
 
             Column(modifier = Modifier.weight(1f)) {
@@ -1126,7 +1126,7 @@ private fun SettingsRow(
                     ValueChip(chip, chipTone)
                 }
                 if (showChevron) {
-                    OwnTVIcon(icon = OwnTVIcon.CHEVRON, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
+                    LunaIPtvIcon(icon = LunaIPtvIcon.CHEVRON, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
                 }
             }
         }
@@ -1135,7 +1135,7 @@ private fun SettingsRow(
 
 @Composable
 private fun SoonChip() {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Text(
         text = "SOON",
         style = MaterialTheme.typography.labelMedium,
@@ -1149,12 +1149,12 @@ private fun SoonChip() {
     )
 }
 
-/** Batch 4 Â· one searchable settings row: its group breadcrumb, title, extra keywords, and action. */
+/** Batch 4 · one searchable settings row: its group breadcrumb, title, extra keywords, and action. */
 private class SettingsSearchEntry(
     val group: String,
     val title: String,
     keywords: String,
-    val icon: OwnTVIcon,
+    val icon: LunaIPtvIcon,
     val tone: TileTone,
     val chip: String? = null,
     val chipTone: TileTone = TileTone.PRIMARY,
@@ -1165,15 +1165,15 @@ private class SettingsSearchEntry(
     val haystack: String = "$group $title $keywords".lowercase()
 }
 
-/** Batch 4 Â· a focusable most-used toggle chip shown pinned above the settings list. */
+/** Batch 4 · a focusable most-used toggle chip shown pinned above the settings list. */
 @Composable
 private fun QuickToggleChip(
     label: String,
     on: Boolean,
-    icon: OwnTVIcon,
+    icon: LunaIPtvIcon,
     onToggle: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val onColors = TileTone.PRIMARY.colors()
     val offColors = TileTone.SECONDARY.colors()
     val (bg, fg) = if (on) onColors else offColors
@@ -1189,7 +1189,7 @@ private fun QuickToggleChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            OwnTVIcon(icon = icon, tint = fg, modifier = Modifier.size(18.dp))
+            LunaIPtvIcon(icon = icon, tint = fg, modifier = Modifier.size(18.dp))
             Text(label, style = MaterialTheme.typography.labelLarge, color = fg, fontWeight = FontWeight.SemiBold)
             Text(
                 text = if (on) stringResource(R.string.on) else stringResource(R.string.off),
@@ -1218,7 +1218,7 @@ private fun ValueChip(text: String, tone: TileTone) {
 
 @Composable
 private fun TileTone.colors(): Pair<Color, Color> {
-    val c = OwnTVTheme.colors
+    val c = LunaIPtvTheme.colors
     return when (this) {
         TileTone.PRIMARY -> c.primaryContainer to c.onPrimaryContainer
         TileTone.SECONDARY -> c.secondaryContainer to c.onSecondaryContainer

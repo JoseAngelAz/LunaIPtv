@@ -20,7 +20,7 @@ import com.lunaiptv.di.databaseModule
 import com.lunaiptv.di.dataModule
 import com.lunaiptv.di.playerModule
 
-class OwnTVApp : Application(), SingletonImageLoader.Factory, androidx.work.Configuration.Provider {
+class LunaIPtvApp : Application(), SingletonImageLoader.Factory, androidx.work.Configuration.Provider {
 
     override val workManagerConfiguration: androidx.work.Configuration
         get() = androidx.work.Configuration.Builder()
@@ -28,11 +28,11 @@ class OwnTVApp : Application(), SingletonImageLoader.Factory, androidx.work.Conf
             .build()
 
     override fun onCreate() {
-        Perf.begin() // zero-point for the OwnTVPerf startup timeline (adb logcat -s OwnTVPerf)
+        Perf.begin() // zero-point for the LunaIPtvPerf startup timeline (adb logcat -s LunaIPtvPerf)
         super.onCreate()
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
-            androidContext(this@OwnTVApp)
+            androidContext(this@LunaIPtvApp)
             modules(appModule, databaseModule, dataModule, playerModule)
         }
         Perf.stamp("koin-started")
@@ -75,7 +75,7 @@ class OwnTVApp : Application(), SingletonImageLoader.Factory, androidx.work.Conf
         super.onTrimMemory(level)
         if (level >= TRIM_MEMORY_RUNNING_LOW) {
             runCatching { SingletonImageLoader.get(this).memoryCache?.clear() }
-            runCatching { GlobalContext.getOrNull()?.getOrNull<com.lunaiptv.player.OwnTVPlayer>()?.onTrimMemory() }
+            runCatching { GlobalContext.getOrNull()?.getOrNull<com.lunaiptv.player.LunaIPtvPlayer>()?.onTrimMemory() }
         }
     }
 }

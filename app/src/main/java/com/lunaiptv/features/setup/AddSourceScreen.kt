@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.setup
+package com.lunaiptv.features.setup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,12 +40,12 @@ import com.lunaiptv.features.settings.PickerDialog
 import com.lunaiptv.features.settings.data.PlaylistAutoRefresh
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
+import com.lunaiptv.ui.components.LunaIPtvButton
 import com.lunaiptv.ui.components.StorageBrowser
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVTextField
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 private enum class SourceKind { XTREAM, M3U }
 
@@ -72,7 +72,7 @@ fun AddSourceScreen(
     initialIsDefault: Boolean = false,
     showDefaultToggle: Boolean = true,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val editing = initial != null
     var kind by remember { mutableStateOf(if (initial?.type == SourceType.M3U) SourceKind.M3U else SourceKind.XTREAM) }
     var name by remember(initial) { mutableStateOf(initial?.name ?: "") }
@@ -118,7 +118,7 @@ fun AddSourceScreen(
             )
             Spacer(Modifier.height(24.dp))
 
-            // Source type selector (locked while editing â€” the type can't change, so initial focus
+            // Source type selector (locked while editing — the type can't change, so initial focus
             // goes to the Name field instead of a dead chip).
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 KindChip(stringResource(R.string.source_kind_xtream), kind == SourceKind.XTREAM, Modifier.weight(1f).then(if (!editing) Modifier.focusRequester(firstFocus) else Modifier)) { if (!editing) kind = SourceKind.XTREAM }
@@ -126,36 +126,36 @@ fun AddSourceScreen(
             }
             Spacer(Modifier.height(20.dp))
 
-            OwnTVTextField(name, { name = it }, label = stringResource(R.string.source_name_optional), placeholder = "My IPTV", modifier = Modifier.fillMaxWidth(), focusRequester = if (editing) firstFocus else null)
+            LunaIPtvTextField(name, { name = it }, label = stringResource(R.string.source_name_optional), placeholder = "My IPTV", modifier = Modifier.fillMaxWidth(), focusRequester = if (editing) firstFocus else null)
             Spacer(Modifier.height(14.dp))
 
             when (kind) {
                 SourceKind.XTREAM -> {
-                    OwnTVTextField(server, { server = it }, label = stringResource(R.string.source_server_url), placeholder = "http://host:port", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
+                    LunaIPtvTextField(server, { server = it }, label = stringResource(R.string.source_server_url), placeholder = "http://host:port", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(14.dp))
-                    OwnTVTextField(username, { username = it }, label = stringResource(R.string.source_username), modifier = Modifier.fillMaxWidth())
+                    LunaIPtvTextField(username, { username = it }, label = stringResource(R.string.source_username), modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(14.dp))
                     val pwLabel = if (editing) stringResource(R.string.source_password_keep) else stringResource(R.string.source_password)
-                    OwnTVTextField(password, { password = it }, label = pwLabel, isPassword = true, modifier = Modifier.fillMaxWidth())
+                    LunaIPtvTextField(password, { password = it }, label = pwLabel, isPassword = true, modifier = Modifier.fillMaxWidth())
                 }
                 SourceKind.M3U -> {
                     val pickedName = remember(m3uUrl) {
                         if (m3uUrl.startsWith("/")) java.io.File(m3uUrl).name else null
                     }
-                    OwnTVTextField(m3uUrl, { m3uUrl = it }, label = stringResource(R.string.source_playlist_url), placeholder = "http://â€¦/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
+                    LunaIPtvTextField(m3uUrl, { m3uUrl = it }, label = stringResource(R.string.source_playlist_url), placeholder = "http://…/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
                     val fileLabel = if (pickedName != null) stringResource(R.string.source_local_file, pickedName) else stringResource(R.string.source_playlist_file)
-                    OwnTVButton(
+                    LunaIPtvButton(
                         label = fileLabel,
                         onClick = { showFileBrowser = true },
-                        style = OwnTVButtonStyle.SECONDARY,
+                        style = LunaIPtvButtonStyle.SECONDARY,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
 
             Spacer(Modifier.height(14.dp))
-            OwnTVTextField(userAgent, { userAgent = it }, label = stringResource(R.string.source_user_agent), placeholder = "e.g. VLC/3.0.20 LibVLC/3.0.20", modifier = Modifier.fillMaxWidth())
+            LunaIPtvTextField(userAgent, { userAgent = it }, label = stringResource(R.string.source_user_agent), placeholder = "e.g. VLC/3.0.20 LibVLC/3.0.20", modifier = Modifier.fillMaxWidth())
 
             Spacer(Modifier.height(16.dp))
             AutoRefreshRow(selected = autoRefresh) { showAutoRefreshPicker = true }
@@ -186,10 +186,10 @@ fun AddSourceScreen(
 
             Spacer(Modifier.height(28.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.back), onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.back), onClick = onBack, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
                 val startLabel = if (editing) stringResource(R.string.save) else stringResource(R.string.source_start_import)
-                OwnTVButton(
+                LunaIPtvButton(
                     label = startLabel,
                     onClick = {
                         when (kind) {
@@ -234,7 +234,7 @@ fun AddSourceScreen(
 /** A focusable settings row showing the current auto-refresh selection; opens a picker on click. */
 @Composable
 private fun AutoRefreshRow(selected: PlaylistAutoRefresh, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -261,7 +261,7 @@ private fun AutoRefreshRow(selected: PlaylistAutoRefresh, onClick: () -> Unit) {
 
 @Composable
 private fun ToggleRow(label: String, desc: String, checked: Boolean, onToggle: (Boolean) -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = { onToggle(!checked) },
         modifier = Modifier.fillMaxWidth(),
@@ -285,7 +285,7 @@ private fun ToggleRow(label: String, desc: String, checked: Boolean, onToggle: (
 
 @Composable
 private fun KindChip(label: String, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier,

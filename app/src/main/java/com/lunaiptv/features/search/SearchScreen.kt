@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.search
+package com.lunaiptv.features.search
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -43,14 +43,14 @@ import com.lunaiptv.core.database.entity.MovieEntity
 import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.R
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.SearchBar
 import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** One row in the flattened results list â€” drives both the list rows and the detail pane. */
+/** One row in the flattened results list — drives both the list rows and the detail pane. */
 private sealed interface SearchItem {
     data class ChannelItem(val row: ChannelSearchResult) : SearchItem
     data class MovieItem(val movie: MovieEntity) : SearchItem
@@ -58,7 +58,7 @@ private sealed interface SearchItem {
 }
 
 /**
- * Phase 11 + Batch 5 â€” global search across channels, movies and series with a remote-first launcher
+ * Phase 11 + Batch 5 — global search across channels, movies and series with a remote-first launcher
  * empty state (recent terms + Continue / Unwatched / Channels intents) and a list + detail layout so a
  * focused result shows its poster/plot/rating and a primary action without opening it. Back clears the
  * query/intent first, then leaves the screen.
@@ -77,7 +77,7 @@ fun SearchScreen(
     val intent by vm.intent.collectAsStateWithLifecycle()
     val recent by vm.recentSearches.collectAsStateWithLifecycle()
     val favoriteIds by vm.favoriteChannelIds.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     val searchFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { searchFocus.requestFocus() } }
@@ -148,7 +148,7 @@ private fun LauncherEmptyState(
     onClearRecent: () -> Unit,
     onIntent: (SearchIntent) -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = Modifier.fillMaxSize().focusGroup(),
         verticalArrangement = Arrangement.spacedBy(18.dp),
@@ -171,7 +171,7 @@ private fun LauncherEmptyState(
                 recent.chunked(4).forEach { rowTerms ->
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         rowTerms.forEach { term ->
-                            PillChip(label = term, tonal = false, icon = OwnTVIcon.HISTORY) { onRecent(term) }
+                            PillChip(label = term, tonal = false, icon = LunaIPtvIcon.HISTORY) { onRecent(term) }
                         }
                     }
                 }
@@ -227,7 +227,7 @@ private fun ResultsWithDetail(
                     is SearchItem.ChannelItem -> item(key = "c${item.row.channel.id}") {
                         ResultRow(
                             thumbUrl = item.row.channel.logoUrl,
-                            fallbackIcon = OwnTVIcon.LIVE_TV,
+                            fallbackIcon = LunaIPtvIcon.LIVE_TV,
                             title = item.row.channel.name,
                             subtitle = channelDetail(item.row),
                             isFavorite = item.row.channel.id in favoriteIds,
@@ -240,7 +240,7 @@ private fun ResultsWithDetail(
                     is SearchItem.MovieItem -> item(key = "m${item.movie.id}") {
                         ResultRow(
                             thumbUrl = item.movie.posterUrl,
-                            fallbackIcon = OwnTVIcon.MOVIES,
+                            fallbackIcon = LunaIPtvIcon.MOVIES,
                             title = item.movie.name,
                             subtitle = metaLine(item.movie.year, item.movie.rating, stringResource(R.string.search_type_movie)),
                             isFavorite = false,
@@ -253,7 +253,7 @@ private fun ResultsWithDetail(
                     is SearchItem.SeriesItem -> item(key = "s${item.series.id}") {
                         ResultRow(
                             thumbUrl = item.series.posterUrl,
-                            fallbackIcon = OwnTVIcon.SERIES,
+                            fallbackIcon = LunaIPtvIcon.SERIES,
                             title = item.series.name,
                             subtitle = metaLine(item.series.year, item.series.rating, stringResource(R.string.search_type_series)),
                             isFavorite = false,
@@ -285,13 +285,13 @@ private fun DetailPane(
     onOpenSeries: (SeriesEntity) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     if (item == null) {
         Box(modifier) {}
         return
     }
     val posterUrl: String?
-    val icon: OwnTVIcon
+    val icon: LunaIPtvIcon
     val title: String
     val subtitle: String?
     val plot: String?
@@ -299,17 +299,17 @@ private fun DetailPane(
     val action: () -> Unit
     when (item) {
         is SearchItem.ChannelItem -> {
-            posterUrl = item.row.channel.logoUrl; icon = OwnTVIcon.LIVE_TV
+            posterUrl = item.row.channel.logoUrl; icon = LunaIPtvIcon.LIVE_TV
             title = item.row.channel.name; subtitle = channelDetail(item.row); plot = null
             actionLabel = stringResource(R.string.search_watch_live); action = { onPlayChannel(item.row.channel) }
         }
         is SearchItem.MovieItem -> {
-            posterUrl = item.movie.posterUrl; icon = OwnTVIcon.MOVIES
+            posterUrl = item.movie.posterUrl; icon = LunaIPtvIcon.MOVIES
             title = item.movie.name; subtitle = metaLine(item.movie.year, item.movie.rating, stringResource(R.string.search_type_movie)); plot = item.movie.plot
             actionLabel = stringResource(R.string.play); action = { onPlayMovie(item.movie) }
         }
         is SearchItem.SeriesItem -> {
-            posterUrl = item.series.posterUrl; icon = OwnTVIcon.SERIES
+            posterUrl = item.series.posterUrl; icon = LunaIPtvIcon.SERIES
             title = item.series.name; subtitle = metaLine(item.series.year, item.series.rating, stringResource(R.string.search_type_series)); plot = item.series.plot
             actionLabel = stringResource(R.string.search_open_series); action = { onOpenSeries(item.series) }
         }
@@ -329,7 +329,7 @@ private fun DetailPane(
             if (!posterUrl.isNullOrBlank()) {
                 AsyncImage(model = posterUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
             } else {
-                OwnTVIcon(icon, tint = colors.onSurfaceVariant, modifier = Modifier.size(48.dp))
+                LunaIPtvIcon(icon, tint = colors.onSurfaceVariant, modifier = Modifier.size(48.dp))
             }
         }
         Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface, maxLines = 2)
@@ -354,7 +354,7 @@ private fun DetailPane(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OwnTVIcon(OwnTVIcon.PLAY, tint = if (focused) colors.onPrimary else colors.onPrimaryContainer, modifier = Modifier.size(20.dp))
+                LunaIPtvIcon(LunaIPtvIcon.PLAY, tint = if (focused) colors.onPrimary else colors.onPrimaryContainer, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
                     actionLabel,
@@ -370,7 +370,7 @@ private fun DetailPane(
 @Composable
 private fun ResultRow(
     thumbUrl: String?,
-    fallbackIcon: OwnTVIcon,
+    fallbackIcon: LunaIPtvIcon,
     title: String,
     subtitle: String?,
     isFavorite: Boolean,
@@ -379,7 +379,7 @@ private fun ResultRow(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)?,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         onLongClick = onLongClick,
@@ -402,7 +402,7 @@ private fun ResultRow(
                 if (!thumbUrl.isNullOrBlank()) {
                     AsyncImage(model = thumbUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
                 } else {
-                    OwnTVIcon(fallbackIcon, tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
+                    LunaIPtvIcon(fallbackIcon, tint = colors.onSurfaceVariant, modifier = Modifier.size(22.dp))
                 }
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -417,7 +417,7 @@ private fun ResultRow(
                 }
             }
             if (isFavorite) {
-                OwnTVIcon(OwnTVIcon.STAR, tint = colors.primary, modifier = Modifier.size(18.dp))
+                LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.primary, modifier = Modifier.size(18.dp))
             }
         }
     }
@@ -427,10 +427,10 @@ private fun ResultRow(
 private fun PillChip(
     label: String,
     tonal: Boolean,
-    icon: OwnTVIcon? = null,
+    icon: LunaIPtvIcon? = null,
     onClick: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         shape = RoundedCornerShape(999.dp),
@@ -456,7 +456,7 @@ private fun PillChip(
             horizontalArrangement = Arrangement.spacedBy(7.dp),
         ) {
             if (icon != null) {
-                OwnTVIcon(icon, tint = fg, modifier = Modifier.size(15.dp))
+                LunaIPtvIcon(icon, tint = fg, modifier = Modifier.size(15.dp))
             }
             Text(label, style = MaterialTheme.typography.labelLarge, color = fg, fontWeight = FontWeight.SemiBold)
         }
@@ -468,7 +468,7 @@ private fun SectionLabel(text: String) {
     Text(
         text.uppercase(),
         style = MaterialTheme.typography.titleSmall,
-        color = OwnTVTheme.colors.primary,
+        color = LunaIPtvTheme.colors.primary,
         fontWeight = FontWeight.Bold,
     )
 }
@@ -476,14 +476,14 @@ private fun SectionLabel(text: String) {
 @Composable
 private fun CenterHint(text: String) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text, style = MaterialTheme.typography.bodyLarge, color = OwnTVTheme.colors.onSurfaceVariant)
+        Text(text, style = MaterialTheme.typography.bodyLarge, color = LunaIPtvTheme.colors.onSurfaceVariant)
     }
 }
 
-/** "category Â· #number" so near-identical feeds stay distinguishable. */
+/** "category · #number" so near-identical feeds stay distinguishable. */
 private fun channelDetail(row: ChannelSearchResult): String? =
     listOfNotNull(row.categoryName?.takeIf { it.isNotBlank() }, row.channel.number?.let { "#$it" })
-        .joinToString(" Â· ").takeIf { it.isNotBlank() }
+        .joinToString(" · ").takeIf { it.isNotBlank() }
 
 private fun metaLine(year: Int?, rating: Double?, type: String): String =
-    listOfNotNull(type, year?.toString(), rating?.let { "â˜… %.1f".format(it) }).joinToString(" Â· ")
+    listOfNotNull(type, year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString(" · ")

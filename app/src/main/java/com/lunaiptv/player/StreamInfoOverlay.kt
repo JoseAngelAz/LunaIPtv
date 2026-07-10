@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.player
+package com.lunaiptv.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Non-interactive technical readout for the current stream (codec, resolution, HDR, bitrate, decoder, audio,
- * buffer, source). Reads [PlaybackEngine.streamInfo] live â€” re-polled once a second so bitrate/buffer update
- * â€” and works on whichever engine is playing (mpv or ExoPlayer). Toggled from the player's info button.
+ * buffer, source). Reads [PlaybackEngine.streamInfo] live — re-polled once a second so bitrate/buffer update
+ * — and works on whichever engine is playing (mpv or ExoPlayer). Toggled from the player's info button.
  */
 @Composable
 fun StreamInfoOverlay(player: PlaybackEngine, modifier: Modifier = Modifier) {
@@ -41,7 +41,7 @@ fun StreamInfoOverlay(player: PlaybackEngine, modifier: Modifier = Modifier) {
         }
     }
     if (rows.isEmpty()) return
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     Column(
         modifier = modifier

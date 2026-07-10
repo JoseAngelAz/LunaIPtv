@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Small "Resume playback?" prompt shown (in the "Ask to resume" mode) when a movie/episode has a
@@ -41,7 +41,7 @@ fun ResumeDialog(
     onStartOver: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -60,9 +60,9 @@ fun ResumeDialog(
             )
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.ui_start_over), onClick = onStartOver, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.ui_start_over), onClick = onStartOver, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.ui_resume_btn), onClick = onResume, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(focus))
+                LunaIPtvButton(stringResource(R.string.ui_resume_btn), onClick = onResume, icon = LunaIPtvIcon.PLAY, modifier = Modifier.focusRequester(focus))
             }
         }
     }

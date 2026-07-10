@@ -16,7 +16,7 @@ data class ProfileEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val avatarColor: Int,
-    /** Index into the [com.lunaiptv.ui.components.OwnTVAvatars] cartoon set. */
+    /** Index into the [com.lunaiptv.ui.components.LunaIPtvAvatars] cartoon set. */
     val avatarId: Int = 0,
     val isKids: Boolean = false,
     val pinHash: String? = null,

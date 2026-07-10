@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,11 +34,11 @@ import com.lunaiptv.features.home.HeroKind
 import com.lunaiptv.features.home.HomeLiveRowMode
 import com.lunaiptv.features.home.HomeRow
 import com.lunaiptv.R
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 @Composable
 fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -47,7 +47,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val config by vm.config.collectAsStateWithLifecycle()
     val androidTvHomeEnabled by settingsVm.androidTvHomeEnabled.collectAsStateWithLifecycle()
     val tvHomeRefresh by settingsVm.tvHomeRefresh.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     val firstFocus = remember { FocusRequester() }
 
@@ -115,7 +115,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
             item {
                 Row2(
-                    icon = OwnTVIcon.LIVE_TV,
+                    icon = LunaIPtvIcon.LIVE_TV,
                     title = stringResource(R.string.home_settings_live_channels),
                     desc = stringResource(R.string.home_settings_live_channels_desc),
                     chip = if (config.heroIncludeLive) stringResource(R.string.on) else stringResource(R.string.off),
@@ -125,7 +125,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
             item {
                 Row2(
-                    icon = OwnTVIcon.MOVIES,
+                    icon = LunaIPtvIcon.MOVIES,
                     title = stringResource(R.string.home_settings_movies),
                     desc = stringResource(R.string.home_settings_movies_desc),
                     chip = if (config.heroIncludeMovies) stringResource(R.string.on) else stringResource(R.string.off),
@@ -135,7 +135,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
             item {
                 Row2(
-                    icon = OwnTVIcon.SERIES,
+                    icon = LunaIPtvIcon.SERIES,
                     title = stringResource(R.string.home_settings_series),
                     desc = stringResource(R.string.home_settings_series_desc),
                     chip = if (config.heroIncludeSeries) stringResource(R.string.on) else stringResource(R.string.off),
@@ -150,7 +150,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             }
             item {
                 Row2(
-                    icon = OwnTVIcon.HISTORY,
+                    icon = LunaIPtvIcon.HISTORY,
                     title = stringResource(R.string.home_settings_android_tv),
                     desc = stringResource(R.string.home_settings_android_tv_desc),
                     chip = if (androidTvHomeEnabled) stringResource(R.string.on) else stringResource(R.string.off),
@@ -161,7 +161,7 @@ fun HomeSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             if (androidTvHomeEnabled) {
                 item {
                     Row2(
-                        icon = OwnTVIcon.SHARE,
+                        icon = LunaIPtvIcon.SHARE,
                     title = stringResource(R.string.home_settings_refresh),
                     desc = stringResource(R.string.home_settings_refresh_desc),
                     chip = when (tvHomeRefresh) {
@@ -196,7 +196,7 @@ private fun HomeRowCard(
     onToggleLiveMode: (HomeLiveRowMode) -> Unit,
     firstButtonModifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     Row(
         modifier = Modifier
@@ -224,26 +224,26 @@ private fun HomeRowCard(
         }
         Spacer(Modifier.width(10.dp))
         if (liveMode != null) {
-            OwnTVButton(
+            LunaIPtvButton(
                 label = stringResource(R.string.home_settings_mode, liveMode.label),
                 onClick = { onToggleLiveMode(liveMode) },
-                style = OwnTVButtonStyle.SECONDARY,
+                style = LunaIPtvButtonStyle.SECONDARY,
             )
             Spacer(Modifier.width(6.dp))
         }
-        OwnTVButton("⤒", onClick = onMoveTop, style = OwnTVButtonStyle.SECONDARY, enabled = canMoveUp)
+        LunaIPtvButton("?", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("↑", onClick = onMoveUp, style = OwnTVButtonStyle.SECONDARY, enabled = canMoveUp)
+        LunaIPtvButton("?", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("↓", onClick = onMoveDown, style = OwnTVButtonStyle.SECONDARY, enabled = canMoveDown)
+        LunaIPtvButton("?", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("⤓", onClick = onMoveBottom, style = OwnTVButtonStyle.SECONDARY, enabled = canMoveDown)
+        LunaIPtvButton("?", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton(
+        LunaIPtvButton(
             label = if (hidden) stringResource(R.string.home_settings_show) else stringResource(R.string.hide),
             onClick = onToggleHidden,
             modifier = firstButtonModifier,
-            style = OwnTVButtonStyle.SECONDARY,
+            style = LunaIPtvButtonStyle.SECONDARY,
         )
     }
 }

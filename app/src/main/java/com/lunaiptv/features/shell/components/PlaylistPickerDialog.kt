@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,12 +34,12 @@ import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.core.database.entity.SourceEntity
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * The top-bar quick switcher: pick which playlist the whole app shows right now. "All playlists" (id -1)
  * is the merged view; any other row narrows Live/Movies/Series/EPG/Search/Home to that one playlist. The
- * choice persists (it writes the same "Default" setting used in Settings → Sources), so it survives a restart.
+ * choice persists (it writes the same "Default" setting used in Settings ? Sources), so it survives a restart.
  */
 @Composable
 fun PlaylistPickerDialog(
@@ -48,7 +48,7 @@ fun PlaylistPickerDialog(
     onSelect: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     // Focus the currently-selected row on open so the user starts on their current choice.
     val selectedFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { selectedFocus.requestFocus() } }
@@ -103,7 +103,7 @@ private fun PlaylistRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -133,7 +133,7 @@ private fun PlaylistRow(
                 modifier = Modifier.weight(1f),
             )
             if (selected) {
-                // Accent dot marks the current choice (no dedicated check glyph in OwnTVIcon).
+                // Accent dot marks the current choice (no dedicated check glyph in LunaIPtvIcon).
                 Box(Modifier.size(10.dp).clip(RoundedCornerShape(999.dp)).background(colors.primary))
             }
         }

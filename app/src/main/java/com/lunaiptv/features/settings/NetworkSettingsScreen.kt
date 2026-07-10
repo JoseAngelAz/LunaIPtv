@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -29,22 +29,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVTextField
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.R
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Network → Proxy (Approach 1): one app-wide HTTP proxy. Enabling it routes all app traffic (playlist,
+ * Network ? Proxy (Approach 1): one app-wide HTTP proxy. Enabling it routes all app traffic (playlist,
  * Xtream API, EPG, images, downloads, updates, ExoPlayer) and mpv playback through the proxy. SOCKS and
  * per-playlist overrides are not part of this version (see extras/PROXY_SUPPORT_PLAN.md).
  */
 @Composable
 fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val vm: SettingsViewModel = koinViewModel()
     val config by vm.proxyConfig.collectAsStateWithLifecycle()
     val testState by vm.proxyTest.collectAsStateWithLifecycle()
@@ -91,7 +91,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         GroupLabel("HTTP Proxy")
         Row2(
-            icon = OwnTVIcon.SHARE,
+            icon = LunaIPtvIcon.SHARE,
             title = "Use proxy",
             desc = stringResource(R.string.network_proxy_desc),
             chip = if (enabled) "On" else "Off", primaryChip = enabled,
@@ -100,7 +100,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
 
         Spacer(Modifier.height(12.dp))
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = host,
             onValueChange = { host = it },
             label = "Host",
@@ -108,7 +108,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(12.dp))
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = port,
             onValueChange = { port = it.filter { c -> c.isDigit() }.take(5) },
             label = "Port",
@@ -117,7 +117,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.width(220.dp),
         )
         Spacer(Modifier.height(12.dp))
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = user,
             onValueChange = { user = it },
             label = "Username (optional)",
@@ -125,7 +125,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(12.dp))
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = pass,
             onValueChange = { pass = it },
             label = "Password (optional)",
@@ -136,11 +136,11 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         Spacer(Modifier.height(20.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OwnTVButton("Save", onClick = { save() })
-            OwnTVButton(
-                label = if (testState is SettingsViewModel.ProxyTestState.Testing) "Testing…" else "Test proxy",
+            LunaIPtvButton("Save", onClick = { save() })
+            LunaIPtvButton(
+                label = if (testState is SettingsViewModel.ProxyTestState.Testing) "Testing�" else "Test proxy",
                 onClick = { vm.testProxy(host, portInt, user, pass) },
-                style = OwnTVButtonStyle.SECONDARY,
+                style = LunaIPtvButtonStyle.SECONDARY,
             )
             ProxyTestLabel(testState)
         }
@@ -153,7 +153,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "HTTP proxy only for now — SOCKS and per-playlist proxies aren't supported yet.",
+            "HTTP proxy only for now � SOCKS and per-playlist proxies aren't supported yet.",
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
         )
@@ -162,9 +162,9 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ProxyTestLabel(state: SettingsViewModel.ProxyTestState) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val (text, color) = when (state) {
-        is SettingsViewModel.ProxyTestState.Ok -> "Connected ✓ (${state.millis} ms)" to colors.primary
+        is SettingsViewModel.ProxyTestState.Ok -> "Connected ? (${state.millis} ms)" to colors.primary
         is SettingsViewModel.ProxyTestState.Fail -> state.message to androidx.compose.ui.graphics.Color(0xFFEF4444)
         else -> null to colors.onSurfaceVariant
     }

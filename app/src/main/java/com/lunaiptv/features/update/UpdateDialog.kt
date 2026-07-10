@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.update
+package com.lunaiptv.features.update
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -40,23 +40,23 @@ import androidx.tv.material3.Text
 import org.koin.compose.koinInject
 import com.lunaiptv.R
 import com.lunaiptv.core.update.UpdateManager
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * The in-app update dialog (used both from Settings â†’ Check for updates and the automatic prompt).
- * Binds to [UpdateManager]'s state machine: checking â†’ up-to-date / available â†’ downloading.
+ * The in-app update dialog (used both from Settings ? Check for updates and the automatic prompt).
+ * Binds to [UpdateManager]'s state machine: checking ? up-to-date / available ? downloading.
  * [checkOnOpen] makes opening the dialog trigger a fresh check (the Settings path).
  */
 @Composable
 fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
     val manager: UpdateManager = koinInject()
     val state by manager.state.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -80,7 +80,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
             when (val s = state) {
                 UpdateManager.State.Idle, UpdateManager.State.Checking -> {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        OwnTVSpinner(sizeDp = 28)
+                        LunaIPtvSpinner(sizeDp = 28)
                         Spacer(Modifier.width(12.dp))
                         Text(stringResource(R.string.update_checking), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                     }
@@ -91,7 +91,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                     )
                     Spacer(Modifier.height(20.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+                        LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
                     }
                 }
                 is UpdateManager.State.Available -> {
@@ -112,16 +112,16 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                     }
                     Spacer(Modifier.height(20.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OwnTVButton(stringResource(R.string.update_later), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                        LunaIPtvButton(stringResource(R.string.update_later), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                         Spacer(Modifier.weight(1f))
-                        OwnTVButton(stringResource(R.string.update_now), onClick = { manager.downloadAndInstall() }, icon = OwnTVIcon.DOWNLOADS, modifier = Modifier.focusRequester(focus))
+                        LunaIPtvButton(stringResource(R.string.update_now), onClick = { manager.downloadAndInstall() }, icon = LunaIPtvIcon.DOWNLOADS, modifier = Modifier.focusRequester(focus))
                     }
                 }
                 is UpdateManager.State.Downloading -> {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        OwnTVSpinner(sizeDp = 28)
+                        LunaIPtvSpinner(sizeDp = 28)
                         Spacer(Modifier.width(12.dp))
-                        Text("Downloading updateâ€¦ ${s.percent}%", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                        Text("Downloading update… ${s.percent}%", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -133,9 +133,9 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                     Text(s.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                     Spacer(Modifier.height(20.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                        LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                         Spacer(Modifier.weight(1f))
-                        OwnTVButton(stringResource(R.string.try_again), onClick = { manager.check() }, modifier = Modifier.focusRequester(focus))
+                        LunaIPtvButton(stringResource(R.string.try_again), onClick = { manager.check() }, modifier = Modifier.focusRequester(focus))
                     }
                 }
             }
@@ -145,8 +145,8 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
 
 /**
  * Renders the minimal release notes (from CHANGELOG_APP.md, via the GitHub release body) for the update
- * dialog. Lightweight Markdown only â€” enough for our bullet-only format: `### ` section headers become
- * bold heading lines, `- ` bullets become "â€¢ ", and inline `**bold**` spans render bold. Everything else
+ * dialog. Lightweight Markdown only — enough for our bullet-only format: `### ` section headers become
+ * bold heading lines, `- ` bullets become "• ", and inline `**bold**` spans render bold. Everything else
  * is shown as-is. Not a full Markdown parser.
  */
 private fun renderReleaseNotes(notes: String, headingColor: Color): AnnotatedString = buildAnnotatedString {
@@ -163,8 +163,8 @@ private fun renderReleaseNotes(notes: String, headingColor: Color): AnnotatedStr
                 withStyle(SpanStyle(color = headingColor, fontWeight = FontWeight.Bold)) {
                     appendInline(line.removePrefix("## ").trim())
                 }
-            line.startsWith("- ") -> { append("â€¢  "); appendInline(line.removePrefix("- ")) }
-            line.startsWith("* ") -> { append("â€¢  "); appendInline(line.removePrefix("* ")) }
+            line.startsWith("- ") -> { append("•  "); appendInline(line.removePrefix("- ")) }
+            line.startsWith("* ") -> { append("•  "); appendInline(line.removePrefix("* ")) }
             else -> appendInline(line)
         }
     }

@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient
 import com.lunaiptv.BuildConfig
 
 /**
- * In-app update checker — LunaIPtv fork does NOT check for updates from the original OwnTV repo.
+ * In-app update checker — LunaIPtv fork does NOT check for updates from the original LunaIPtv repo.
  * Always reports UpToDate so the user never sees a misleading "update available" dialog.
  */
 class UpdateManager(

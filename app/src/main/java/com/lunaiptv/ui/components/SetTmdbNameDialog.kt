@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -31,12 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * "Set TMDB name" dialog (plan Â§11.2 U5b): the user types the exact title (+ optional year) to search TMDB
+ * "Set TMDB name" dialog (plan §11.2 U5b): the user types the exact title (+ optional year) to search TMDB
  * under, overriding the auto-normalized provider title. This is the escape hatch when a match is wrong or
- * was negative-cached for 7 days â€” saving forces a fresh re-resolve. Mirrors [TextInputDialog]'s TV-friendly
+ * was negative-cached for 7 days — saving forces a fresh re-resolve. Mirrors [TextInputDialog]'s TV-friendly
  * layout (two-stage fields, Back exits, focus trapped inside).
  *
  * - **Save**: writes the override (caller re-resolves). Disabled while the title is blank.
@@ -52,7 +52,7 @@ fun SetTmdbNameDialog(
     onClear: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var title by remember { mutableStateOf(initialTitle) }
     var year by remember { mutableStateOf(initialYear?.toString() ?: "") }
     val titleFocus = remember { FocusRequester() }
@@ -73,7 +73,7 @@ fun SetTmdbNameDialog(
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(18.dp))
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = title,
                 onValueChange = { title = it },
                 label = stringResource(R.string.ui_title),
@@ -81,7 +81,7 @@ fun SetTmdbNameDialog(
                 focusRequester = titleFocus,
             )
             Spacer(Modifier.height(14.dp))
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = year,
                 onValueChange = { s -> year = s.filter { it.isDigit() }.take(4) },
                 label = stringResource(R.string.ui_year_optional),
@@ -90,10 +90,10 @@ fun SetTmdbNameDialog(
             )
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                if (hasOverride) OwnTVButton(stringResource(R.string.tmdb_clear), onClick = onClear, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
+                if (hasOverride) LunaIPtvButton(stringResource(R.string.tmdb_clear), onClick = onClear, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.save),
                     onClick = { onSave(title.trim(), year.trim().toIntOrNull()) },
                     enabled = title.trim().isNotEmpty(),

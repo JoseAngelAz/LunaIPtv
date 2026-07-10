@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,9 +22,9 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.core.database.entity.DownloadEntity
 import com.lunaiptv.core.model.DownloadStatus
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Display-only download state for the poster-panel strip (no actions â€” mirrors the Downloads screen). */
+/** Display-only download state for the poster-panel strip (no actions — mirrors the Downloads screen). */
 data class DownloadStripState(
     val label: String,
     /** 0f..1f when a size is known; null = indeterminate (queued / unknown total). */
@@ -34,8 +34,8 @@ data class DownloadStripState(
 
 /**
  * Builds a strip state from the download rows that belong to one item (a single movie/episode, or all
- * of a series' episodes). Returns null when nothing is in flight â€” i.e. no rows, or every row already
- * COMPLETED â€” so the caller can hide the strip. FAILED rows still surface so the user isn't left guessing.
+ * of a series' episodes). Returns null when nothing is in flight — i.e. no rows, or every row already
+ * COMPLETED — so the caller can hide the strip. FAILED rows still surface so the user isn't left guessing.
  */
 fun downloadStripFor(rows: List<DownloadEntity>): DownloadStripState? {
     val active = rows.filter { it.status != DownloadStatus.COMPLETED }
@@ -58,7 +58,7 @@ fun downloadStripFor(rows: List<DownloadEntity>): DownloadStripState? {
         paused.isNotEmpty() && running.isEmpty() && failed.isEmpty() -> DownloadStripState("Paused$suffix", fraction)
         failed.isNotEmpty() && running.isEmpty() && queued.isEmpty() && paused.isEmpty() ->
             DownloadStripState(if (many) "${failed.size} downloads failed" else "Download failed", null, isError = true)
-        // Mixed states (some queued/paused/failed together) â†’ report the in-progress framing.
+        // Mixed states (some queued/paused/failed together) ? report the in-progress framing.
         else -> DownloadStripState("Downloading$suffix", fraction)
     }
 }
@@ -66,7 +66,7 @@ fun downloadStripFor(rows: List<DownloadEntity>): DownloadStripState? {
 /** A compact, non-focusable status strip: icon + label + a thin progress bar. */
 @Composable
 fun DownloadStatusStrip(state: DownloadStripState, modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val accent = if (state.isError) Color(0xFFEF4444) else colors.primary
     Column(
         modifier = modifier
@@ -77,7 +77,7 @@ fun DownloadStatusStrip(state: DownloadStripState, modifier: Modifier = Modifier
         verticalArrangement = Arrangement.spacedBy(7.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OwnTVIcon(OwnTVIcon.DOWNLOADS, tint = accent, modifier = Modifier.size(16.dp))
+            LunaIPtvIcon(LunaIPtvIcon.DOWNLOADS, tint = accent, modifier = Modifier.size(16.dp))
             Text(state.label, style = MaterialTheme.typography.labelLarge, color = accent, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
             state.progress?.let {

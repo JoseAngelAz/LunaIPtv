@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.downloads
+package com.lunaiptv.features.downloads
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -43,16 +43,16 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.core.database.entity.DownloadEntity
 import com.lunaiptv.core.model.DownloadStatus
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Phase 12 â€” the Downloads section: offline movies & episodes with progress and playback. */
+/** Phase 12 — the Downloads section: offline movies & episodes with progress and playback. */
 @Composable
 fun DownloadsScreen(
     onFullscreen: () -> Unit,
@@ -68,7 +68,7 @@ fun DownloadsScreen(
     // when playback is handed to an external app.
     val externalPlayerOn by vm.externalPlayerOn.collectAsStateWithLifecycle()
     val storage by vm.storage.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     // Grouped rows (Active / Waiting / Completed / Failed) with section headers interleaved.
     val sectionLabels = mapOf(
@@ -103,7 +103,7 @@ fun DownloadsScreen(
             // directional entry from outside (internal moves don't re-trigger it).
             .focusProperties { onEnter = { runCatching { firstFocus.requestFocus() } } }
             // Held Up/Down can outrun the lazy list's composition and escape this pane
-            // (landing on the top bar) â€” trap vertical exits; Left/Right/Back leave normally.
+            // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
             .trapVerticalFocusExit()
             .focusGroup()
             .onFocusChanged { if (it.hasFocus) onChildFocused() }
@@ -182,14 +182,14 @@ private fun buildDownloadRows(downloads: List<DownloadEntity>, labels: Map<Strin
 @Composable
 private fun SectionHeader(label: String, count: Int) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 4.dp)) {
-        Text(label.uppercase(), style = MaterialTheme.typography.titleSmall, color = OwnTVTheme.colors.primary, fontWeight = FontWeight.Bold)
-        Text("$count", style = MaterialTheme.typography.labelMedium, color = OwnTVTheme.colors.onSurfaceVariant)
+        Text(label.uppercase(), style = MaterialTheme.typography.titleSmall, color = LunaIPtvTheme.colors.primary, fontWeight = FontWeight.Bold)
+        Text("$count", style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
     }
 }
 
 @Composable
 private fun StorageBar(info: com.lunaiptv.core.download.DownloadStorageInfo) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.downloads_storage), style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
@@ -203,7 +203,7 @@ private fun StorageBar(info: com.lunaiptv.core.download.DownloadStorageInfo) {
     }
 }
 
-private fun gb(bytes: Long): String = if (bytes <= 0) "â€”" else "%.1f GB".format(bytes / 1_073_741_824.0)
+private fun gb(bytes: Long): String = if (bytes <= 0) "—" else "%.1f GB".format(bytes / 1_073_741_824.0)
 
 @Composable
 private fun DownloadRow(
@@ -211,14 +211,14 @@ private fun DownloadRow(
     onPlay: () -> Unit, onPlayExternal: () -> Unit, onRetry: () -> Unit, onPause: () -> Unit, onResume: () -> Unit, onDelete: () -> Unit,
     focusModifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Row(
         modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(colors.surfaceContainerHigh).padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(56.dp, 78.dp).clip(RoundedCornerShape(8.dp)).background(colors.surfaceContainerLowest), contentAlignment = Alignment.Center) {
             if (!download.posterUrl.isNullOrBlank()) AsyncImage(model = download.posterUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
-            else OwnTVIcon(OwnTVIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
+            else LunaIPtvIcon(LunaIPtvIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(24.dp))
         }
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
@@ -232,30 +232,30 @@ private fun DownloadRow(
         Spacer(Modifier.width(12.dp))
         when (download.status) {
             DownloadStatus.COMPLETED -> Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OwnTVButton(stringResource(R.string.play), onClick = onPlay, icon = OwnTVIcon.PLAY, modifier = focusModifier)
+                LunaIPtvButton(stringResource(R.string.play), onClick = onPlay, icon = LunaIPtvIcon.PLAY, modifier = focusModifier)
                 // Phase B: one-off external playback, independent of the global "External player" toggle.
-                OwnTVButton(stringResource(R.string.downloads_external), onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.downloads_external), onClick = onPlayExternal, style = LunaIPtvButtonStyle.SECONDARY)
             }
-            DownloadStatus.FAILED -> OwnTVButton(stringResource(R.string.retry), onClick = onRetry, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
-            DownloadStatus.PAUSED -> OwnTVButton(stringResource(R.string.downloads_resume), onClick = onResume, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
-            DownloadStatus.RUNNING, DownloadStatus.QUEUED -> OwnTVButton(stringResource(R.string.downloads_pause), onClick = onPause, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.FAILED -> LunaIPtvButton(stringResource(R.string.retry), onClick = onRetry, style = LunaIPtvButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.PAUSED -> LunaIPtvButton(stringResource(R.string.downloads_resume), onClick = onResume, style = LunaIPtvButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.RUNNING, DownloadStatus.QUEUED -> LunaIPtvButton(stringResource(R.string.downloads_pause), onClick = onPause, style = LunaIPtvButtonStyle.SECONDARY, modifier = focusModifier)
         }
         Spacer(Modifier.width(10.dp))
-        OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton(stringResource(R.string.delete), onClick = onDelete, style = LunaIPtvButtonStyle.SECONDARY)
     }
 }
 
-/** Shows the folder path of a download, e.g. "Series â€º Game of Thrones â€º Season 6". */
+/** Shows the folder path of a download, e.g. "Series › Game of Thrones › Season 6". */
 private fun folderCrumb(filePath: String?): String? {
     val parts = filePath?.substringBeforeLast('/')?.split('/')?.filter { it.isNotBlank() } ?: return null
     val idx = parts.indexOfLast { it == "Movies" || it == "Series" }
     val rel = if (idx >= 0) parts.subList(idx, parts.size) else parts.takeLast(3)
-    return rel.joinToString(" â€º ").ifBlank { null }
+    return rel.joinToString(" › ").ifBlank { null }
 }
 
 @Composable
 private fun StatusLine(d: DownloadEntity) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     when (d.status) {
         DownloadStatus.COMPLETED -> Text(stringResource(R.string.downloads_status_downloaded, mb(d.totalBytes)), style = MaterialTheme.typography.bodySmall, color = colors.primary, fontWeight = FontWeight.SemiBold)
         DownloadStatus.FAILED -> Text(stringResource(R.string.downloads_status_failed), style = MaterialTheme.typography.bodySmall, color = Color(0xFFEF4444))
@@ -268,7 +268,7 @@ private fun StatusLine(d: DownloadEntity) {
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% Â· ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else stringResource(R.string.downloads_downloading, mb(d.downloadedBytes)),
+                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% · ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else stringResource(R.string.downloads_downloading, mb(d.downloadedBytes)),
                     style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
                 )
             }
@@ -276,4 +276,4 @@ private fun StatusLine(d: DownloadEntity) {
     }
 }
 
-private fun mb(bytes: Long): String = if (bytes <= 0) "â€”" else "%.1f MB".format(bytes / 1_048_576.0)
+private fun mb(bytes: Long): String = if (bytes <= 0) "—" else "%.1f MB".format(bytes / 1_048_576.0)

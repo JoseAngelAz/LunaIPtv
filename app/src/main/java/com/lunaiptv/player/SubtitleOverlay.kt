@@ -26,11 +26,11 @@ import com.lunaiptv.features.settings.data.SettingsRepository
 
 /**
  * App-drawn subtitles for the direct render path: the decoder owns the video surface there, so mpv
- * can't draw its OSD — instead the player polls the active subtitle line ([OwnTVPlayer.subText])
+ * can't draw its OSD — instead the player polls the active subtitle line ([LunaIPtvPlayer.subText])
  * and this overlay renders it Netflix-style. Inactive (empty) in GL mode, where mpv draws its own.
  */
 @Composable
-fun SubtitleOverlay(player: OwnTVPlayer, modifier: Modifier = Modifier) {
+fun SubtitleOverlay(player: LunaIPtvPlayer, modifier: Modifier = Modifier) {
     val text by player.subText.collectAsStateWithLifecycle()
     val settings = koinInject<SettingsRepository>()
     val scale by settings.subtitleScale.collectAsStateWithLifecycle(initialValue = 1.0f)

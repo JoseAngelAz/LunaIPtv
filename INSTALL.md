@@ -17,11 +17,11 @@
 ## Paso 1: Clonar el Repositorio
 
 ```bash
-git clone https://github.com/ahXN00/OwnTV.git
-cd OwnTV
+git clone https://github.com/ahXN00/LunaIPtv.git
+cd LunaIPtv
 ```
 
-> **Nota:** Este es un fork de OwnTV rebrandado como LunaIPtv para fines educativos sobre IPTV.
+> **Nota:** Este es un fork de LunaIPtv rebrandado como LunaIPtv para fines educativos sobre IPTV.
 
 ---
 
@@ -121,7 +121,7 @@ Al abrir LunaIPtv por primera vez:
 ## Estructura del Proyecto
 
 ```
-OwnTV/
+LunaIPtv/
 ├── app/
 │   ├── src/main/
 │   │   ├── java/com/lunaiptv/
@@ -193,6 +193,6 @@ Ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## Créditos
 
-- **Proyecto original:** [OwnTV](https://github.com/ahXN00/OwnTV) por ahXN00
+- **Proyecto original:** [LunaIPtv](https://github.com/ahXN00/LunaIPtv) por ahXN00
 - **Fork y rebrand:** Jose Angel Azucena Mendez — para aprendizaje personal sobre IPTV
 - **Built with AI** — Asistido por inteligencia artificial

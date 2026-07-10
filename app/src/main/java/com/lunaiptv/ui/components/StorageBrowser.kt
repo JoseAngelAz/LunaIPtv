@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -39,7 +39,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.core.storage.StorageAccess
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import java.io.File
 
 enum class BrowseMode { FOLDER, FILE }
@@ -58,7 +58,7 @@ fun StorageBrowser(
     fileExtensions: Set<String>? = null,
 ) {
     val context = LocalContext.current
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val roots = remember { StorageAccess.storageRoots(context) }
     var current by remember { mutableStateOf<File?>(null) } // null = the roots list
     var hasAccess by remember { mutableStateOf(StorageAccess.hasAllFilesAccess()) }
@@ -70,7 +70,7 @@ fun StorageBrowser(
 
     // Re-grab focus whenever the listing changes (open / navigate / refresh). Deferred a beat: the
     // clicked row is removed in the same recompose, and its focus teardown lands AFTER an immediate
-    // request — which would leave focus on whatever sits behind the overlay.
+    // request � which would leave focus on whatever sits behind the overlay.
     LaunchedEffect(current, hasAccess, refresh) {
         kotlinx.coroutines.delay(120)
         runCatching { firstFocus.requestFocus() }
@@ -94,28 +94,28 @@ fun StorageBrowser(
                 if (dir == null) {
                     if (!hasAccess) {
                         item {
-                            BrowserRow(OwnTVIcon.SETTINGS, stringResource(R.string.browser_grant_access), Modifier.focusRequester(firstFocus)) {
+                            BrowserRow(LunaIPtvIcon.SETTINGS, stringResource(R.string.browser_grant_access), Modifier.focusRequester(firstFocus)) {
                                 StorageAccess.requestAllFilesAccess(context); hasAccess = StorageAccess.hasAllFilesAccess()
                             }
                         }
                     }
                     itemsIndexed(roots) { i, (label, file) ->
                         val m = if (i == 0 && hasAccess) Modifier.focusRequester(firstFocus) else Modifier
-                        BrowserRow(OwnTVIcon.DOWNLOADS, label, m) { current = file }
+                        BrowserRow(LunaIPtvIcon.DOWNLOADS, label, m) { current = file }
                     }
                 } else {
-                    item { BrowserRow(OwnTVIcon.BACK, "..", Modifier.focusRequester(firstFocus)) { current = dir.parentFile } }
-                    itemsIndexed(folders) { _, f -> BrowserRow(OwnTVIcon.DOWNLOADS, f.name) { current = f } }
-                    itemsIndexed(files) { _, f -> BrowserRow(OwnTVIcon.PLAYLIST, f.name) { onPick(f) } }
+                    item { BrowserRow(LunaIPtvIcon.BACK, "..", Modifier.focusRequester(firstFocus)) { current = dir.parentFile } }
+                    itemsIndexed(folders) { _, f -> BrowserRow(LunaIPtvIcon.DOWNLOADS, f.name) { current = f } }
+                    itemsIndexed(files) { _, f -> BrowserRow(LunaIPtvIcon.PLAYLIST, f.name) { onPick(f) } }
                 }
             }
 
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                if (current != null) OwnTVButton(stringResource(R.string.ui_new_folder), onClick = { showNewFolder = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.ADD)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
+                if (current != null) LunaIPtvButton(stringResource(R.string.ui_new_folder), onClick = { showNewFolder = true }, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.ADD)
                 Spacer(Modifier.weight(1f))
-                if (mode == BrowseMode.FOLDER && current != null) OwnTVButton(stringResource(R.string.browser_use_folder), onClick = { current?.let(onPick) })
+                if (mode == BrowseMode.FOLDER && current != null) LunaIPtvButton(stringResource(R.string.browser_use_folder), onClick = { current?.let(onPick) })
             }
         }
     }
@@ -134,7 +134,7 @@ fun StorageBrowser(
 
 @Composable
 private fun NewFolderDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var name by remember { mutableStateOf("") }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
@@ -143,23 +143,23 @@ private fun NewFolderDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
         Column(Modifier.width(420.dp).clip(RoundedCornerShape(18.dp)).background(colors.surfaceContainerHighest).padding(24.dp)) {
             Text(stringResource(R.string.ui_new_folder), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(14.dp))
-            OwnTVTextField(name, { name = it }, label = stringResource(R.string.ui_folder_name), placeholder = "e.g. My TV", modifier = Modifier.fillMaxWidth().focusRequester(focus))
+            LunaIPtvTextField(name, { name = it }, label = stringResource(R.string.ui_folder_name), placeholder = "e.g. My TV", modifier = Modifier.fillMaxWidth().focusRequester(focus))
             Spacer(Modifier.height(18.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.create), onClick = { onCreate(name) }, enabled = name.isNotBlank())
+                LunaIPtvButton(stringResource(R.string.create), onClick = { onCreate(name) }, enabled = name.isNotBlank())
             }
         }
     }
 }
 
 @Composable
-private fun BrowserRow(icon: OwnTVIcon, label: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+private fun BrowserRow(icon: LunaIPtvIcon, label: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(onClick = onClick, modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(10.dp), contentAlignment = Alignment.CenterStart) { focused ->
         Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 11.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVIcon(icon, tint = if (focused) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+            LunaIPtvIcon(icon, tint = if (focused) colors.primary else colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
             Text(label, style = MaterialTheme.typography.titleMedium, color = if (focused) colors.primary else colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }

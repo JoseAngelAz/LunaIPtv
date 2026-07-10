@@ -16,7 +16,7 @@ import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.core.model.SourceType
 
 @RunWith(AndroidJUnit4::class)
-class OwnTVDatabaseMigrationTest {
+class LunaIPtvDatabaseMigrationTest {
     private val context = InstrumentationRegistry.getInstrumentation().targetContext
     private val testContext = InstrumentationRegistry.getInstrumentation().context
 
@@ -30,8 +30,8 @@ class OwnTVDatabaseMigrationTest {
         context.deleteDatabase(DB_NAME)
         bootstrapVersion2Database()
 
-        val db = Room.databaseBuilder(context, OwnTVDatabase::class.java, DB_NAME)
-            .addMigrations(OwnTVDatabase.MIGRATION_1_2, OwnTVDatabase.MIGRATION_2_3, OwnTVDatabase.MIGRATION_3_4)
+        val db = Room.databaseBuilder(context, LunaIPtvDatabase::class.java, DB_NAME)
+            .addMigrations(LunaIPtvDatabase.MIGRATION_1_2, LunaIPtvDatabase.MIGRATION_2_3, LunaIPtvDatabase.MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
 
@@ -66,8 +66,8 @@ class OwnTVDatabaseMigrationTest {
         context.deleteDatabase(DB_NAME)
         bootstrapVersion7Database()
 
-        val db = Room.databaseBuilder(context, OwnTVDatabase::class.java, DB_NAME)
-            .addMigrations(OwnTVDatabase.MIGRATION_7_8, OwnTVDatabase.MIGRATION_8_9)
+        val db = Room.databaseBuilder(context, LunaIPtvDatabase::class.java, DB_NAME)
+            .addMigrations(LunaIPtvDatabase.MIGRATION_7_8, LunaIPtvDatabase.MIGRATION_8_9)
             .allowMainThreadQueries()
             .build()
 
@@ -94,13 +94,13 @@ class OwnTVDatabaseMigrationTest {
         context.deleteDatabase(DB_NAME)
         bootstrapVersion3Database()
 
-        val db = Room.databaseBuilder(context, OwnTVDatabase::class.java, DB_NAME)
+        val db = Room.databaseBuilder(context, LunaIPtvDatabase::class.java, DB_NAME)
             .addMigrations(
-                OwnTVDatabase.MIGRATION_3_4,
-                OwnTVDatabase.MIGRATION_4_6,
-                OwnTVDatabase.MIGRATION_6_7,
-                OwnTVDatabase.MIGRATION_7_8,
-                OwnTVDatabase.MIGRATION_8_9,
+                LunaIPtvDatabase.MIGRATION_3_4,
+                LunaIPtvDatabase.MIGRATION_4_6,
+                LunaIPtvDatabase.MIGRATION_6_7,
+                LunaIPtvDatabase.MIGRATION_7_8,
+                LunaIPtvDatabase.MIGRATION_8_9,
             )
             .allowMainThreadQueries()
             .build()

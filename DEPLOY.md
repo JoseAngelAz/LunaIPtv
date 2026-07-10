@@ -91,7 +91,7 @@ emulator -avd AndroidTV
 ### Ver logs en tiempo real
 ```bash
 # Filtrar por tag de LunaIPtv
-adb logcat -s OwnTVHome
+adb logcat -s LunaIPtvHome
 
 # Ver todos los logs
 adb logcat

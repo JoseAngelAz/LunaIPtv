@@ -30,11 +30,11 @@ import java.util.Locale
  * which mpv can't do without GL-compositing the whole 4K frame (the heavy path we removed).
  *
  * It is a **handoff**, not a sidecar: mpv is stopped first, so the provider only ever sees one connection
- * (IPTV panels routinely cap VOD at one). [OwnTVPlayer] owns this and mirrors its state into the same
+ * (IPTV panels routinely cap VOD at one). [LunaIPtvPlayer] owns this and mirrors its state into the same
  * StateFlows the HUD already observes, so the player UI is unchanged. All methods run on the main thread.
  *
  * It also serves as the **VOD engine fallback**: when mpv terminally fails to play a VOD (demuxer reject,
- * decoder stall, retry budget exhausted), [OwnTVPlayer] retries the same item here once ([start] with
+ * decoder stall, retry budget exhausted), [LunaIPtvPlayer] retries the same item here once ([start] with
  * `fallback = true`) before surfacing an error — some devices/streams play on ExoPlayer's MediaCodec
  * path where mpv's can't. In fallback mode no subtitle is auto-selected and errors are worded as
  * engine failures rather than subtitle failures.
@@ -46,7 +46,7 @@ class ExoSubtitleEngine(
     private val budget: PlayerBudget,
     private val callbacks: Callbacks,
 ) {
-    /** Hooks back into [OwnTVPlayer]'s StateFlows (all fire on the main thread). */
+    /** Hooks back into [LunaIPtvPlayer]'s StateFlows (all fire on the main thread). */
     interface Callbacks {
         fun onPlayingChanged(playing: Boolean)
         fun onBuffering(buffering: Boolean)
@@ -55,7 +55,7 @@ class ExoSubtitleEngine(
         fun onFirstFrame()
         fun onCues(cues: List<Cue>)
         fun onAudioTracks(tracks: List<TrackOption>)
-        /** Text/image subtitle tracks from the active file — [OwnTVPlayer] shows these in the HUD while
+        /** Text/image subtitle tracks from the active file — [LunaIPtvPlayer] shows these in the HUD while
          *  this engine owns playback as a VOD engine (mpv never probed the file, so its list is empty). */
         fun onTextTracks(tracks: List<TrackOption>)
         fun onVideoFps(fps: Float)
@@ -198,7 +198,7 @@ class ExoSubtitleEngine(
      *  values above 100% just clamp to full (no boost in the handoff). */
     fun setVolume(percent: Int) { player?.volume = (percent / 100f).coerceIn(0f, 1f) }
 
-    /** Called on a ~0.5s tick by [OwnTVPlayer] while active, so the HUD scrubber advances. */
+    /** Called on a ~0.5s tick by [LunaIPtvPlayer] while active, so the HUD scrubber advances. */
     fun emitPositionDuration() {
         val p = player ?: return
         val dur = p.duration.let { if (it == C.TIME_UNSET) 0L else it }

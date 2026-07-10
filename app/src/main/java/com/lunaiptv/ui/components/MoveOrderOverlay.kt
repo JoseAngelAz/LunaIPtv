@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Full-screen overlay for manually reordering items via D-pad Up/Down.
@@ -51,7 +51,7 @@ fun MoveOrderOverlay(
     onCommit: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     val listState = rememberLazyListState()
 
@@ -69,7 +69,7 @@ fun MoveOrderOverlay(
     androidx.activity.compose.BackHandler { onCancel() }
 
     // Outer Box intercepts D-pad via onKeyEvent when any child has focus.
-    // NOT focusable() itself — focus lives on the Save button so TV focus finds it.
+    // NOT focusable() itself � focus lives on the Save button so TV focus finds it.
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -95,7 +95,7 @@ fun MoveOrderOverlay(
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
             Text(
-                "▲/▼ to move  ·  OK to save  ·  Back to cancel",
+                "?/? to move  �  OK to save  �  Back to cancel",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant,
             )
@@ -116,7 +116,7 @@ fun MoveOrderOverlay(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isActive) {
-                                Text("↕ ", style = MaterialTheme.typography.bodyMedium, color = colors.onPrimary)
+                                Text("? ", style = MaterialTheme.typography.bodyMedium, color = colors.onPrimary)
                             }
                             Text(
                                 name,
@@ -132,8 +132,8 @@ fun MoveOrderOverlay(
             Spacer(Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
                 // Save gets the focus: TV focus lands here on overlay open, so onKeyEvent fires.
-                OwnTVButton("Save", onClick = onCommit, modifier = Modifier.weight(1f).focusRequester(focus))
-                OwnTVButton("Cancel", onClick = onCancel, style = OwnTVButtonStyle.SECONDARY, modifier = Modifier.weight(1f))
+                LunaIPtvButton("Save", onClick = onCommit, modifier = Modifier.weight(1f).focusRequester(focus))
+                LunaIPtvButton("Cancel", onClick = onCancel, style = LunaIPtvButtonStyle.SECONDARY, modifier = Modifier.weight(1f))
             }
         }
     }

@@ -4,7 +4,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import com.lunaiptv.core.database.OwnTVDatabase
+import com.lunaiptv.core.database.LunaIPtvDatabase
 
 /**
  * Provides the Room database (WAL journal mode for fast concurrent reads during large imports) and
@@ -15,37 +15,37 @@ import com.lunaiptv.core.database.OwnTVDatabase
  */
 val databaseModule = module {
     single {
-        Room.databaseBuilder(androidContext(), OwnTVDatabase::class.java, OwnTVDatabase.NAME)
+        Room.databaseBuilder(androidContext(), LunaIPtvDatabase::class.java, LunaIPtvDatabase.NAME)
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .addMigrations(
-                OwnTVDatabase.MIGRATION_1_2,
-                OwnTVDatabase.MIGRATION_2_3,
-                OwnTVDatabase.MIGRATION_3_4,
-                OwnTVDatabase.MIGRATION_4_6,
-                OwnTVDatabase.MIGRATION_6_7,
-                OwnTVDatabase.MIGRATION_7_8,
-                OwnTVDatabase.MIGRATION_8_9,
-                OwnTVDatabase.MIGRATION_9_10,
-                OwnTVDatabase.MIGRATION_10_11,
-                OwnTVDatabase.MIGRATION_11_12,
-                OwnTVDatabase.MIGRATION_12_13,
+                LunaIPtvDatabase.MIGRATION_1_2,
+                LunaIPtvDatabase.MIGRATION_2_3,
+                LunaIPtvDatabase.MIGRATION_3_4,
+                LunaIPtvDatabase.MIGRATION_4_6,
+                LunaIPtvDatabase.MIGRATION_6_7,
+                LunaIPtvDatabase.MIGRATION_7_8,
+                LunaIPtvDatabase.MIGRATION_8_9,
+                LunaIPtvDatabase.MIGRATION_9_10,
+                LunaIPtvDatabase.MIGRATION_10_11,
+                LunaIPtvDatabase.MIGRATION_11_12,
+                LunaIPtvDatabase.MIGRATION_12_13,
             )
             .fallbackToDestructiveMigration(dropAllTables = true) // safety net for unforeseen jumps
             .build()
     }
 
-    single { get<OwnTVDatabase>().profileDao() }
-    single { get<OwnTVDatabase>().sourceDao() }
-    single { get<OwnTVDatabase>().categoryDao() }
-    single { get<OwnTVDatabase>().channelDao() }
-    single { get<OwnTVDatabase>().movieDao() }
-    single { get<OwnTVDatabase>().seriesDao() }
-    single { get<OwnTVDatabase>().favoriteDao() }
-    single { get<OwnTVDatabase>().historyDao() }
-    single { get<OwnTVDatabase>().progressDao() }
-    single { get<OwnTVDatabase>().contentOrderDao() }
-    single { get<OwnTVDatabase>().tvProviderProgramDao() }
-    single { get<OwnTVDatabase>().downloadDao() }
-    single { get<OwnTVDatabase>().epgDao() }
-    single { get<OwnTVDatabase>().metadataDao() }
+    single { get<LunaIPtvDatabase>().profileDao() }
+    single { get<LunaIPtvDatabase>().sourceDao() }
+    single { get<LunaIPtvDatabase>().categoryDao() }
+    single { get<LunaIPtvDatabase>().channelDao() }
+    single { get<LunaIPtvDatabase>().movieDao() }
+    single { get<LunaIPtvDatabase>().seriesDao() }
+    single { get<LunaIPtvDatabase>().favoriteDao() }
+    single { get<LunaIPtvDatabase>().historyDao() }
+    single { get<LunaIPtvDatabase>().progressDao() }
+    single { get<LunaIPtvDatabase>().contentOrderDao() }
+    single { get<LunaIPtvDatabase>().tvProviderProgramDao() }
+    single { get<LunaIPtvDatabase>().downloadDao() }
+    single { get<LunaIPtvDatabase>().epgDao() }
+    single { get<LunaIPtvDatabase>().metadataDao() }
 }

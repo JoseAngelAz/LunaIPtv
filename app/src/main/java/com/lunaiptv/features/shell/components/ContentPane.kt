@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,16 +13,16 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.EmptyState
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Layer 3 â€” content list/grid area. Phase 1/2 render the header plus a reusable [EmptyState]; the
- * real Paging list/grid arrives in the media-section phases (7â€“9).
+ * Layer 3 — content list/grid area. Phase 1/2 render the header plus a reusable [EmptyState]; the
+ * real Paging list/grid arrives in the media-section phases (7–9).
  *
  * Per the plan's "Total Count Requirements", the count sits on the subtitle line beneath the title
- * as `ABBR (N unit)` â€” e.g. `UK (50 channels)` â€” rather than a separate top-right number.
+ * as `ABBR (N unit)` — e.g. `UK (50 channels)` — rather than a separate top-right number.
  */
 @Composable
 fun ContentPane(
@@ -30,12 +30,12 @@ fun ContentPane(
     categoryName: String,
     categoryAbbr: String,
     countLabel: String,
-    emptyIcon: OwnTVIcon,
+    emptyIcon: LunaIPtvIcon,
     emptyMessage: String,
     onAddSource: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier
             .fillMaxSize()

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -27,23 +27,23 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.core.metadata.MetadataConfig
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVTextField
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Settings â†’ Metadata (TMDB). Phase M1 of the enrichment plan: the master toggle and the two advanced
+ * Settings ? Metadata (TMDB). Phase M1 of the enrichment plan: the master toggle and the two advanced
  * access tiers (own TMDB key / self-host URL), plus a manual "look up title" test that proves the
  * configured tier reaches TMDB end-to-end. Enrichment of actual detail screens arrives in later phases.
  *
- * Precedence (plan Â§4): self-host URL > own key > the default caching Worker (zero setup).
+ * Precedence (plan §4): self-host URL > own key > the default caching Worker (zero setup).
  */
 @Composable
 fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val vm: SettingsViewModel = koinViewModel()
     val mode by vm.metadataMode.collectAsStateWithLifecycle()
     val storedKey by vm.tmdbApiKey.collectAsStateWithLifecycle()
@@ -51,7 +51,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val tier by vm.metadataTier.collectAsStateWithLifecycle()
     val testState by vm.metadataTest.collectAsStateWithLifecycle()
 
-    // Seed the editable fields once; local edit â†’ Save persists (same pattern as NetworkSettingsScreen).
+    // Seed the editable fields once; local edit ? Save persists (same pattern as NetworkSettingsScreen).
     var seeded by remember { mutableStateOf(false) }
     var key by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
@@ -92,7 +92,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         com.lunaiptv.core.metadata.MetadataMode.entries.forEachIndexed { i, m ->
             val selected = m == mode
             Row2(
-                icon = if (m == com.lunaiptv.core.metadata.MetadataMode.PROVIDER) OwnTVIcon.PLAYLIST else OwnTVIcon.VIDEO,
+                icon = if (m == com.lunaiptv.core.metadata.MetadataMode.PROVIDER) LunaIPtvIcon.PLAYLIST else LunaIPtvIcon.VIDEO,
                 title = m.label,
                 desc = when (m) {
                     com.lunaiptv.core.metadata.MetadataMode.PROVIDER -> "Use only what your playlist provides. No TMDB lookups."
@@ -116,7 +116,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         Spacer(Modifier.height(16.dp))
         Row2(
-            icon = OwnTVIcon.SETTINGS,
+            icon = LunaIPtvIcon.SETTINGS,
             title = "Advanced options",
             desc = "Use your own TMDB API key or a self-hosted server instead of the shared default.",
             chip = if (showAdvanced) "On" else "Off", primaryChip = showAdvanced,
@@ -132,7 +132,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(12.dp))
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = key,
                 onValueChange = { key = it },
                 label = "TMDB API key (v3)",
@@ -140,7 +140,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = url,
                 onValueChange = { url = it },
                 label = "Self-host server URL",
@@ -148,7 +148,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(16.dp))
-            OwnTVButton("Save", onClick = {
+            LunaIPtvButton("Save", onClick = {
                 vm.setTmdbApiKey(key)
                 vm.setMetadataServerUrl(url)
                 vm.resetMetadataTest()
@@ -157,7 +157,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         Spacer(Modifier.height(20.dp))
         GroupLabel("Test")
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = testTitle,
             onValueChange = { testTitle = it },
             label = "Look up a movie title",
@@ -166,17 +166,17 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OwnTVButton(
-                label = if (testState is SettingsViewModel.MetadataTestState.Testing) "Looking upâ€¦" else "Test lookup",
+            LunaIPtvButton(
+                label = if (testState is SettingsViewModel.MetadataTestState.Testing) "Looking up…" else "Test lookup",
                 onClick = { vm.testMetadataLookup(testTitle) },
-                style = OwnTVButtonStyle.SECONDARY,
+                style = LunaIPtvButtonStyle.SECONDARY,
             )
             MetadataTestLabel(testState)
         }
         } // end if (mode.enrich)
 
         Spacer(Modifier.height(24.dp))
-        // TMDB attribution (plan Â§8) â€” logo + line, required by TMDB's API terms.
+        // TMDB attribution (plan §8) — logo + line, required by TMDB's API terms.
         androidx.compose.foundation.Image(
             painter = androidx.compose.ui.res.painterResource(com.lunaiptv.R.drawable.ic_tmdb_logo),
             contentDescription = "TMDB",
@@ -192,7 +192,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun MetadataTestLabel(state: SettingsViewModel.MetadataTestState) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val (text, color) = when (state) {
         is SettingsViewModel.MetadataTestState.Ok -> "Match: ${state.summary}" to colors.primary
         is SettingsViewModel.MetadataTestState.Fail -> state.message to androidx.compose.ui.graphics.Color(0xFFEF4444)

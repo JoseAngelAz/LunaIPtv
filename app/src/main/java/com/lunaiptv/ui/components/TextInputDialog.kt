@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -30,11 +30,11 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * A simple TV dialog with one text field (e.g. renaming a channel/category). [onConfirm] receives the
- * trimmed text — possibly empty, which callers treat as "reset to original".
+ * trimmed text � possibly empty, which callers treat as "reset to original".
  */
 @Composable
 fun TextInputDialog(
@@ -46,7 +46,7 @@ fun TextInputDialog(
     confirmLabel: String = stringResource(R.string.save),
     hint: String? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var value by remember { mutableStateOf(initial) }
     val fieldFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fieldFocus.requestFocus() } }
@@ -64,12 +64,12 @@ fun TextInputDialog(
                 Text(hint, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             }
             Spacer(Modifier.height(18.dp))
-            OwnTVTextField(value = value, onValueChange = { value = it }, label = label, modifier = Modifier.fillMaxWidth(), focusRequester = fieldFocus)
+            LunaIPtvTextField(value = value, onValueChange = { value = it }, label = label, modifier = Modifier.fillMaxWidth(), focusRequester = fieldFocus)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(confirmLabel, onClick = { onConfirm(value.trim()) })
+                LunaIPtvButton(confirmLabel, onClick = { onConfirm(value.trim()) })
             }
         }
     }

@@ -17,7 +17,7 @@ import com.lunaiptv.features.shell.MainSection
 
 /**
  * Rank 1 — Neo Signal Duotone (Phase 7). SVG shapes from
- * extras/owntv_future_nav_icons_ranked.html, rendered on a crisp 100-unit Canvas grid
+ * extras/LunaIPtv_future_nav_icons_ranked.html, rendered on a crisp 100-unit Canvas grid
  * with clean integer coordinates so icons stay sharp at any UI zoom.
  */
 @Composable

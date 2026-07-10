@@ -261,7 +261,7 @@
   re-search immediately, on Movies, Series, and Episodes — no need to wait for the cache to expire. Lets the
   improved title matcher reach titles that failed before the fix.
 - **Set TMDB name (long-press)** — manual override for titles the matcher still gets wrong: type the exact
-  TMDB title (and optional year) and OwnTV re-searches under that name, on Movies and Series. The override
+  TMDB title (and optional year) and LunaIPtv re-searches under that name, on Movies and Series. The override
   survives playlist re-syncs; Clear reverts to automatic matching. Episodes inherit their series' match.
 - **In-app toasts** — transient notices (refetch, already-downloaded, re-search) now use a themed in-app
   toast instead of the system toast.
@@ -269,7 +269,7 @@
   plays the YouTube trailer in a floating window styled like the TMDB Details window, with Exit, a progress
   bar and D-pad ◀/▶ ±10s seek. Falls back to opening the YouTube app if the built-in player can't run.
 - **Self-hostable metadata server** — the caching-proxy Worker source now ships in `worker/` with a README,
-  so anyone can deploy their own and point OwnTV at it.
+  so anyone can deploy their own and point LunaIPtv at it.
 - **Attribution** — Settings → Metadata shows the TMDB logo and the required notice: this product uses the
   TMDB API but is not endorsed or certified by TMDB.
 
@@ -434,7 +434,7 @@
 
 ### 📄 License
 
-- OwnTV has moved from the **MIT License** to the **GNU General Public License v3.0 (GPLv3)**. OwnTV
+- LunaIPtv has moved from the **MIT License** to the **GNU General Public License v3.0 (GPLv3)**. LunaIPtv
   remains fully open-source — anyone can use, study, modify, and redistribute it, including commercially —
   but any redistributed version (forks, modified builds, or commercial products built on it) must also
   be licensed under GPLv3 with its source made available. Versions released before this change remain
@@ -586,7 +586,7 @@ entries below) folded together with a large batch of new features, performance w
   if no episodes appear).
 - **Settings → Customize Category** — the "Customize" settings row has been renamed **Customize Category** to
   clarify it affects categories (hide, rename, reorder), not individual items.
-- **Global HTTP proxy support** — **Settings → Network → Proxy** lets you route all OwnTV traffic
+- **Global HTTP proxy support** — **Settings → Network → Proxy** lets you route all LunaIPtv traffic
   (playlist sync, Xtream API, EPG, images, downloads, updates) and fullscreen playback through an HTTP proxy.
   Enter a proxy host and port (optionally with username / password); a **Test Proxy** button verifies connectivity
   before saving. Disabling the proxy restores direct connections. The proxy is applied globally across all
@@ -600,7 +600,7 @@ entries below) folded together with a large batch of new features, performance w
   now** rebuilds those cards (with a *Rebuilding… → Done* status). (Sideloaded Fire TV / Google TV don't surface
   system Watch Next rows, so the in‑app Home screen is the universal landing for everyone.)
   🙏 **Huge thanks to [@codeVerine](https://github.com/codeVerine) (Sagar Mukundan UV) for building and
-  contributing this entire Home screen feature ([PR #31](https://github.com/ahXN00/OwnTV/pull/31)).**
+  contributing this entire Home screen feature ([PR #31](https://github.com/ahXN00/LunaIPtv/pull/31)).**
 - **Stream technical info overlay** — in the player, the bottom-bar **info** button toggles a live readout of
   the current stream: video codec · resolution · fps · bit-depth, HDR type, bitrate, decoder (hardware/software
   · direct), audio codec · channels · sample rate, buffer & dropped frames, and the (credential-masked) source.
@@ -659,7 +659,7 @@ entries below) folded together with a large batch of new features, performance w
   nudge the audio earlier/later in 50 ms steps when a badly-encoded file has the sound out of sync. It resets
   per file, so it never throws off your other movies.
 - **One-tap guide sync after adding a playlist** — after importing a playlist (first-run setup or Settings →
-  Playlists), OwnTV now asks **"Sync the TV guide now?"** if the playlist has a guide feed. **Sync now** shows
+  Playlists), LunaIPtv now asks **"Sync the TV guide now?"** if the playlist has a guide feed. **Sync now** shows
   a **live programme count** (just like the playlist import) and a brief "Done"; **Not now** keeps it manual.
 - **Long-press a channel in Live TV** — long-press any channel in the Live TV list for a quick menu:
   **Add/Remove Favourite, Rename, Hide, Match EPG**, and **Catch-up** (on channels that support it) — without
@@ -714,7 +714,7 @@ entries below) folded together with a large batch of new features, performance w
 - **Startup focus rests on the nav** — on a cold start (or switching to the Home tab) focus now stays on the
   **Home item in the sidebar** instead of being pulled into the content; it only jumps into the hero when you
   return from the player. (Builds on [@codeVerine](https://github.com/codeVerine)'s empty‑Home focus fix,
-  [PR #32](https://github.com/ahXN00/OwnTV/pull/32).)
+  [PR #32](https://github.com/ahXN00/LunaIPtv/pull/32).)
 - **Clear watch history now empties Movies/Series from Home too** — clearing history (all, or just Movies /
   Series) now also wipes the **resume positions** that feed Home's "Continue Watching", so those titles
   actually leave the row (previously only Live cleared).
@@ -858,7 +858,7 @@ entries below) folded together with a large batch of new features, performance w
   (on by default) broke playback on some TVs that *claim* 5.1 over HDMI but mis-play it: series with
   multichannel (Dolby/DTS) audio played at **double speed with no sound** (movies/live were fine). Surround
   is now **off by default** — leave it off on TV speakers / stereo soundbars (clean stereo), turn it **on**
-  for a real 5.1/7.1 receiver. When on, OwnTV pins a widely-compatible **16-bit / 48 kHz** output and, if it
+  for a real 5.1/7.1 receiver. When on, LunaIPtv pins a widely-compatible **16-bit / 48 kHz** output and, if it
   still detects that double-speed/no-sound runaway, **auto-switches that session to stereo** so playback
   never breaks. (#25)
 - **Live TV recovers from connection drops** — if a live channel froze mid-watch (a brief Wi-Fi/provider
@@ -894,13 +894,13 @@ entries below) folded together with a large batch of new features, performance w
 - **Surround sound no longer stutters video** — the v3.1.0 *Surround passthrough* toggle bit-streamed raw
   Dolby/DTS to the TV/receiver, but on some TVs (e.g. Realtek) the passthrough audio path returns no
   timing to the player, which starved the video into a **1–2 fps slideshow** on Dolby/DTS titles (most
-  noticeable on 4K). The setting is now simply **Settings → Surround sound** (on by default): OwnTV
+  noticeable on 4K). The setting is now simply **Settings → Surround sound** (on by default): LunaIPtv
   **decodes** Dolby/DTS to **multichannel LPCM (5.1/7.1)** over HDMI, so your TV or AV receiver still gets
   surround **and** the picture stays smooth on the fast 4K/HDR path. Turn it off for a stereo downmix.
   (Raw bitstream passthrough has been removed.)
 - **M3U live channels that wouldn't play now work** — after v3.1.0's faster channel-zapping, some live
   channels from a plain **M3U/HLS** playlist could hang on a black screen (the trimmed startup probe
-  couldn't open those streams), while Xtream live was unaffected. OwnTV now uses the full probe for
+  couldn't open those streams), while Xtream live was unaffected. LunaIPtv now uses the full probe for
   HLS/non-TS live (as it did before), and keeps the fast trimmed probe for direct **MPEG-TS** (`.ts`) live
   — so M3U live plays again *and* TS zapping stays quick.
 - **4K channel zapping no longer hangs** — switching between **4K** channels with the D-pad / CH± in
@@ -908,7 +908,7 @@ entries below) folded together with a large batch of new features, performance w
   4K-class channel on a fresh video surface, so zapping plays cleanly (a TV-decoder quirk on back-to-back
   4K decodes).
 - **Episodes now appear for every Xtream series** — some providers return a series' episode data in a
-  different JSON shape, which OwnTV didn't read, so those shows opened with **no episodes** (they worked in
+  different JSON shape, which LunaIPtv didn't read, so those shows opened with **no episodes** (they worked in
   other apps). The parser now handles both shapes, so episodes populate. (#23)
 - **Global search opens the right series** — picking a series from the **main search** now opens that
   show's **episode list** directly, instead of just jumping to the Series tab.
@@ -924,7 +924,7 @@ entries below) folded together with a large batch of new features, performance w
   Show/Hide button to start a span, then press Show/Hide on another category to select everything in
   between and hide or show it all in one go — a big time-saver for providers with hundreds of categories.
   (by @dan-maloney, #20)
-- **Auto-play next episode** — when an episode finishes, OwnTV automatically starts the next one, and
+- **Auto-play next episode** — when an episode finishes, LunaIPtv automatically starts the next one, and
   **rolls into the next season** after a season's last episode — great for binge-watching. There's a new
   **Settings → Auto-play next episode** toggle (on by default) for anyone who prefers manual playback. (#21)
 - **Series open on your last-watched episode** — reopening a show now jumps straight to the episode you
@@ -932,29 +932,29 @@ entries below) folded together with a large batch of new features, performance w
   and that episode is tagged **"Last watched"** so it's easy to spot. (#22)
 - **Surround sound passthrough** — a new **Settings → Surround passthrough** toggle sends **Dolby
   (AC-3/E-AC-3, incl. Atmos) and DTS** audio straight to your TV or AV receiver to decode, instead of
-  mixing down to stereo. OwnTV only passes through the formats your audio output reports it can handle,
+  mixing down to stereo. LunaIPtv only passes through the formats your audio output reports it can handle,
   and you can switch it off if a stream goes silent. (Off by default.)
 
 ### 🐛 Bug fixes
 
 - **Faster channel zapping** — live channels and HLS streams now start with a **trimmed stream probe**,
   so the picture comes up noticeably quicker when switching channels. If a trimmed probe ever misses a
-  stream's audio (rare, on sparse feeds), OwnTV automatically **re-probes that channel in full** so it
+  stream's audio (rare, on sparse feeds), LunaIPtv automatically **re-probes that channel in full** so it
   still plays with sound. On-demand movies/series keep the full probe for rock-solid HDR/audio detection.
 - **Live channels that dropped out every few seconds now play continuously** — some live servers close the
-  connection on a schedule (common with 4K feeds); OwnTV now **reconnects automatically at the stream level**
+  connection on a schedule (common with 4K feeds); LunaIPtv now **reconnects automatically at the stream level**
   and keeps playing, instead of stalling and re-buffering on a loop.
 - **Smoother video on TVs** — the player now asks the display to **match the video's frame rate** (e.g.
   switch a 60 Hz panel to 24/48 Hz for 24fps content). On TVs that support it, this removes the subtle
   *judder* of film-rate content on a fixed 60 Hz screen (the "looks slightly slow/uneven, but not
   buffering" feel). No effect on panels that can't switch — it just stays as-is.
-- **Installs on non-TV devices now** — OwnTV required the Android **TV (leanback)** feature, so it
+- **Installs on non-TV devices now** — LunaIPtv required the Android **TV (leanback)** feature, so it
   wouldn't install on plain phones / non-TV boxes (incl. some armv7a Android 11 devices) and showed
   **no launcher icon** on phones. It's now installable on regular Android too, with a normal home-screen
   icon — while still appearing in the TV launcher on Android TV. (Also resolves #16.)
 - **EPG sources that failed with a "protocol error" now load** — some EPG/host CDNs have flaky HTTP/2
   and would reset large downloads (e.g. a big US guide) with *"stream was reset: PROTOCOL_ERROR"*.
-  OwnTV now uses HTTP/1.1 for its downloads, which those servers handle reliably. (#17)
+  LunaIPtv now uses HTTP/1.1 for its downloads, which those servers handle reliably. (#17)
 - **Image-based subtitles now play smoothly** — text subtitles (SRT/ASS) display on the fast HDR path as
   before. **Image-based** subtitles (PGS/VOBSUB/DVB) on **movies & series** now display *without* slowing
   the video down: picking one seamlessly hands that title to a second engine (ExoPlayer) that keeps the
@@ -974,7 +974,7 @@ entries below) folded together with a large batch of new features, performance w
 
 *Big release — bundling the open feature requests + Catch-up TV.*
 
-> 💬 **Join us on Telegram** — **Settings → About** now shows the OwnTV **Telegram group** link with a
+> 💬 **Join us on Telegram** — **Settings → About** now shows the LunaIPtv **Telegram group** link with a
 > **QR code** you can scan from your phone to join the community (also added to the README).
 
 ### ✨ New features
@@ -1019,7 +1019,7 @@ entries below) folded together with a large batch of new features, performance w
   Series now refresh **right away** instead of staying empty until you restarted the app.
 - **Huge playlists import fully again** — some Xtream panels cut off very large movie/series lists
   mid-download, which aborted the whole import with an *"Unterminated string…"* error and left you
-  unable to sign in. Now, if the bulk list truncates, OwnTV automatically **fetches it category by
+  unable to sign in. Now, if the bulk list truncates, LunaIPtv automatically **fetches it category by
   category** (small requests the server can handle) so you get your **full library** — and items keep
   populating as it goes. (Fixes #15.)
 - **Faster channel switching in Live TV** — switching channels no longer feels slow or briefly "broken".
@@ -1145,8 +1145,8 @@ entries below) folded together with a large batch of new features, performance w
 - **TV-friendly text entry** — focusing a text field (Add source, profile creation, dialogs) no
   longer pops the keyboard and traps you; it highlights like any control, **OK** opens the keyboard,
   **Back** closes it — so you can move straight to the Save button. (Fixes #3.)
-- **Easier Fire TV install** — releases now also publish a stable `OwnTV.apk` so a fixed
-  `…/releases/latest/download/OwnTV.apk` link always serves the newest signed build. Fire TV users
+- **Easier Fire TV install** — releases now also publish a stable `LunaIPtv.apk` so a fixed
+  `…/releases/latest/download/LunaIPtv.apk` link always serves the newest signed build. Fire TV users
   can install via the **Downloader code `4308278`** (`aftv.news/4308278`); README has full
   sideload instructions.
 
@@ -1195,7 +1195,7 @@ This update delivers the complete, long-term vision for the app. I’ve been wor
 - **Resume, your way** — replaying a movie/episode with a saved position now shows a small
   *"Resume at 23:45?"* prompt (Resume / Start over). A new **Resume playback** setting in Video Player
   settings picks the behavior: **Always resume · Ask to resume (default) · Never resume**.
-- **In-app updates** — OwnTV updates itself straight from GitHub Releases: automatic check shortly
+- **In-app updates** — LunaIPtv updates itself straight from GitHub Releases: automatic check shortly
   after launch (toggleable via **Settings → Check updates on startup**), or manually via
   **Settings → Check for updates**. The startup check shows a small **top-right status card**
   ("Checking… / You're up to date", auto-hides) that stays with *Update now / Later* when a release

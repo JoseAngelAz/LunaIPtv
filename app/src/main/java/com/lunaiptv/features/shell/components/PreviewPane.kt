@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,18 +22,18 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Layer 4 â€” preview / detail / player pane. Idle state shows OwnTV branding and a hint, per the plan.
- * Live preview playback, movie/series detail, and the fullscreen handoff land in phases 7â€“10.
+ * Layer 4 — preview / detail / player pane. Idle state shows LunaIPtv branding and a hint, per the plan.
+ * Live preview playback, movie/series detail, and the fullscreen handoff land in phases 7–10.
  */
 @Composable
 fun PreviewPane(
     hint: String,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Column(
         modifier = modifier
             .fillMaxSize()

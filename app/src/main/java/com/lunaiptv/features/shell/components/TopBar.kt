@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import android.text.format.DateFormat
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,9 +39,9 @@ import kotlinx.coroutines.delay
 import com.lunaiptv.R
 import com.lunaiptv.core.weather.WeatherInfo
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.theme.OwnTVTheme
-import com.lunaiptv.ui.theme.ownTvTween
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.lunaIptvTween
 import java.util.Date
 
 @Composable
@@ -54,13 +54,13 @@ fun TopBar(
     searchVisible: Boolean = true,
     playlistInteractive: Boolean = false,
     onPlaylistClick: () -> Unit = {},
-    // Batch 7 â€” shared "Continue" chip (resume last movie/episode/channel). Null label = nothing to resume.
+    // Batch 7 — shared "Continue" chip (resume last movie/episode/channel). Null label = nothing to resume.
     continueLabel: String? = null,
-    continueIcon: OwnTVIcon = OwnTVIcon.PLAY,
+    continueIcon: LunaIPtvIcon = LunaIPtvIcon.PLAY,
     onContinueClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -87,7 +87,7 @@ fun TopBar(
 
 @Composable
 private fun SectionChip(label: String) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(Modifier.clip(RoundedCornerShape(999.dp)).background(colors.primaryContainer).padding(horizontal = 14.dp, vertical = 7.dp)) {
         Text(label, style = MaterialTheme.typography.labelLarge, color = colors.onPrimaryContainer, fontWeight = FontWeight.Bold)
     }
@@ -95,10 +95,10 @@ private fun SectionChip(label: String) {
 
 @Composable
 private fun SearchPill(onClick: () -> Unit, visible: Boolean) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     // Fade instead of remove: the pill keeps its space so the top-bar row never shifts, and it
     // becomes unfocusable while hidden so an escaping vertical focus search can never land on it.
-    val alpha by animateFloatAsState(if (visible) 1f else 0f, ownTvTween(160), label = "searchPillAlpha")
+    val alpha by animateFloatAsState(if (visible) 1f else 0f, lunaIptvTween(160), label = "searchPillAlpha")
     FocusableSurface(
         onClick = onClick,
         modifier = Modifier
@@ -110,15 +110,15 @@ private fun SearchPill(onClick: () -> Unit, visible: Boolean) {
         contentAlignment = Alignment.Center,
     ) { _ ->
         Row(Modifier.padding(horizontal = 14.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OwnTVIcon(icon = OwnTVIcon.SEARCH, tint = colors.onSurfaceVariant, modifier = Modifier.size(16.dp))
+            LunaIPtvIcon(icon = LunaIPtvIcon.SEARCH, tint = colors.onSurfaceVariant, modifier = Modifier.size(16.dp))
             Text(stringResource(R.string.topbar_search), style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant)
         }
     }
 }
 
 @Composable
-private fun ContinueChip(label: String, icon: OwnTVIcon, onClick: () -> Unit, visible: Boolean) {
-    val colors = OwnTVTheme.colors
+private fun ContinueChip(label: String, icon: LunaIPtvIcon, onClick: () -> Unit, visible: Boolean) {
+    val colors = LunaIPtvTheme.colors
     val alpha by animateFloatAsState(if (visible) 1f else 0f, label = "continueChipAlpha")
     FocusableSurface(
         onClick = onClick,
@@ -136,7 +136,7 @@ private fun ContinueChip(label: String, icon: OwnTVIcon, onClick: () -> Unit, vi
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             val fg = if (focused) colors.onPrimary else colors.onPrimaryContainer
-            OwnTVIcon(icon = icon, tint = fg, modifier = Modifier.size(16.dp))
+            LunaIPtvIcon(icon = icon, tint = fg, modifier = Modifier.size(16.dp))
             Text(label, style = MaterialTheme.typography.labelLarge, color = fg, fontWeight = FontWeight.SemiBold, maxLines = 1)
         }
     }
@@ -144,7 +144,7 @@ private fun ContinueChip(label: String, icon: OwnTVIcon, onClick: () -> Unit, vi
 
 @Composable
 private fun ClockChip() {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     LaunchedEffect(Unit) { while (true) { delay(15_000); now = System.currentTimeMillis() } }
@@ -156,7 +156,7 @@ private fun ClockChip() {
 
 @Composable
 private fun PlaylistChip(label: String, interactive: Boolean = false, onClick: () -> Unit = {}) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     // Static badge when there's only one playlist (nothing to switch); a focusable button with a chevron
     // when there are 2+, opening the playlist quick-switcher.
     if (!interactive) {
@@ -178,16 +178,16 @@ private fun PlaylistChip(label: String, interactive: Boolean = false, onClick: (
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(label, style = MaterialTheme.typography.labelLarge, color = colors.onPrimaryContainer, fontWeight = FontWeight.SemiBold, maxLines = 1)
-            OwnTVIcon(icon = OwnTVIcon.CHEVRON, tint = colors.onPrimaryContainer, modifier = Modifier.size(16.dp))
+            LunaIPtvIcon(icon = LunaIPtvIcon.CHEVRON, tint = colors.onPrimaryContainer, modifier = Modifier.size(16.dp))
         }
     }
 }
 
 @Composable
 private fun WeatherChip(info: WeatherInfo, fahrenheit: Boolean) {
-    val colors = OwnTVTheme.colors
-    val temp = if (fahrenheit) "${(info.temperatureC * 9 / 5 + 32).toInt()}Â°F" else "${info.temperatureC.toInt()}Â°C"
-    val location = if (info.city.isNotBlank()) " Â· ${info.city}" else ""
+    val colors = LunaIPtvTheme.colors
+    val temp = if (fahrenheit) "${(info.temperatureC * 9 / 5 + 32).toInt()}°F" else "${info.temperatureC.toInt()}°C"
+    val location = if (info.city.isNotBlank()) " · ${info.city}" else ""
     Box(Modifier.clip(RoundedCornerShape(999.dp)).background(colors.primaryContainer.copy(alpha = 0.4f)).padding(horizontal = 14.dp, vertical = 7.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             WeatherConditionIcon(info = info, Modifier.size(16.dp))

@@ -6,14 +6,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
 /**
- * OwnTV's resolved Material 3 color roles for the current theme + accent. Read as `OwnTVTheme.colors`.
+ * LunaIPtv's resolved Material 3 color roles for the current theme + accent. Read as `LunaIPtvTheme.colors`.
  *
  * Exposes the full M3 surface-container tiers and primary/secondary/tertiary roles the MD3 UI needs.
  * A few legacy aliases (`panel`/`card`/`rail`/`textPrimary`/`textSecondary`/`accent`) map onto M3
  * roles so older components keep working.
  */
 @Immutable
-data class OwnTVColors(
+data class LunaIPtvColors(
     val isDark: Boolean,
     // Surfaces
     val background: Color,
@@ -105,7 +105,7 @@ private fun rolesFrom(seed: Color, isDark: Boolean): AccentRoles = if (isDark) {
  * Build the resolved M3 tokens for a theme (dark/light) and accent. A valid [customAccent] hex
  * overrides the preset (its tonal roles are generated from the seed color).
  */
-fun ownTvColors(isDark: Boolean, accent: AccentColor, customAccent: String = ""): OwnTVColors {
+fun LunaIPtvColors(isDark: Boolean, accent: AccentColor, customAccent: String = ""): LunaIPtvColors {
     val roles = parseAccentHex(customAccent)?.let { rolesFrom(it, isDark) } ?: AccentRoles(
         primary = accent.primary(isDark),
         onPrimary = accent.onPrimary(isDark),
@@ -114,7 +114,7 @@ fun ownTvColors(isDark: Boolean, accent: AccentColor, customAccent: String = "")
     )
     val primary = roles.primary
     return if (isDark) {
-        OwnTVColors(
+        LunaIPtvColors(
             isDark = true,
             background = DarkBackground,
             surface = DarkSurface,
@@ -144,7 +144,7 @@ fun ownTvColors(isDark: Boolean, accent: AccentColor, customAccent: String = "")
             favorite = DarkError,
         )
     } else {
-        OwnTVColors(
+        LunaIPtvColors(
             isDark = false,
             background = LightBackground,
             surface = LightSurface,
@@ -176,4 +176,4 @@ fun ownTvColors(isDark: Boolean, accent: AccentColor, customAccent: String = "")
     }
 }
 
-val LocalOwnTVColors = staticCompositionLocalOf { ownTvColors(isDark = true, accent = AccentColor.TEAL) }
+val LocalLunaIPtvColors = staticCompositionLocalOf { LunaIPtvColors(isDark = true, accent = AccentColor.TEAL) }

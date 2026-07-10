@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.update
+package com.lunaiptv.features.update
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -30,14 +30,14 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.core.update.UpdateManager
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVSpinner
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvSpinner
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Small semi-transparent status card (top-right corner) for the automatic startup update check:
- * "Checking…" → "You're up to date" (auto-hides after ~2s) — or, when an update exists, it stays
+ * "Checking�" ? "You're up to date" (auto-hides after ~2s) � or, when an update exists, it stays
  * with Update now / Later. Update now downloads with progress and hands off to the system installer.
  * Only the Available state takes D-pad focus; the transient states never interrupt browsing.
  */
@@ -45,7 +45,7 @@ import com.lunaiptv.ui.theme.OwnTVTheme
 fun UpdateStatusToast(onDone: () -> Unit, onViewChangelog: () -> Unit, modifier: Modifier = Modifier) {
     val manager: UpdateManager = koinInject()
     val state by manager.state.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
 
     // Transient outcomes hide themselves; an available update keeps the card up.
@@ -70,7 +70,7 @@ fun UpdateStatusToast(onDone: () -> Unit, onViewChangelog: () -> Unit, modifier:
     ) {
         when (val s = state) {
             UpdateManager.State.Idle, UpdateManager.State.Checking -> Row(verticalAlignment = Alignment.CenterVertically) {
-                OwnTVSpinner(sizeDp = 18)
+                LunaIPtvSpinner(sizeDp = 18)
                 Spacer(Modifier.width(10.dp))
                 Text(stringResource(R.string.update_checking), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             }
@@ -92,12 +92,12 @@ fun UpdateStatusToast(onDone: () -> Unit, onViewChangelog: () -> Unit, modifier:
                 )
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OwnTVButton(stringResource(R.string.update_whats_new), onClick = onViewChangelog, modifier = Modifier.focusRequester(focus))
-                    OwnTVButton(stringResource(R.string.update_later), onClick = onDone, style = OwnTVButtonStyle.SECONDARY)
+                    LunaIPtvButton(stringResource(R.string.update_whats_new), onClick = onViewChangelog, modifier = Modifier.focusRequester(focus))
+                    LunaIPtvButton(stringResource(R.string.update_later), onClick = onDone, style = LunaIPtvButtonStyle.SECONDARY)
                 }
             }
             is UpdateManager.State.Downloading -> Row(verticalAlignment = Alignment.CenterVertically) {
-                OwnTVSpinner(sizeDp = 18)
+                LunaIPtvSpinner(sizeDp = 18)
                 Spacer(Modifier.width(10.dp))
                 Text(stringResource(R.string.update_downloading, s.percent), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             }

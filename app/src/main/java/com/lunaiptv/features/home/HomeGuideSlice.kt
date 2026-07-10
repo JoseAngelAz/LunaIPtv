@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.home
+package com.lunaiptv.features.home
 
 import android.text.format.DateFormat
 import coil3.compose.AsyncImage
@@ -49,8 +49,8 @@ import com.lunaiptv.core.database.entity.ChannelEntity
 import com.lunaiptv.core.database.entity.EpgProgrammeEntity
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import java.util.Date
 
 @Composable
@@ -103,7 +103,7 @@ private fun ChannelCardsRow(
         Text(
             text = title.uppercase(),
             style = MaterialTheme.typography.titleSmall,
-            color = OwnTVTheme.colors.primary,
+            color = LunaIPtvTheme.colors.primary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = Dimens.HomeRowPaddingH),
         )
@@ -127,9 +127,9 @@ private fun ChannelCardsRow(
                         }.onFocusChanged { if (it.hasFocus) onFocus() },
                         shape = RoundedCornerShape(14.dp),
                         focusedScale = 1f,
-                        focusedContainerColor = OwnTVTheme.colors.surfaceContainerHigh,
-                        unfocusedContainerColor = OwnTVTheme.colors.surfaceContainerHigh,
-                        selectedContainerColor = OwnTVTheme.colors.surfaceContainerHigh,
+                        focusedContainerColor = LunaIPtvTheme.colors.surfaceContainerHigh,
+                        unfocusedContainerColor = LunaIPtvTheme.colors.surfaceContainerHigh,
+                        selectedContainerColor = LunaIPtvTheme.colors.surfaceContainerHigh,
                     ) { focused ->
                         Row(
                             modifier = Modifier
@@ -142,7 +142,7 @@ private fun ChannelCardsRow(
                             Text(
                                 text = channel.name,
                                 style = MaterialTheme.typography.titleSmall,
-                                color = if (focused) OwnTVTheme.colors.primary else OwnTVTheme.colors.onSurface,
+                                color = if (focused) LunaIPtvTheme.colors.primary else LunaIPtvTheme.colors.onSurface,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                             )
@@ -164,7 +164,7 @@ private fun OnNowRow(
     onContainerDown: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val rows = guide.channels
     val sectionShape = RoundedCornerShape(10.dp)
     var activeRowIndex by remember { mutableIntStateOf(-1) }
@@ -260,7 +260,7 @@ private fun OnNowRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "${title.uppercase()} Â· ON NOW",
+                    text = "${title.uppercase()} · ON NOW",
                     style = MaterialTheme.typography.titleSmall,
                     color = colors.primary,
                     fontWeight = FontWeight.Bold,
@@ -304,7 +304,7 @@ private fun OnNowChannelItem(
     now: Long,
     focused: Boolean,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
     val rowShape = RoundedCornerShape(8.dp)
     val info = remember(programmes, now, context) {
@@ -391,7 +391,7 @@ private fun OnNowChannelItem(
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = info.upcoming.joinToString("  Â·  "),
+                        text = info.upcoming.joinToString("  ·  "),
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.onSurfaceVariant.copy(alpha = 0.44f),
                         maxLines = 1,
@@ -431,7 +431,7 @@ private fun ChannelTextBadge(
     channel: ChannelEntity,
     focused: Boolean,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val text = channel.number?.toString() ?: channel.name.firstOrNull()?.uppercase().orEmpty()
     Box(
         modifier = Modifier
@@ -456,7 +456,7 @@ private fun ChannelLogoBadge(
     channel: ChannelEntity,
     focused: Boolean,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(
         modifier = Modifier
             .size(46.dp)
@@ -486,7 +486,7 @@ private fun ChannelLogo(
         modifier = Modifier
             .size(size.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(OwnTVTheme.colors.surfaceContainerLowest),
+            .background(LunaIPtvTheme.colors.surfaceContainerLowest),
         contentAlignment = Alignment.Center,
     ) {
         if (!channel.logoUrl.isNullOrBlank()) {
@@ -497,9 +497,9 @@ private fun ChannelLogo(
                 contentScale = ContentScale.Fit,
             )
         } else {
-            OwnTVIcon(
-                OwnTVIcon.LIVE_TV,
-                tint = OwnTVTheme.colors.onSurfaceVariant,
+            LunaIPtvIcon(
+                LunaIPtvIcon.LIVE_TV,
+                tint = LunaIPtvTheme.colors.onSurfaceVariant,
                 modifier = Modifier.size((size / 2).dp),
             )
         }
@@ -510,7 +510,7 @@ private fun ChannelLogo(
 private fun ProgrammeProgressBar(
     progress: Float,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -556,9 +556,9 @@ private fun programmeTimeLabel(
 ): String {
     val time = "${formatTime(programme.startMs)}-${formatTime(programme.stopMs)}"
     return if (now in programme.startMs until programme.stopMs) {
-        "NOW Â· $time"
+        "NOW · $time"
     } else {
-        "UP NEXT Â· $time"
+        "UP NEXT · $time"
     }
 }
 

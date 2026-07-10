@@ -3,7 +3,7 @@ package com.lunaiptv.core.metadata
 /**
  * TMDB metadata enrichment (see extras/future-plan/tmdb-metadata-plan.md).
  *
- * OwnTV enriches VOD movies / series / episodes on demand from TMDB — never in bulk (libraries run to
+ * LunaIPtv enriches VOD movies / series / episodes on demand from TMDB — never in bulk (libraries run to
  * ~170k movies / ~50k series). A single [MetadataProvider] serves all three access tiers; only its base
  * URL / auth differ (see [MetadataConfig] and [TmdbProvider]). Live TV is out of scope (no canonical id).
  */

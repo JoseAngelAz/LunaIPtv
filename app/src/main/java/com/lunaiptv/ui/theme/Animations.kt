@@ -35,5 +35,5 @@ val animationsOn: Boolean
 /** A tween whose duration follows the user's Animations setting (Off → an instant 0 ms snap). */
 @Composable
 @ReadOnlyComposable
-fun <T> ownTvTween(durationMs: Int = 200, easing: Easing = FastOutSlowInEasing): TweenSpec<T> =
+fun <T> lunaIptvTween(durationMs: Int = 200, easing: Easing = FastOutSlowInEasing): TweenSpec<T> =
     tween(LocalAnimationLevel.current.scale(durationMs), easing = easing)

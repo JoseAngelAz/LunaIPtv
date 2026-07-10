@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.customize
+package com.lunaiptv.features.customize
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -45,17 +45,17 @@ import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.R
 import com.lunaiptv.features.profiles.PinDialog
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
 import com.lunaiptv.ui.components.TextInputDialog
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Settings → Customize & Hidden Items: hide / rename / reorder categories per section, and unhide
+ * Settings ? Customize & Hidden Items: hide / rename / reorder categories per section, and unhide
  * hidden channels, movies and series. Everything is per-profile and survives source re-syncs.
  * Optionally locked behind a PIN (set from this screen's top-right) so hidden items can't be
- * unhidden by someone else — the PIN is asked on every entry.
+ * unhidden by someone else � the PIN is asked on every entry.
  */
 @Composable
 fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -65,9 +65,9 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val hiddenChannels by vm.hiddenChannels.collectAsStateWithLifecycle()
     val rangeAnchorKey by vm.rangeAnchorKey.collectAsStateWithLifecycle()
     val pinLock by vm.pinLock.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var renaming by remember { mutableStateOf<CustomizeCatRow?>(null) }
-    // The category whose Hide button was clicked to close a range — opens the Show/Hide/Cancel prompt.
+    // The category whose Hide button was clicked to close a range � opens the Show/Hide/Cancel prompt.
     var rangeEnd by remember { mutableStateOf<CustomizeCatRow?>(null) }
     // PIN gate: asked on every entry (state is per-composition, so leaving the screen re-locks it).
     var unlocked by remember { mutableStateOf(false) }
@@ -120,7 +120,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // Spatial D-pad entry from the sidebar would land mid-list — route it to the first chip.
+            // Spatial D-pad entry from the sidebar would land mid-list � route it to the first chip.
             // onEnter fires only for directional entry from outside (internal moves don't re-trigger it).
             .focusProperties { onEnter = { runCatching { firstFocus.requestFocus() } } }
             .focusGroup()
@@ -134,24 +134,24 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
             )
             // Optional PIN lock on this screen, controlled from here. Per-profile and NOT exported in
-            // backups. Only reachable once unlocked — to be here with a PIN set the user already
+            // backups. Only reachable once unlocked � to be here with a PIN set the user already
             // entered it, so changing or removing it needs no further verification.
             if (pinLock.pin == null) {
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.customize_set_pin),
                     onClick = { firstPin = ""; confirmPinStage = false; pinMismatch = false; editingPin = PinEdit.SET },
                 )
             } else {
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.customize_change_pin),
                     onClick = { firstPin = ""; confirmPinStage = false; pinMismatch = false; editingPin = PinEdit.CHANGE },
-                    style = OwnTVButtonStyle.SECONDARY,
+                    style = LunaIPtvButtonStyle.SECONDARY,
                 )
                 Spacer(Modifier.width(10.dp))
-                OwnTVButton(
+                LunaIPtvButton(
                     stringResource(R.string.customize_remove_lock),
                     onClick = { editingPin = PinEdit.REMOVE },
-                    style = OwnTVButtonStyle.SECONDARY,
+                    style = LunaIPtvButtonStyle.SECONDARY,
                 )
             }
         }
@@ -187,13 +187,13 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(10.dp))
-                OwnTVButton(stringResource(R.string.cancel), onClick = { vm.cancelRange() }, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = { vm.cancelRange() }, style = LunaIPtvButtonStyle.SECONDARY)
             }
             Spacer(Modifier.height(12.dp))
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
-            // Hidden items of this section first (hidden via each section's long-press menu) — kept on
+            // Hidden items of this section first (hidden via each section's long-press menu) � kept on
             // top so they're findable even when a provider has hundreds of categories below.
             if (hiddenChannels.isNotEmpty()) {
                 item {
@@ -228,7 +228,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                             modifier = Modifier.weight(1f),
                         )
                         Spacer(Modifier.width(10.dp))
-                        OwnTVButton(stringResource(R.string.customize_unhide), onClick = { vm.unhideChannel(key) }, style = OwnTVButtonStyle.SECONDARY)
+                        LunaIPtvButton(stringResource(R.string.customize_unhide), onClick = { vm.unhideChannel(key) }, style = LunaIPtvButtonStyle.SECONDARY)
                     }
                 }
                 item {
@@ -336,7 +336,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
  */
 @Composable
 private fun RangeHideDialog(count: Int, onHide: () -> Unit, onShow: () -> Unit, onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val hideFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { hideFocus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -356,10 +356,10 @@ private fun RangeHideDialog(count: Int, onHide: () -> Unit, onShow: () -> Unit, 
             )
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.show), onClick = onShow, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton(stringResource(R.string.hide), onClick = onHide, modifier = Modifier.focusRequester(hideFocus))
+                LunaIPtvButton(stringResource(R.string.show), onClick = onShow, style = LunaIPtvButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.hide), onClick = onHide, modifier = Modifier.focusRequester(hideFocus))
             }
         }
     }
@@ -367,7 +367,7 @@ private fun RangeHideDialog(count: Int, onHide: () -> Unit, onShow: () -> Unit, 
 
 @Composable
 private fun SectionChip(label: String, selected: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         selected = selected,
@@ -404,7 +404,7 @@ private fun CategoryRow(
     onHideLongPress: () -> Unit,
     onPickRangeEnd: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val wasLabel = stringResource(R.string.customize_was)
     Row(
         modifier = Modifier
@@ -428,7 +428,7 @@ private fun CategoryRow(
                     buildString {
                         if (row.hidden) append("Hidden")
                         if (row.renamed) {
-                            if (row.hidden) append("  ·  ")
+                            if (row.hidden) append("  �  ")
                             append(wasLabel)
                             append(" \u201c${row.originalName}\u201d")
                         }
@@ -441,23 +441,23 @@ private fun CategoryRow(
             }
         }
         Spacer(Modifier.width(10.dp))
-        OwnTVButton("⤒", onClick = onMoveTop, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton("?", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("↑", onClick = onMoveUp, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton("?", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("↓", onClick = onMoveDown, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton("?", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("⤓", onClick = onMoveBottom, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton("?", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton(stringResource(R.string.customize_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton(stringResource(R.string.customize_rename), onClick = onRename, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton(
+        LunaIPtvButton(
             label = if (row.hidden) stringResource(R.string.show) else stringResource(R.string.hide),
             // Long-press anchors a range; a normal press picks the span end while a range is active,
             // otherwise it toggles just this category.
             onClick = { if (inRangeMode) onPickRangeEnd() else onToggleHidden() },
             onLongClick = onHideLongPress,
-            style = OwnTVButtonStyle.SECONDARY,
+            style = LunaIPtvButtonStyle.SECONDARY,
         )
     }
 }
@@ -477,7 +477,7 @@ private fun PinConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val confirmFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { confirmFocus.requestFocus() } }
     BackHandler { onDismiss() }
@@ -493,9 +493,9 @@ private fun PinConfirmDialog(
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(confirmLabel, onClick = onConfirm, modifier = Modifier.focusRequester(confirmFocus))
+                LunaIPtvButton(confirmLabel, onClick = onConfirm, modifier = Modifier.focusRequester(confirmFocus))
             }
         }
     }

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -47,14 +47,14 @@ import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.player.ZoomMode
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Common languages offered for the audio/subtitle preference (code â†’ display name; "" = no preference). */
+/** Common languages offered for the audio/subtitle preference (code ? display name; "" = no preference). */
 private val LANGUAGES = listOf(
     "" to "None / Auto",
     "eng" to "English",
@@ -79,12 +79,12 @@ private fun langName(code: String) = LANGUAGES.firstOrNull { it.first == code }?
 private fun subSizeName(scale: Float) = SUB_SIZES.minByOrNull { kotlin.math.abs(it.first - scale) }?.second ?: "Normal"
 
 /**
- * Video Player settings â€” decoder, default aspect/zoom, subtitle size & language, audio sync. Each
+ * Video Player settings — decoder, default aspect/zoom, subtitle size & language, audio sync. Each
  * value is persisted and applied to the shared mpv player (live where possible, otherwise next load).
  */
 @Composable
 fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val vm: SettingsViewModel = koinViewModel()
     val hw by vm.hwDecoding.collectAsStateWithLifecycle()
     val vodExo by vm.vodPreferExo.collectAsStateWithLifecycle()
@@ -103,7 +103,7 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
 
     // Dialog-close focus return: closing a picker refocuses the row that opened it. The restore
     // request crosses INTO this screen's focus group from the dialog, so the group's onEnter
-    // intercepts it â€” it consults dialogReturn first (and clears it) instead of hijacking.
+    // intercepts it — it consults dialogReturn first (and clears it) instead of hijacking.
     val dialogRowFocus = remember { Dialog.entries.associateWith { FocusRequester() } }
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     LaunchedEffect(dialog) {
@@ -123,8 +123,8 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // onEnter fires for any entry from outside the group â€” including our own dialog-close
-            // restores (the dialogs live outside it) â€” so it must prefer the pending return row.
+            // onEnter fires for any entry from outside the group — including our own dialog-close
+            // restores (the dialogs live outside it) — so it must prefer the pending return row.
             .focusProperties {
                 onEnter = {
                     val target = dialogReturn ?: firstFocus
@@ -142,33 +142,33 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
 
         GroupLabel(stringResource(R.string.video_group_decoding))
         Row2(
-            icon = OwnTVIcon.VIDEO, title = stringResource(R.string.video_hw_decoding),
+            icon = LunaIPtvIcon.VIDEO, title = stringResource(R.string.video_hw_decoding),
             desc = stringResource(R.string.video_hw_decoding_desc),
             chip = if (hw) stringResource(R.string.on) else stringResource(R.string.off), primaryChip = hw,
             modifier = Modifier.focusRequester(firstFocus),
             onClick = { vm.setHwDecoding(!hw) },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_vod_player),
+            icon = LunaIPtvIcon.PLAY, title = stringResource(R.string.video_vod_player),
             desc = stringResource(R.string.video_vod_player_desc),
             chip = if (vodExo) "ExoPlayer" else "mpv", primaryChip = !vodExo,
             onClick = { vm.setVodPreferExo(!vodExo) },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_external),
+            icon = LunaIPtvIcon.PLAY, title = stringResource(R.string.video_external),
             desc = stringResource(R.string.video_external_desc),
             chip = if (externalPlayer) stringResource(R.string.on) else stringResource(R.string.off), primaryChip = externalPlayer,
             onClick = { vm.setExternalPlayer(!externalPlayer) },
         )
         Row2(
-            icon = OwnTVIcon.ASPECT, title = stringResource(R.string.video_default_zoom),
+            icon = LunaIPtvIcon.ASPECT, title = stringResource(R.string.video_default_zoom),
             desc = stringResource(R.string.video_default_zoom_desc),
             chip = zoomMode.label, chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.ZOOM)),
             onClick = { dialog = Dialog.ZOOM },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_resume),
+            icon = LunaIPtvIcon.PLAY, title = stringResource(R.string.video_resume),
             desc = stringResource(R.string.video_resume_desc),
             chip = resumeMode.label, chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.RESUME)),
@@ -178,14 +178,14 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
         Divider()
         GroupLabel(stringResource(R.string.video_group_subtitles))
         Row2(
-            icon = OwnTVIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_size),
+            icon = LunaIPtvIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_size),
             desc = stringResource(R.string.video_subtitle_size_desc),
             chip = subSizeName(subScale), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.SUB_SIZE)),
             onClick = { dialog = Dialog.SUB_SIZE },
         )
         Row2(
-            icon = OwnTVIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_lang),
+            icon = LunaIPtvIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_lang),
             desc = stringResource(R.string.video_subtitle_lang_desc),
             chip = langName(subLang), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.SUB_LANG)),
@@ -195,14 +195,14 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
         Divider()
         GroupLabel(stringResource(R.string.video_group_audio))
         Row2(
-            icon = OwnTVIcon.AUDIO, title = stringResource(R.string.video_audio_lang),
+            icon = LunaIPtvIcon.AUDIO, title = stringResource(R.string.video_audio_lang),
             desc = stringResource(R.string.video_audio_lang_desc),
             chip = langName(audioLang), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.AUDIO_LANG)),
             onClick = { dialog = Dialog.AUDIO_LANG },
         )
         Row2(
-            icon = OwnTVIcon.AUDIO, title = stringResource(R.string.video_audio_sync),
+            icon = LunaIPtvIcon.AUDIO, title = stringResource(R.string.video_audio_sync),
             desc = stringResource(R.string.video_audio_sync_desc),
             chip = "%+d ms".format(audioDelay), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.AUDIO_SYNC)),
@@ -270,8 +270,8 @@ internal fun Header(title: String, onBack: () -> Unit) {
             modifier = Modifier.size(44.dp),
             shape = RoundedCornerShape(14.dp),
             contentAlignment = Alignment.Center,
-        ) { _ -> OwnTVIcon(OwnTVIcon.BACK, tint = OwnTVTheme.colors.onSurface, modifier = Modifier.size(20.dp)) }
-        Text(title, style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+        ) { _ -> LunaIPtvIcon(LunaIPtvIcon.BACK, tint = LunaIPtvTheme.colors.onSurface, modifier = Modifier.size(20.dp)) }
+        Text(title, style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface)
     }
 }
 
@@ -280,7 +280,7 @@ internal fun GroupLabel(text: String) {
     Text(
         text = text.uppercase(),
         style = MaterialTheme.typography.labelMedium,
-        color = OwnTVTheme.colors.onSurfaceVariant,
+        color = LunaIPtvTheme.colors.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(start = 16.dp, top = 10.dp, bottom = 4.dp),
     )
@@ -293,14 +293,14 @@ internal fun Divider() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(1.dp)
-            .background(OwnTVTheme.colors.outlineVariant),
+            .background(LunaIPtvTheme.colors.outlineVariant),
     )
 }
 
 /** A settings row with an icon tile, title/description and a trailing value chip (+ optional chevron). */
 @Composable
 internal fun Row2(
-    icon: OwnTVIcon,
+    icon: LunaIPtvIcon,
     title: String,
     desc: String? = null,
     chip: String? = null,
@@ -309,7 +309,7 @@ internal fun Row2(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
@@ -324,7 +324,7 @@ internal fun Row2(
             Box(
                 modifier = Modifier.size(Dimens.IconTileSize).clip(RoundedCornerShape(Dimens.IconTileCorner)).background(colors.primaryContainer),
                 contentAlignment = Alignment.Center,
-            ) { OwnTVIcon(icon = icon, tint = colors.onPrimaryContainer, modifier = Modifier.size(22.dp)) }
+            ) { LunaIPtvIcon(icon = icon, tint = colors.onPrimaryContainer, modifier = Modifier.size(22.dp)) }
             Column(Modifier.weight(1f)) {
                 Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 if (desc != null) Text(desc, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
@@ -337,12 +337,12 @@ internal fun Row2(
                     modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(bg).padding(horizontal = 12.dp, vertical = 6.dp),
                 )
             }
-            if (chevron) OwnTVIcon(OwnTVIcon.CHEVRON, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
+            if (chevron) LunaIPtvIcon(LunaIPtvIcon.CHEVRON, tint = colors.onSurfaceVariant, modifier = Modifier.size(18.dp))
         }
     }
 }
 
-/** A single-select list dialog (value â†’ label). */
+/** A single-select list dialog (value ? label). */
 @Composable
 internal fun PickerDialog(
     title: String,
@@ -352,7 +352,7 @@ internal fun PickerDialog(
     onDismiss: () -> Unit,
     searchable: Boolean = false,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val fr = remember { FocusRequester() }
     val searchFr = remember { FocusRequester() }
     var query by remember { mutableStateOf("") }
@@ -393,14 +393,14 @@ internal fun PickerDialog(
                     ) { _ ->
                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(label, style = MaterialTheme.typography.titleMedium, color = if (isSel) colors.onPrimaryContainer else colors.onSurface, modifier = Modifier.weight(1f))
-                            if (isSel) OwnTVIcon(OwnTVIcon.STAR, tint = colors.onPrimaryContainer, filled = true, modifier = Modifier.size(16.dp))
+                            if (isSel) LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.onPrimaryContainer, filled = true, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
             }
         }
     }
@@ -419,7 +419,7 @@ internal fun StepperDialog(
     onReset: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
     BackHandler { onDismiss() }
@@ -431,15 +431,15 @@ internal fun StepperDialog(
             Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                StepBtn("â€“", enabled = value > min) { onSet((value - step).coerceAtLeast(min)) }
+                StepBtn("–", enabled = value > min) { onSet((value - step).coerceAtLeast(min)) }
                 Text(format(value), style = MaterialTheme.typography.headlineMedium, color = colors.primary, modifier = Modifier.width(140.dp), textAlign = TextAlign.Center)
                 StepBtn("+", enabled = value < max, modifier = Modifier.focusRequester(fr)) { onSet((value + step).coerceAtMost(max)) }
             }
             Spacer(Modifier.height(24.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.reset), onClick = onReset, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.reset), onClick = onReset, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(stringResource(R.string.done), onClick = onDismiss)
+                LunaIPtvButton(stringResource(R.string.done), onClick = onDismiss)
             }
         }
     }
@@ -447,7 +447,7 @@ internal fun StepperDialog(
 
 @Composable
 private fun StepBtn(label: String, enabled: Boolean, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         enabled = enabled,

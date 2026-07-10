@@ -482,7 +482,7 @@ class SettingsRepository(private val context: Context) {
     }
 
     // --- Per-source auto-refresh (Off / Startup / staleness threshold) ---
-    // Stored as a JSON map { "<sourceId>": "<EnumName>" } in the owntv_settings DataStore — migration-safe
+    // Stored as a JSON map { "<sourceId>": "<EnumName>" } in the LunaIPtv_settings DataStore — migration-safe
     // (Room uses destructive migrations, so anything that must survive a schema bump lives here). Reuses the
     // existing lastSyncAt columns (SourceEntity.lastSyncAt for playlists, EpgSource.lastSyncAt for EPG) as the
     // "last successful sync" timestamp; nothing new is stored for that.

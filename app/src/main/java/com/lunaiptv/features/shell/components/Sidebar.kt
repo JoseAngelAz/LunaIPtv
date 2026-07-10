@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -56,11 +56,11 @@ import com.lunaiptv.features.shell.MainSection
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.NavAccentBar
 import com.lunaiptv.ui.components.rememberNavLadderColors
-import com.lunaiptv.ui.components.OwnTVAvatar
+import com.lunaiptv.ui.components.LunaIPtvAvatar
 import com.lunaiptv.ui.components.NavDuotoneIcon
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /** Golden glow color for the floating tooltip. */
 private val GoldGlow = Color(0xFFFFD700)
@@ -79,7 +79,7 @@ private fun sectionLabel(section: MainSection): String = when (section) {
 }
 
 /**
- * Layer 1 â€” the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
+ * Layer 1 — the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
  * (browse + Settings) vertically centered in the middle (Phase 3), and the profile avatar pinned at the
  * bottom (Phase 1). The logo is display-only (not focusable); everything else is a focusable nav item.
  */
@@ -97,7 +97,7 @@ fun Sidebar(
     counts: (MainSection) -> Int = { 0 },
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var hasFocus by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val expanded = false
@@ -163,7 +163,7 @@ fun Sidebar(
             }
         }
 
-        // Floating tooltip with golden glow â€” appears when a nav item is focused
+        // Floating tooltip with golden glow — appears when a nav item is focused
         AnimatedVisibility(
             visible = focusedSection != null,
             enter = fadeIn() + slideInHorizontally(initialOffsetX = { -it / 3 }),
@@ -213,7 +213,7 @@ fun Sidebar(
 }
 
 /**
- * Brand mark at the top of the rail â€” the LunaIPtv moon logo. Decorative only: not focusable.
+ * Brand mark at the top of the rail — the LunaIPtv moon logo. Decorative only: not focusable.
  */
 @Composable
 private fun AppLogo(modifier: Modifier = Modifier) {
@@ -221,7 +221,7 @@ private fun AppLogo(modifier: Modifier = Modifier) {
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(20.dp))
-            .border(width = 2.dp, color = OwnTVTheme.colors.primary, shape = RoundedCornerShape(20.dp)),
+            .border(width = 2.dp, color = LunaIPtvTheme.colors.primary, shape = RoundedCornerShape(20.dp)),
         contentAlignment = Alignment.Center,
     ) {
         Image(
@@ -242,10 +242,10 @@ private fun ProfileCard(
     onPickAvatar: () -> Unit,
     onSwitchProfile: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     if (!expanded) {
-        // Fixed nav: just the avatar â€” click opens the profile switcher ("who's watching"), long-press
+        // Fixed nav: just the avatar — click opens the profile switcher ("who's watching"), long-press
         // changes the avatar picture. Pinned top-left, always in the same spot.
         AvatarButton(avatarId = avatarId, sizeDp = 56, onClick = onSwitchProfile, onLongClick = onPickAvatar)
         return
@@ -299,7 +299,7 @@ private fun ProfileCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    OwnTVIcon(icon = OwnTVIcon.PERSON, tint = c, modifier = Modifier.size(18.dp))
+                    LunaIPtvIcon(icon = LunaIPtvIcon.PERSON, tint = c, modifier = Modifier.size(18.dp))
                     Text(stringResource(R.string.sidebar_switch_profile), style = MaterialTheme.typography.labelLarge, color = c, maxLines = 1)
                 }
             }
@@ -315,12 +315,12 @@ private fun AvatarButton(avatarId: Int, sizeDp: Int, onClick: () -> Unit, onLong
         modifier = Modifier.size(sizeDp.dp),
         shape = CircleShape,
         focusedScale = 1.08f,
-        focusedContainerColor = OwnTVTheme.colors.surfaceContainerHighest,
+        focusedContainerColor = LunaIPtvTheme.colors.surfaceContainerHighest,
         unfocusedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
         selectedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentAlignment = Alignment.Center,
     ) { _ ->
-        OwnTVAvatar(avatarId = avatarId, modifier = Modifier.size((sizeDp - 4).dp))
+        LunaIPtvAvatar(avatarId = avatarId, modifier = Modifier.size((sizeDp - 4).dp))
     }
 }
 
@@ -335,7 +335,7 @@ private fun NavItem(
     onClearFocus: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val shape = RoundedCornerShape(17.dp)
     FocusableSurface(
         onClick = onClick,
@@ -403,15 +403,15 @@ private fun NavItem(
     }
 }
 
-private val MainSection.navIcon: OwnTVIcon
+private val MainSection.navIcon: LunaIPtvIcon
     get() = when (this) {
-        MainSection.SEARCH -> OwnTVIcon.SEARCH
-        MainSection.HOME -> OwnTVIcon.HOME
-        MainSection.LIVE_TV -> OwnTVIcon.LIVE_TV
-        MainSection.MOVIES -> OwnTVIcon.MOVIES
-        MainSection.SERIES -> OwnTVIcon.SERIES
-        MainSection.DOWNLOADS -> OwnTVIcon.DOWNLOADS
-        MainSection.EPG -> OwnTVIcon.EPG
-        MainSection.SETTINGS -> OwnTVIcon.SETTINGS
+        MainSection.SEARCH -> LunaIPtvIcon.SEARCH
+        MainSection.HOME -> LunaIPtvIcon.HOME
+        MainSection.LIVE_TV -> LunaIPtvIcon.LIVE_TV
+        MainSection.MOVIES -> LunaIPtvIcon.MOVIES
+        MainSection.SERIES -> LunaIPtvIcon.SERIES
+        MainSection.DOWNLOADS -> LunaIPtvIcon.DOWNLOADS
+        MainSection.EPG -> LunaIPtvIcon.EPG
+        MainSection.SETTINGS -> LunaIPtvIcon.SETTINGS
     }
 

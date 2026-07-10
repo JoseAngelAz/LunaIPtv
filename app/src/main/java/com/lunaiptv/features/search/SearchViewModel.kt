@@ -41,7 +41,7 @@ import com.lunaiptv.core.database.entity.WatchHistoryEntity
 import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.settings.data.SettingsRepository
-import com.lunaiptv.player.OwnTVPlayer
+import com.lunaiptv.player.LunaIPtvPlayer
 
 /** Combined results of a global query (each list bounded). */
 data class SearchResults(
@@ -71,7 +71,7 @@ class SearchViewModel(
     private val settings: SettingsRepository,
     private val customize: CustomizationStore,
     private val favoriteDao: FavoriteDao,
-    val player: OwnTVPlayer,
+    val player: LunaIPtvPlayer,
     private val externalPlayerLauncher: com.lunaiptv.core.player.ExternalPlayerLauncher,
 ) : ViewModel() {
 

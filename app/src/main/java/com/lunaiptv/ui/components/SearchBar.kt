@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,11 +42,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Inline search field for a section, TV-style: the pill itself takes D-pad focus like any other
- * control â€” the keyboard only opens when the user presses OK on it (the inner text field is not
+ * control — the keyboard only opens when the user presses OK on it (the inner text field is not
  * focusable until then), so focus can pass through / land on search without an IME popup.
  */
 @Composable
@@ -54,9 +54,9 @@ fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Searchâ€¦",
+    placeholder: String = "Search…",
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val interaction = remember { MutableInteractionSource() }
     val pillFocused by interaction.collectIsFocusedAsState()
     var editing by remember { mutableStateOf(false) }
@@ -92,8 +92,8 @@ fun SearchBar(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OwnTVIcon(
-                icon = OwnTVIcon.SEARCH,
+            LunaIPtvIcon(
+                icon = LunaIPtvIcon.SEARCH,
                 tint = if (focused) colors.primary else colors.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
             )

@@ -1,4 +1,4 @@
-# OwnTV — App Changelog (minimal)
+# LunaIPtv — App Changelog (minimal)
 
 > Short release notes shown inside the app's update dialog: two parts per version — New features
 > (by name) and Fixes. The full, detailed changelog is [CHANGELOG.md](CHANGELOG.md). Hand-maintained —

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -27,12 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVAvatar
+import com.lunaiptv.ui.components.LunaIPtvAvatar
 import com.lunaiptv.ui.components.ProfileIcon
-import com.lunaiptv.ui.components.OwnTVAvatars
+import com.lunaiptv.ui.components.LunaIPtvAvatars
 import com.lunaiptv.ui.components.longPressMenuGuard
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /** Full-screen avatar picker: a grid of the preset cartoon avatars. Picking one applies & closes. */
 @Composable
@@ -41,7 +41,7 @@ fun AvatarPickerDialog(
     onSelect: (Int) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val selectedFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { selectedFocus.requestFocus() } }
 
@@ -49,7 +49,7 @@ fun AvatarPickerDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.65f))
-            // Opened by a long-press of OK â€” without this guard the still-held release would instantly
+            // Opened by a long-press of OK — without this guard the still-held release would instantly
             // confirm the focused avatar (the "auto-selects first, no pause" bug). longPressMenuGuard
             // swallows OK/Enter until the key is released once, so the user navigates + OK to pick.
             .longPressMenuGuard()
@@ -73,7 +73,7 @@ fun AvatarPickerDialog(
             )
             Spacer(Modifier.height(20.dp))
 
-            // Phase 7 â€” "no avatar" option showing the Rank 1 ProfileIcon (ID -1)
+            // Phase 7 — "no avatar" option showing the Rank 1 ProfileIcon (ID -1)
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 val noneSelected = selectedId == -1
                 FocusableSurface(
@@ -88,12 +88,12 @@ fun AvatarPickerDialog(
                     selectedContainerColor = colors.primaryContainer,
                     contentAlignment = Alignment.Center,
                 ) { _ ->
-                    ProfileIcon(color = OwnTVTheme.colors.primary, modifier = Modifier.size(40.dp))
+                    ProfileIcon(color = LunaIPtvTheme.colors.primary, modifier = Modifier.size(40.dp))
                 }
             }
             Spacer(Modifier.height(14.dp))
 
-            val ids = (0 until OwnTVAvatars.COUNT).toList()
+            val ids = (0 until LunaIPtvAvatars.COUNT).toList()
             ids.chunked(4).forEach { rowIds ->
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     rowIds.forEach { id ->
@@ -110,7 +110,7 @@ fun AvatarPickerDialog(
                             selectedContainerColor = colors.primaryContainer,
                             contentAlignment = Alignment.Center,
                         ) { _ ->
-                            OwnTVAvatar(avatarId = id, modifier = Modifier.size(64.dp))
+                            LunaIPtvAvatar(avatarId = id, modifier = Modifier.size(64.dp))
                         }
                     }
                 }

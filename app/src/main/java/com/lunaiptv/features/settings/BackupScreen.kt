@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -40,17 +40,17 @@ import com.lunaiptv.R
 import com.lunaiptv.core.backup.BackupManager
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVSpinner
-import com.lunaiptv.ui.components.OwnTVTextField
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvSpinner
+import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.components.StorageBrowser
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import java.io.File
 
 /**
- * Phase 12 â€” Backup & Restore (Settings â†’ Backup), with selective sections: the user picks what to
+ * Phase 12 — Backup & Restore (Settings ? Backup), with selective sections: the user picks what to
  * back up (profiles & sources / customizations / favorites / history / resume) and, on restore,
  * which of the file's sections to apply. Uses an in-app file picker (no SAF).
  */
@@ -58,13 +58,13 @@ import java.io.File
 fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val vm: BackupViewModel = koinViewModel()
     val state by vm.state.collectAsStateWithLifecycle()
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     var browser by remember { mutableStateOf(BrowseMode.FOLDER) } // which picker
     var showBrowser by remember { mutableStateOf(false) }
     var showExportPicker by remember { mutableStateOf(false) }
     // Opening the folder browser in the SAME frame the section picker closes makes the browser's
-    // initial focus grab race the picker's teardown â€” focus ends up trapped on the screen behind
+    // initial focus grab race the picker's teardown — focus ends up trapped on the screen behind
     // the overlay. Defer the open by a beat instead.
     var pendingFolderBrowser by remember { mutableStateOf(false) }
     LaunchedEffect(pendingFolderBrowser) {
@@ -86,7 +86,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Dialog-close focus return: closing the section picker / file browser refocuses the button
     // that opened it. The restore crosses INTO this group from the dialog, so onEnter intercepts
-    // it â€” it consults dialogReturn first (and clears it) instead of hijacking.
+    // it — it consults dialogReturn first (and clears it) instead of hijacking.
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     val anyDialogOpen = showBrowser || showExportPicker || pendingFolderBrowser || exportFolder != null ||
         state is BackupViewModel.State.ChooseRestore || state is BackupViewModel.State.NeedPassword
@@ -103,8 +103,8 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // onEnter fires for any entry from outside the group â€” including our own dialog-close
-            // restores (the dialogs live outside it) â€” so it must prefer the pending return button.
+            // onEnter fires for any entry from outside the group — including our own dialog-close
+            // restores (the dialogs live outside it) — so it must prefer the pending return button.
             .focusProperties {
                 onEnter = {
                     val target = dialogReturn ?: firstFocus
@@ -126,14 +126,14 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         val exportBtnLabel = stringResource(R.string.backup_export)
         val restoreBtnLabel = stringResource(R.string.backup_restore)
-        OwnTVButton(exportBtnLabel, onClick = { dialogReturn = firstFocus; showExportPicker = true }, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(firstFocus))
-        OwnTVButton(restoreBtnLabel, onClick = { dialogReturn = restoreBtnFocus; browser = BrowseMode.FILE; showBrowser = true }, style = OwnTVButtonStyle.SECONDARY, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(restoreBtnFocus))
+        LunaIPtvButton(exportBtnLabel, onClick = { dialogReturn = firstFocus; showExportPicker = true }, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(firstFocus))
+        LunaIPtvButton(restoreBtnLabel, onClick = { dialogReturn = restoreBtnFocus; browser = BrowseMode.FILE; showBrowser = true }, style = LunaIPtvButtonStyle.SECONDARY, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(restoreBtnFocus))
         }
         Spacer(Modifier.height(20.dp))
 
         when (val s = state) {
             BackupViewModel.State.Working -> Row(verticalAlignment = Alignment.CenterVertically) {
-                OwnTVSpinner(sizeDp = 22)
+                LunaIPtvSpinner(sizeDp = 22)
                 Spacer(Modifier.width(12.dp))
                 Text(stringResource(R.string.backup_working), style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant)
             }
@@ -161,7 +161,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
     }
 
-    // Restore step 2: the picked file was inspected â€” choose which of its sections to apply.
+    // Restore step 2: the picked file was inspected — choose which of its sections to apply.
     (state as? BackupViewModel.State.ChooseRestore)?.let { choose ->
         val whatRestoreTitle = stringResource(R.string.backup_what_restore)
         val restoreBtnLabel = stringResource(R.string.backup_restore_btn)
@@ -235,7 +235,7 @@ private fun BackupPasswordDialog(
     onSkip: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var password by remember { mutableStateOf("") }
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
@@ -248,7 +248,7 @@ private fun BackupPasswordDialog(
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(20.dp))
             val backupPwLabel = stringResource(R.string.setup_backup_password)
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = backupPwLabel,
@@ -258,10 +258,10 @@ private fun BackupPasswordDialog(
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 val cancelLabel = stringResource(R.string.cancel)
-                OwnTVButton(cancelLabel, onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(cancelLabel, onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(skipLabel, onClick = onSkip, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton(confirmLabel, onClick = { onConfirm(password) }, enabled = password.isNotBlank())
+                LunaIPtvButton(skipLabel, onClick = onSkip, style = LunaIPtvButtonStyle.SECONDARY)
+                LunaIPtvButton(confirmLabel, onClick = { onConfirm(password) }, enabled = password.isNotBlank())
             }
         }
     }
@@ -277,7 +277,7 @@ private fun SectionPickerDialog(
     onConfirm: (Set<BackupManager.Section>) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var selected by remember { mutableStateOf(initial) }
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
@@ -309,9 +309,9 @@ private fun SectionPickerDialog(
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 val cancelLabel = stringResource(R.string.cancel)
-                OwnTVButton(cancelLabel, onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(cancelLabel, onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton(confirmLabel, onClick = { onConfirm(selected) }, enabled = selected.isNotEmpty())
+                LunaIPtvButton(confirmLabel, onClick = { onConfirm(selected) }, enabled = selected.isNotEmpty())
             }
         }
     }
@@ -325,7 +325,7 @@ private fun CheckRow(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onToggle,
         modifier = modifier.fillMaxWidth(),

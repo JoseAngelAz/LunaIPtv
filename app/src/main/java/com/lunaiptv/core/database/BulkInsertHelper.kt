@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 
 class BulkInsertHelper(
-    private val db: OwnTVDatabase,
+    private val db: LunaIPtvDatabase,
 ) {
     suspend fun <T> withOptimizedBulkInsert(
         table: String,

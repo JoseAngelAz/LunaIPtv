@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -25,10 +25,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 import androidx.compose.ui.res.stringResource
 import com.lunaiptv.R
 
@@ -41,7 +41,7 @@ fun ExitDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val cancelFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { cancelFocus.requestFocus() } }
 
@@ -76,16 +76,16 @@ fun ExitDialog(
             )
             Spacer(Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                OwnTVButton(
+                LunaIPtvButton(
                     label = stringResource(R.string.cancel),
                     onClick = onDismiss,
-                    style = OwnTVButtonStyle.SECONDARY,
+                    style = LunaIPtvButtonStyle.SECONDARY,
                     modifier = Modifier.focusRequester(cancelFocus),
                 )
-                OwnTVButton(
+                LunaIPtvButton(
                     label = stringResource(R.string.close),
                     onClick = onConfirm,
-                    style = OwnTVButtonStyle.PRIMARY,
+                    style = LunaIPtvButtonStyle.PRIMARY,
                 )
             }
         }

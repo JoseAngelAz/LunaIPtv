@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.epg
+package com.lunaiptv.features.epg
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -41,12 +41,12 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.core.database.entity.EpgProgrammeEntity
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.format.rememberSystemTimeFormatter
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 internal object GuideGridDefaults {
     val ChannelCol = 176.dp
@@ -65,11 +65,11 @@ internal fun ProgrammeStripCanvas(
     catchupIds: Set<Long>,
     hScroll: androidx.compose.foundation.ScrollState,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val density = androidx.compose.ui.platform.LocalDensity.current
     val measurer = rememberTextMeasurer(cacheSize = 64)
 
-    // Pre-computed once â€” nothing here is allocated inside the draw loop.
+    // Pre-computed once — nothing here is allocated inside the draw loop.
     val pxPerMin = with(density) { GuideGridDefaults.PxPerMin.toPx() }
     val gapPx = with(density) { 4.dp.toPx() }
     val padPx = with(density) { 10.dp.toPx() }
@@ -83,15 +83,15 @@ internal fun ProgrammeStripCanvas(
     // Time labels built once (string formatting kept out of the per-frame draw loop).
     val labels = remember(programmes, now, formatTime) {
         programmes.map { p ->
-            val t = "${formatTime(p.startMs)} â€“ ${formatTime(p.stopMs)}"
-            if (now in p.startMs until p.stopMs) "NOW Â· $t" else t
+            val t = "${formatTime(p.startMs)} – ${formatTime(p.stopMs)}"
+            if (now in p.startMs until p.stopMs) "NOW · $t" else t
         }
     }
-    // Vertical "now" marker + catch-up glyph â€” measured once, reused each frame.
+    // Vertical "now" marker + catch-up glyph — measured once, reused each frame.
     val nowColor = Color(0xFFFF5C5C)
     val nowLinePx = with(density) { 2.dp.toPx() }
     val catchupStyle = MaterialTheme.typography.labelSmall.copy(color = colors.primary)
-    val catchupGlyph = remember(catchupStyle) { measurer.measure("â†»", catchupStyle) }
+    val catchupGlyph = remember(catchupStyle) { measurer.measure("?", catchupStyle) }
 
     val scrollPx = hScroll.value.toFloat() // read in composable scope so Canvas redraws on scroll
     Canvas(Modifier.fillMaxSize()) {
@@ -119,12 +119,12 @@ internal fun ProgrammeStripCanvas(
                 drawText(title, topLeft = Offset(x + padPx, top))
                 drawText(time, topLeft = Offset(x + padPx, top + title.size.height + 2))
             }
-            // Catch-up badge (â†») at the cell's top-right â€” only on programmes this channel can rewind from.
+            // Catch-up badge (?) at the cell's top-right — only on programmes this channel can rewind from.
             if (p.id in catchupIds && w > 50f) {
                 drawText(catchupGlyph, topLeft = Offset(x + w - catchupGlyph.size.width - 4f, 3f))
             }
         }
-        // Vertical "now" marker â€” drawn on every row so it reads as one continuous line down the grid.
+        // Vertical "now" marker — drawn on every row so it reads as one continuous line down the grid.
         if (now in windowStart..windowEnd) {
             val nowX = ((now - windowStart) / 60_000f) * pxPerMin - scrollPx
             if (nowX in 0f..viewW) {
@@ -144,7 +144,7 @@ internal fun ProgrammeDetailDialog(
     onPlayCatchup: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val formatTime = rememberSystemTimeFormatter()
     // The grid load drops `description` to stay under the CursorWindow limit, so fetch it on demand
     // here (fall back to the row's own value when it was loaded by the lazy per-row path).
@@ -161,21 +161,21 @@ internal fun ProgrammeDetailDialog(
                 Spacer(Modifier.height(6.dp))
                 Text(programme.title, style = MaterialTheme.typography.headlineSmall, color = colors.onSurface)
                 Spacer(Modifier.height(8.dp))
-                Text("${formatTime(programme.startMs)} â€“ ${formatTime(programme.stopMs)}", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
+                Text("${formatTime(programme.startMs)} – ${formatTime(programme.stopMs)}", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
                 if (!description.isNullOrBlank()) {
                     Spacer(Modifier.height(14.dp))
                     Text(description.orEmpty(), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(24.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OwnTVButton("Close", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                    LunaIPtvButton("Close", onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
                     Spacer(Modifier.weight(1f))
                     // Catch-up channels: replay this programme from its start (seekable archive playback).
                     if (canCatchup) {
-                        OwnTVButton("Watch from start", onClick = onPlayCatchup, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(fr))
-                        OwnTVButton("Watch channel", onClick = onWatch, style = OwnTVButtonStyle.SECONDARY)
+                        LunaIPtvButton("Watch from start", onClick = onPlayCatchup, icon = LunaIPtvIcon.PLAY, modifier = Modifier.focusRequester(fr))
+                        LunaIPtvButton("Watch channel", onClick = onWatch, style = LunaIPtvButtonStyle.SECONDARY)
                     } else {
-                        OwnTVButton("Watch channel", onClick = onWatch, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(fr))
+                        LunaIPtvButton("Watch channel", onClick = onWatch, icon = LunaIPtvIcon.PLAY, modifier = Modifier.focusRequester(fr))
                     }
                 }
             }

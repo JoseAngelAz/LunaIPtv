@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ahXN00/OwnTV/actions/workflows/android.yml">
-    <img alt="Android CI" src="https://github.com/ahXN00/OwnTV/actions/workflows/android.yml/badge.svg">
+  <a href="https://github.com/ahXN00/LunaIPtv/actions/workflows/android.yml">
+    <img alt="Android CI" src="https://github.com/ahXN00/LunaIPtv/actions/workflows/android.yml/badge.svg">
   </a>
 </p>
 
@@ -33,13 +33,13 @@ way to browse and watch them.
 > **Disclaimer:** LunaIPtv does **not** provide any channels, playlists, subscriptions, streams, or media content.
 > You are responsible for adding your own legally accessible sources.
 
-> **Note:** This project was originally named **OwnTV**. It has been forked and rebranded as **LunaIPtv** for personal learning about IPTV technology. **It is not intended for selling IPTV services.**
+> **Note:** This project was originally named **LunaIPtv**. It has been forked and rebranded as **LunaIPtv** for personal learning about IPTV technology. **It is not intended for selling IPTV services.**
 
 ---
 
 ## Credits
 
-**Original project by:** [ahXN00](https://github.com/ahXN00/OwnTV)
+**Original project by:** [ahXN00](https://github.com/ahXN00/LunaIPtv)
 
 **Fork & rebrand by:** **Jose Angel Azucena Mendez** — Forked for personal learning and educational purposes about IPTV, Android TV development, and media playback technologies.
 
@@ -57,11 +57,11 @@ See the [LICENSE](LICENSE) file for the full GPLv3 text.
 
 Questions, ideas, bug reports — or just want to follow along? **Join the LunaIPtv Telegram group:**
 
-### [t.me/owntvplayer](https://t.me/owntvplayer)
+### [t.me/LunaIPtvplayer](https://t.me/LunaIPtvplayer)
 
 Scan to join from your phone:
 
-<a href="https://t.me/owntvplayer"><img src="extras/telegram_qr_code.jpg" alt="Scan to join the LunaIPtv Telegram group" width="170"></a>
+<a href="https://t.me/LunaIPtvplayer"><img src="extras/telegram_qr_code.jpg" alt="Scan to join the LunaIPtv Telegram group" width="170"></a>
 
 ---
 
@@ -162,8 +162,8 @@ app/src/main/java/com/lunaiptv/
 
 ```bash
 # Clone the repository
-git clone https://github.com/ahXN00/OwnTV.git
-cd OwnTV
+git clone https://github.com/ahXN00/LunaIPtv.git
+cd LunaIPtv
 
 # Build debug APK
 ./gradlew assembleDebug

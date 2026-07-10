@@ -89,22 +89,22 @@ jobs:
           echo "Built: $SRC"
           echo "APK_SRC=$SRC" >> "$GITHUB_ENV"
 
-      - name: Name the APK (OwnTV-v<version>)
+      - name: Name the APK (LunaIPtv-v<version>)
         run: |
           mkdir -p dist
           if [ "$IS_TAG" = "true" ]; then
-            OUT="OwnTV-v${{ steps.ver.outputs.name }}.apk"
+            OUT="LunaIPtv-v${{ steps.ver.outputs.name }}.apk"
           else
-            OUT="OwnTV-dev-${GITHUB_SHA::7}.apk"
+            OUT="LunaIPtv-dev-${GITHUB_SHA::7}.apk"
           fi
           cp "$APK_SRC" "dist/$OUT"
           echo "APK_OUT=$OUT" >> "$GITHUB_ENV"
           echo "Packaged dist/$OUT"
           # Tag builds also ship a stable-named copy so a fixed URL always serves the latest signed
-          # release: https://github.com/<repo>/releases/latest/download/OwnTV.apk
+          # release: https://github.com/<repo>/releases/latest/download/LunaIPtv.apk
           # (used by the Fire TV Downloader code and any "always-latest" sideload link).
           if [ "$IS_TAG" = "true" ]; then
-            cp "$APK_SRC" "dist/OwnTV.apk"
+            cp "$APK_SRC" "dist/LunaIPtv.apk"
           fi
 
       - name: Upload APK artifact
@@ -132,9 +132,9 @@ jobs:
         if: env.IS_TAG == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          name: OwnTV ${{ github.ref_name }}
+          name: LunaIPtv ${{ github.ref_name }}
           files: |
             dist/${{ env.APK_OUT }}
-            dist/OwnTV.apk
+            dist/LunaIPtv.apk
           body_path: dist/RELEASE_NOTES.md
           generate_release_notes: true

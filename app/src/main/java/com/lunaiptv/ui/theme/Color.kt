@@ -3,7 +3,7 @@ package com.lunaiptv.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Material 3 tonal palette for OwnTV (teal-seeded). NEUTRAL + secondary/tertiary roles are
+ * Material 3 tonal palette for LunaIPtv (teal-seeded). NEUTRAL + secondary/tertiary roles are
  * theme-only; the `primary` roles are seeded per [AccentColor] (default teal == these values).
  *
  * Dark uses a near-black background (#040e0b) so the panel colours (Phase 6) pop against

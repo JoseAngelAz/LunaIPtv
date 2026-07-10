@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,7 +43,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * A remote-friendly single-line text field, TV-style and two-stage: D-pad focus only *highlights*
@@ -56,7 +56,7 @@ import com.lunaiptv.ui.theme.OwnTVTheme
  * independently D-pad focusable so the user can reveal the password without a keyboard.
  */
 @Composable
-fun OwnTVTextField(
+fun LunaIPtvTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -66,7 +66,7 @@ fun OwnTVTextField(
     isPassword: Boolean = false,
     focusRequester: FocusRequester? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val interaction = remember { MutableInteractionSource() }
     val fieldFocused by interaction.collectIsFocusedAsState()
     var editing by remember { mutableStateOf(false) }

@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.setup
+package com.lunaiptv.features.setup
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -47,14 +47,14 @@ import com.lunaiptv.core.sync.importProgressDisplay
 import com.lunaiptv.features.profiles.ProfileEditorDialog
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVTextField
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvTextField
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.features.settings.EpgSyncDialog
 import com.lunaiptv.ui.components.StorageBrowser
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 private enum class Step { WELCOME, DISCLAIMER, SETUP_CHOICE, CREATE_PROFILE, ADD_CONTENT, ADD_SOURCE, IMPORTING, EXISTING, IMPORT_BACKUP }
 
@@ -78,11 +78,11 @@ fun Onboarding(firstRun: Boolean, onDone: () -> Unit, onCancel: () -> Unit, modi
     // Refresh the "existing playlists" availability whenever we land on the add-content step.
     LaunchedEffect(step) { if (step == Step.ADD_CONTENT) existing = runCatching { vm.availableExistingSources() }.getOrDefault(emptyList()) }
 
-    Box(modifier = modifier.fillMaxSize().background(OwnTVTheme.colors.background)) {
+    Box(modifier = modifier.fillMaxSize().background(LunaIPtvTheme.colors.background)) {
         when (step) {
             Step.WELCOME -> WelcomeScreen(onNext = { step = Step.DISCLAIMER })
             Step.DISCLAIMER -> DisclaimerScreen(onAgree = { step = Step.SETUP_CHOICE }, onBack = { step = Step.WELCOME })
-            // First decision: start fresh or bring everything back from a backup (profiles included —
+            // First decision: start fresh or bring everything back from a backup (profiles included �
             // no point creating a profile first that the restore would replace).
             Step.SETUP_CHOICE -> SetupChoiceScreen(
                 onCreate = { step = Step.CREATE_PROFILE },
@@ -131,7 +131,7 @@ fun Onboarding(firstRun: Boolean, onDone: () -> Unit, onCancel: () -> Unit, modi
                 onBack = { vm.reset(); step = backupOrigin },
             )
         }
-        // Semi-auto EPG: after the first playlist imports, ask → sync (live count) → done (overlays "All set!").
+        // Semi-auto EPG: after the first playlist imports, ask ? sync (live count) ? done (overlays "All set!").
         EpgSyncDialog(state = epgSync, onSync = vm::syncPendingEpg, onDismiss = vm::dismissPendingEpg)
     }
 }
@@ -148,15 +148,15 @@ private fun WelcomeScreen(onNext: () -> Unit) {
             contentScale = ContentScale.Fit,
         )
         Spacer(Modifier.height(16.dp))
-        Text(stringResource(R.string.setup_welcome_desc), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurfaceVariant)
+        Text(stringResource(R.string.setup_welcome_desc), style = MaterialTheme.typography.titleMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
         Spacer(Modifier.height(40.dp))
-        OwnTVButton(stringResource(R.string.setup_get_started), onClick = onNext, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(fr))
+        LunaIPtvButton(stringResource(R.string.setup_get_started), onClick = onNext, icon = LunaIPtvIcon.PLAY, modifier = Modifier.focusRequester(fr))
     }
 }
 
 @Composable
 private fun DisclaimerScreen(onAgree: () -> Unit, onBack: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
     Centered {
@@ -171,15 +171,15 @@ private fun DisclaimerScreen(onAgree: () -> Unit, onBack: () -> Unit) {
         )
         Spacer(Modifier.height(32.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton(stringResource(R.string.back), onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
-            OwnTVButton(stringResource(R.string.setup_i_understand), onClick = onAgree, modifier = Modifier.focusRequester(fr))
+            LunaIPtvButton(stringResource(R.string.back), onClick = onBack, style = LunaIPtvButtonStyle.SECONDARY)
+            LunaIPtvButton(stringResource(R.string.setup_i_understand), onClick = onAgree, modifier = Modifier.focusRequester(fr))
         }
     }
 }
 
 @Composable
 private fun SetupChoiceScreen(onCreate: () -> Unit, onRestore: () -> Unit, onBack: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
     BackHandler { onBack() }
@@ -192,15 +192,15 @@ private fun SetupChoiceScreen(onCreate: () -> Unit, onRestore: () -> Unit, onBac
         )
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ChoiceCard(icon = OwnTVIcon.PERSON, title = stringResource(R.string.setup_new_profile), desc = stringResource(R.string.setup_new_profile_desc), modifier = Modifier.focusRequester(fr), onClick = onCreate)
-            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = stringResource(R.string.setup_restore_backup), desc = stringResource(R.string.setup_restore_backup_desc), onClick = onRestore)
+            ChoiceCard(icon = LunaIPtvIcon.PERSON, title = stringResource(R.string.setup_new_profile), desc = stringResource(R.string.setup_new_profile_desc), modifier = Modifier.focusRequester(fr), onClick = onCreate)
+            ChoiceCard(icon = LunaIPtvIcon.DOWNLOADS, title = stringResource(R.string.setup_restore_backup), desc = stringResource(R.string.setup_restore_backup_desc), onClick = onRestore)
         }
     }
 }
 
 @Composable
 private fun AddContentScreen(hasExisting: Boolean, onNew: () -> Unit, onExisting: () -> Unit, onImport: () -> Unit, onSkip: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
     Centered {
@@ -209,20 +209,20 @@ private fun AddContentScreen(hasExisting: Boolean, onNew: () -> Unit, onExisting
         Text(stringResource(R.string.setup_add_playlist_desc), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            ChoiceCard(icon = OwnTVIcon.ADD, title = stringResource(R.string.setup_new), desc = stringResource(R.string.setup_new_desc), modifier = Modifier.focusRequester(fr), onClick = onNew)
+            ChoiceCard(icon = LunaIPtvIcon.ADD, title = stringResource(R.string.setup_new), desc = stringResource(R.string.setup_new_desc), modifier = Modifier.focusRequester(fr), onClick = onNew)
             if (hasExisting) {
-                ChoiceCard(icon = OwnTVIcon.PLAYLIST, title = stringResource(R.string.setup_existing), desc = stringResource(R.string.setup_existing_playlists_desc), onClick = onExisting)
+                ChoiceCard(icon = LunaIPtvIcon.PLAYLIST, title = stringResource(R.string.setup_existing), desc = stringResource(R.string.setup_existing_playlists_desc), onClick = onExisting)
             }
-            ChoiceCard(icon = OwnTVIcon.DOWNLOADS, title = stringResource(R.string.setup_import), desc = stringResource(R.string.setup_import_desc), onClick = onImport)
+            ChoiceCard(icon = LunaIPtvIcon.DOWNLOADS, title = stringResource(R.string.setup_import), desc = stringResource(R.string.setup_import_desc), onClick = onImport)
         }
         Spacer(Modifier.height(24.dp))
-        OwnTVButton(stringResource(R.string.setup_skip_for_now), onClick = onSkip, style = OwnTVButtonStyle.SECONDARY)
+        LunaIPtvButton(stringResource(R.string.setup_skip_for_now), onClick = onSkip, style = LunaIPtvButtonStyle.SECONDARY)
     }
 }
 
 @Composable
 private fun ExistingSourcesScreen(sources: List<SourceEntity>, onAdd: (Set<Long>) -> Unit, onBack: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var selected by remember { mutableStateOf(setOf<Long>()) }
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
@@ -249,15 +249,15 @@ private fun ExistingSourcesScreen(sources: List<SourceEntity>, onAdd: (Set<Long>
                                 Text(src.name, style = MaterialTheme.typography.titleMedium, color = if (checked) colors.onPrimaryContainer else colors.onSurface)
                                 Text(src.url, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1)
                             }
-                            if (checked) OwnTVIcon(OwnTVIcon.STAR, tint = colors.onPrimaryContainer, filled = true, modifier = Modifier.size(18.dp))
+                            if (checked) LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.onPrimaryContainer, filled = true, modifier = Modifier.size(18.dp))
                         }
                     }
                 }
             }
             Spacer(Modifier.height(20.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.back), onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton(stringResource(R.string.setup_add_count, selected.size), onClick = { onAdd(selected) }, enabled = selected.isNotEmpty())
+                LunaIPtvButton(stringResource(R.string.back), onClick = onBack, style = LunaIPtvButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.setup_add_count, selected.size), onClick = { onAdd(selected) }, enabled = selected.isNotEmpty())
             }
         }
     }
@@ -272,12 +272,12 @@ private fun ImportBackupScreen(
 ) {
     when (state) {
         SetupViewModel.ImportState.Idle -> Centered {
-            OwnTVSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurface)
+            LunaIPtvSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = LunaIPtvTheme.colors.onSurface)
         }
         SetupViewModel.ImportState.Running -> Centered {
-            OwnTVSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurface)
+            LunaIPtvSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = LunaIPtvTheme.colors.onSurface)
         }
         is SetupViewModel.ImportState.NeedPassword -> Centered {
             var password by remember { mutableStateOf("") }
@@ -285,17 +285,17 @@ private fun ImportBackupScreen(
             LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
             Text(
                 if (state.retry) stringResource(R.string.setup_backup_wrong_password) else stringResource(R.string.setup_backup_enter_password),
-                style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface,
+                style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface,
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 if (state.retry) stringResource(R.string.setup_backup_wrong_desc)
                 else stringResource(R.string.setup_backup_encrypted_desc),
-                style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant,
                 textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp),
             )
             Spacer(Modifier.height(20.dp))
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = stringResource(R.string.setup_backup_password),
@@ -305,17 +305,17 @@ private fun ImportBackupScreen(
             )
             Spacer(Modifier.height(20.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton(stringResource(R.string.back), onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton(stringResource(R.string.setup_skip_no_passwords), onClick = { onPassword(state.file, null) }, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton(stringResource(R.string.setup_restore_button), onClick = { onPassword(state.file, password) }, enabled = password.isNotBlank())
+                LunaIPtvButton(stringResource(R.string.back), onClick = onBack, style = LunaIPtvButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.setup_skip_no_passwords), onClick = { onPassword(state.file, null) }, style = LunaIPtvButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.setup_restore_button), onClick = { onPassword(state.file, password) }, enabled = password.isNotBlank())
             }
         }
         is SetupViewModel.ImportState.Failed -> Centered {
-            Text(stringResource(R.string.setup_restore_failed), style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+            Text(stringResource(R.string.setup_restore_failed), style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface)
             Spacer(Modifier.height(8.dp))
-            Text(state.message, style = MaterialTheme.typography.bodyMedium, color = OwnTVTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp))
+            Text(state.message, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp))
             Spacer(Modifier.height(20.dp))
-            OwnTVButton(stringResource(R.string.back), onClick = onBack)
+            LunaIPtvButton(stringResource(R.string.back), onClick = onBack)
             StorageBrowser(
                 title = stringResource(R.string.setup_pick_backup),
                 mode = BrowseMode.FILE,
@@ -325,14 +325,14 @@ private fun ImportBackupScreen(
             )
         }
         is SetupViewModel.ImportState.Success -> Centered {
-            Text(stringResource(R.string.setup_all_set), style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
+            Text(stringResource(R.string.setup_all_set), style = MaterialTheme.typography.headlineLarge, color = LunaIPtvTheme.colors.onSurface)
         }
     }
 }
 
 @Composable
-private fun ChoiceCard(icon: OwnTVIcon, title: String, desc: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    val colors = OwnTVTheme.colors
+private fun ChoiceCard(icon: LunaIPtvIcon, title: String, desc: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         modifier = modifier.size(width = 220.dp, height = 170.dp),
@@ -344,7 +344,7 @@ private fun ChoiceCard(icon: OwnTVIcon, title: String, desc: String, modifier: M
     ) { focused ->
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier.size(56.dp).clip(RoundedCornerShape(16.dp)).background(colors.primaryContainer), contentAlignment = Alignment.Center) {
-                OwnTVIcon(icon, tint = colors.onPrimaryContainer, modifier = Modifier.size(28.dp))
+                LunaIPtvIcon(icon, tint = colors.onPrimaryContainer, modifier = Modifier.size(28.dp))
             }
             Spacer(Modifier.height(14.dp))
             Text(title, style = MaterialTheme.typography.titleLarge, color = if (focused) colors.primary else colors.onSurface)
@@ -362,7 +362,7 @@ private fun ImportProgressScreen(
     onRetry: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val context = LocalContext.current
     val fr = remember { FocusRequester() }
     LaunchedEffect(state) {
@@ -374,7 +374,7 @@ private fun ImportProgressScreen(
             SetupViewModel.ImportState.Running, SetupViewModel.ImportState.Idle,
             is SetupViewModel.ImportState.NeedPassword -> {
                 val display = progress?.importProgressDisplay(context)
-                OwnTVSpinner(sizeDp = 56)
+                LunaIPtvSpinner(sizeDp = 56)
                 Spacer(Modifier.height(20.dp))
                 Text(display?.title ?: stringResource(R.string.setup_importing_catalog), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 Spacer(Modifier.height(8.dp))
@@ -390,14 +390,14 @@ private fun ImportProgressScreen(
                     color = colors.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(24.dp))
-                OwnTVButton(stringResource(R.string.cancel), onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
+                LunaIPtvButton(stringResource(R.string.cancel), onClick = onCancel, style = LunaIPtvButtonStyle.SECONDARY)
             }
             is SetupViewModel.ImportState.Success -> {
                 Text(stringResource(R.string.setup_all_set), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
                 Spacer(Modifier.height(10.dp))
                 Text(state.summary, style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 560.dp))
                 Spacer(Modifier.height(28.dp))
-                OwnTVButton(stringResource(R.string.setup_continue), onClick = onContinue, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(fr))
+                LunaIPtvButton(stringResource(R.string.setup_continue), onClick = onContinue, icon = LunaIPtvIcon.PLAY, modifier = Modifier.focusRequester(fr))
             }
             is SetupViewModel.ImportState.Failed -> {
                 Text(stringResource(R.string.setup_import_failed), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
@@ -405,8 +405,8 @@ private fun ImportProgressScreen(
                 Text(state.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.widthIn(max = 520.dp))
                 Spacer(Modifier.height(28.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OwnTVButton(stringResource(R.string.back), onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
-                    OwnTVButton(stringResource(R.string.try_again), onClick = onRetry, modifier = Modifier.focusRequester(fr))
+                    LunaIPtvButton(stringResource(R.string.back), onClick = onCancel, style = LunaIPtvButtonStyle.SECONDARY)
+                    LunaIPtvButton(stringResource(R.string.try_again), onClick = onRetry, modifier = Modifier.focusRequester(fr))
                 }
             }
         }

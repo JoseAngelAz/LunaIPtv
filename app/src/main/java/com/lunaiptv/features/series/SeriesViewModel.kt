@@ -61,9 +61,9 @@ import com.lunaiptv.features.live.LiveRailItem
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.settings.data.SettingsRepository
 import com.lunaiptv.player.MediaMeta
-import com.lunaiptv.player.OwnTVPlayer
+import com.lunaiptv.player.LunaIPtvPlayer
 import com.lunaiptv.player.PlaylistItem
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 
 class SeriesViewModel(
     private val seriesDao: SeriesDao,
@@ -76,7 +76,7 @@ class SeriesViewModel(
     private val seriesRepository: SeriesRepository,
     private val settings: SettingsRepository,
     private val customize: CustomizationStore,
-    private val player: OwnTVPlayer,
+    private val player: LunaIPtvPlayer,
     private val downloadManager: DownloadManager,
     private val launcherIntegrationRepository: LauncherIntegrationRepository,
     private val contentOrderDao: ContentOrderDao,
@@ -575,7 +575,7 @@ class SeriesViewModel(
             val pid = currentProfileId()
             // External player (global toggle): launch only the selected episode (external players are
             // single-item — no prev/next queue). History is still recorded; resume position and the
-            // in-app HUD/progress tick are not, since OwnTV can't observe the external app.
+            // in-app HUD/progress tick are not, since LunaIPtv can't observe the external app.
             if (settings.externalPlayer.first()) {
                 Log.d(TAG, "playEpisodeQueue seriesId=${show.id} episodeId=${episode.id} -> external player")
                 externalPlayerLauncher.launch(episode.streamUrl, episode.name)
@@ -791,8 +791,8 @@ class SeriesViewModel(
     private companion object {
         const val TAG = "LunaIPtvHome"
         val defaultRail = listOf(
-            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", OwnTVIcon.STAR),
-            LiveRailItem(LiveKey.History, "HIS", "History", OwnTVIcon.HISTORY),
+            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", LunaIPtvIcon.STAR),
+            LiveRailItem(LiveKey.History, "HIS", "History", LunaIPtvIcon.HISTORY),
             LiveRailItem(LiveKey.All, "ALL", "All Series"),
         )
     }

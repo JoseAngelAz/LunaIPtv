@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.profiles
+package com.lunaiptv.features.profiles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,14 +39,14 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.core.database.entity.ProfileEntity
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVAvatar
-import com.lunaiptv.ui.components.OwnTVAvatars
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVTextField
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.components.LunaIPtvAvatar
+import com.lunaiptv.ui.components.LunaIPtvAvatars
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvTextField
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Modal scrim wrapper for the profile dialogs. Phase 7 â€” Popup(focusable=true) creates
+/** Modal scrim wrapper for the profile dialogs. Phase 7 — Popup(focusable=true) creates
  *  a hard focus boundary on Android TV so D-pad stays inside the dialog. */
 @Composable
 internal fun ProfileScrim(onDismiss: () -> Unit, content: @Composable () -> Unit) {
@@ -65,7 +65,7 @@ internal fun ProfileScrim(onDismiss: () -> Unit, content: @Composable () -> Unit
                 modifier = Modifier
                     .width(480.dp)
                     .clip(RoundedCornerShape(20.dp))
-                    .background(OwnTVTheme.colors.surfaceContainerHigh)
+                    .background(LunaIPtvTheme.colors.surfaceContainerHigh)
                     .padding(28.dp),
             ) { content() }
         }
@@ -75,18 +75,18 @@ internal fun ProfileScrim(onDismiss: () -> Unit, content: @Composable () -> Unit
 /** Numeric PIN entry. Calls [onSubmit] with the entered digits. */
 @Composable
 internal fun PinDialog(title: String, onSubmit: (String) -> Unit, onDismiss: () -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var pin by remember { mutableStateOf("") }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     ProfileScrim(onDismiss) {
         Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
         Spacer(Modifier.height(16.dp))
-        OwnTVTextField(
+        LunaIPtvTextField(
             value = pin,
             onValueChange = { if (it.length <= 6 && it.all(Char::isDigit)) pin = it },
             label = "PIN",
-            placeholder = "Â·Â·Â·Â·",
+            placeholder = "····",
             keyboardType = KeyboardType.NumberPassword,
             isPassword = true,
             modifier = Modifier.fillMaxWidth().focusRequester(focus),
@@ -97,12 +97,12 @@ internal fun PinDialog(title: String, onSubmit: (String) -> Unit, onDismiss: () 
         val cancelFocus = remember { FocusRequester() }
         val okFocus = remember { FocusRequester() }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton(
-                "Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY,
+            LunaIPtvButton(
+                "Cancel", onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY,
                 modifier = Modifier.focusRequester(cancelFocus).focusProperties { right = okFocus },
             )
             Spacer(Modifier.weight(1f))
-            OwnTVButton(
+            LunaIPtvButton(
                 "OK", onClick = { onSubmit(pin) }, enabled = pin.length >= 4,
                 modifier = Modifier.focusRequester(okFocus).focusProperties { left = cancelFocus },
             )
@@ -121,9 +121,9 @@ internal fun ProfileEditorDialog(
     onConfirm: (name: String, avatarId: Int, isKids: Boolean, pin: String?) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var name by remember { mutableStateOf(initial?.name ?: "") }
-    var avatarId by remember { mutableIntStateOf(initial?.avatarId ?: -1) } // Phase 7 â€” new profiles default to no-avatar
+    var avatarId by remember { mutableIntStateOf(initial?.avatarId ?: -1) } // Phase 7 — new profiles default to no-avatar
     var isKids by remember { mutableStateOf(initial?.isKids ?: false) }
     var pin by remember { mutableStateOf("") }
     var removePin by remember { mutableStateOf(false) }
@@ -133,13 +133,13 @@ internal fun ProfileEditorDialog(
     ProfileScrim(onDismiss) {
         Text(if (initial == null) "New profile" else "Edit profile", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
         Spacer(Modifier.height(16.dp))
-        OwnTVTextField(name, { name = it }, label = "Name", placeholder = "e.g. Alex", modifier = Modifier.fillMaxWidth().focusRequester(focus))
+        LunaIPtvTextField(name, { name = it }, label = "Name", placeholder = "e.g. Alex", modifier = Modifier.fillMaxWidth().focusRequester(focus))
         Spacer(Modifier.height(16.dp))
 
         Text("AVATAR", style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            items((-1 until OwnTVAvatars.COUNT).toList()) { id -> // Phase 7 â€” includes "no avatar" (-1)
+            items((-1 until LunaIPtvAvatars.COUNT).toList()) { id -> // Phase 7 — includes "no avatar" (-1)
                 FocusableSurface(
                     onClick = { avatarId = id },
                     modifier = Modifier.size(60.dp),
@@ -148,7 +148,7 @@ internal fun ProfileEditorDialog(
                     selectedContainerColor = colors.primaryContainer,
                     contentAlignment = Alignment.Center,
                 ) { _ ->
-                    OwnTVAvatar(avatarId = id, modifier = Modifier.size(48.dp))
+                    LunaIPtvAvatar(avatarId = id, modifier = Modifier.size(48.dp))
                 }
             }
         }
@@ -161,11 +161,11 @@ internal fun ProfileEditorDialog(
             Spacer(Modifier.height(12.dp))
         }
         if (!removePin) {
-            OwnTVTextField(
+            LunaIPtvTextField(
                 value = pin,
                 onValueChange = { if (it.length <= 6 && it.all(Char::isDigit)) pin = it },
                 label = if (initial?.pinHash != null) "Change PIN (blank = keep)" else "PIN (optional)",
-                placeholder = "4â€“6 digits",
+                placeholder = "4–6 digits",
                 keyboardType = KeyboardType.NumberPassword,
                 isPassword = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -174,9 +174,9 @@ internal fun ProfileEditorDialog(
 
         Spacer(Modifier.height(22.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+            LunaIPtvButton("Cancel", onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
             Spacer(Modifier.weight(1f))
-            OwnTVButton(
+            LunaIPtvButton(
                 label = if (initial == null) "Create" else "Save",
                 onClick = { onConfirm(name, avatarId, isKids, if (removePin) "" else pin.takeIf { it.isNotBlank() }) },
                 enabled = name.isNotBlank() && (removePin || pin.isEmpty() || pin.length >= 4),
@@ -187,7 +187,7 @@ internal fun ProfileEditorDialog(
 
 @Composable
 private fun ToggleRow(label: String, desc: String, checked: Boolean, onToggle: (Boolean) -> Unit) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = { onToggle(!checked) },
         modifier = Modifier.fillMaxWidth(),

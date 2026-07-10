@@ -1,11 +1,11 @@
-# OwnTV TMDB caching proxy (Cloudflare Worker)
+# LunaIPtv TMDB caching proxy (Cloudflare Worker)
 
-This is the source of OwnTV's **default metadata server** — a tiny Cloudflare Worker that
+This is the source of LunaIPtv's **default metadata server** — a tiny Cloudflare Worker that
 proxies TMDB `/3/...` API calls, injects a server-side TMDB API key, and edge-caches the JSON
 responses so a large user base costs only a handful of real TMDB calls.
 
-OwnTV's built-in default points at the maintainer's deployment of exactly this code. You can
-run your **own free copy in about 10 minutes** and point OwnTV at it — no programming needed.
+LunaIPtv's built-in default points at the maintainer's deployment of exactly this code. You can
+run your **own free copy in about 10 minutes** and point LunaIPtv at it — no programming needed.
 
 ## What you need (both free)
 
@@ -20,7 +20,7 @@ run your **own free copy in about 10 minutes** and point OwnTV at it — no prog
 
 1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com).
 2. In the left menu choose **Workers & Pages**, then click **Create** → **Create Worker**.
-3. Give it any name you like (e.g. `my-owntv-meta`) and click **Deploy** — this creates a
+3. Give it any name you like (e.g. `my-LunaIPtv-meta`) and click **Deploy** — this creates a
    "Hello World" worker; you'll replace its code next.
 4. Click **Edit code**. Delete everything in the editor, then open
    [`index.js`](index.js) from this folder, copy **all** of it, paste it into the editor,
@@ -29,14 +29,14 @@ run your **own free copy in about 10 minutes** and point OwnTV at it — no prog
    **Variables and Secrets** → **Add** → type = **Secret**, name = `TMDB_KEY` (exactly like
    that), value = your TMDB API key → **Deploy** / **Save**.
 6. Find your worker's address on its overview page — it looks like
-   `https://my-owntv-meta.<your-subdomain>.workers.dev`.
+   `https://my-LunaIPtv-meta.<your-subdomain>.workers.dev`.
 7. **Test it** in any browser — open:
 
-   `https://my-owntv-meta.<your-subdomain>.workers.dev/3/search/movie?query=Oppenheimer`
+   `https://my-LunaIPtv-meta.<your-subdomain>.workers.dev/3/search/movie?query=Oppenheimer`
 
    If you see a wall of movie data (JSON), it works. If you see an error, re-check step 5
    (the secret must be named `TMDB_KEY`).
-8. In OwnTV on your TV: **Settings → Metadata → Advanced → Custom metadata server URL** →
+8. In LunaIPtv on your TV: **Settings → Metadata → Advanced → Custom metadata server URL** →
    enter your worker address (without any `/3/...` part) → **Test lookup** should succeed.
 
 That's it. Your TMDB key never leaves your Cloudflare account, and repeated lookups are served
@@ -66,7 +66,7 @@ The deployed URL is printed by `wrangler deploy`; test and configure it as in st
   responses are edge-cached for 30 days, so most lookups never reach TMDB.
 - Only GET requests to `/3/...` are proxied; everything else is rejected.
 - Upstream errors are passed through uncached, so a transient TMDB failure doesn't stick.
-- Images are **not** proxied — OwnTV loads poster/backdrop art directly from `image.tmdb.org`,
+- Images are **not** proxied — LunaIPtv loads poster/backdrop art directly from `image.tmdb.org`,
   which needs no key. The Worker only ever sees small JSON lookups.
 
 ## Attribution

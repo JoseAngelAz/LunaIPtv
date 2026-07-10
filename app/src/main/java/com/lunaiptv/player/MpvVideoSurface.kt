@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-private class MpvSurfaceView(context: Context, private val player: OwnTVPlayer) :
+private class MpvSurfaceView(context: Context, private val player: LunaIPtvPlayer) :
     SurfaceView(context), SurfaceHolder.Callback {
 
     private var pendingFps = 0f
@@ -62,14 +62,14 @@ private class MpvSurfaceView(context: Context, private val player: OwnTVPlayer) 
 /**
  * Hosts the mpv video output (a [SurfaceView]) in Compose.
  *
- * The decoder always fills the surface edge-to-edge (mpv is told, via [OwnTVPlayer.setZoomMode], to
+ * The decoder always fills the surface edge-to-edge (mpv is told, via [LunaIPtvPlayer.setZoomMode], to
  * never letterbox/crop/override internally), so zoom/aspect is done entirely by **sizing the view
  * itself** — see [Modifier.videoZoom] for the shared sizing math (also used by the ExoPlayer live path,
  * so Live TV and VOD zoom behave identically).
  */
 @OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-fun MpvVideoSurface(player: OwnTVPlayer, modifier: Modifier = Modifier) {
+fun MpvVideoSurface(player: LunaIPtvPlayer, modifier: Modifier = Modifier) {
     val aspect by player.videoAspect.collectAsStateWithLifecycle()
     val videoSize by player.videoSize.collectAsStateWithLifecycle()
     val zoom by player.zoomMode.collectAsStateWithLifecycle()

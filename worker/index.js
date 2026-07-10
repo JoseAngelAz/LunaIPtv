@@ -1,10 +1,10 @@
 /**
- * OwnTV TMDB caching proxy (Cloudflare Worker).
+ * LunaIPtv TMDB caching proxy (Cloudflare Worker).
  *
  * This is the source of the default metadata server baked into OwnTV
  * (https://owntv-tmdb-meta.xiannero.workers.dev) — see future-plan/tmdb-metadata-plan.md §5.
  * It is committed here so the deployed Worker is version-controlled and so anyone can
- * self-host their own copy (OwnTV Settings → Metadata → custom metadata server URL).
+ * self-host their own copy (LunaIPtv Settings → Metadata → custom metadata server URL).
  *
  * What it does:
  *  1. Accepts the same path/query shape as TMDB's /3/... API (e.g. /3/search/movie?query=...).

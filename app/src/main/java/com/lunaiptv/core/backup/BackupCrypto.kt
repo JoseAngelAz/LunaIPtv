@@ -14,7 +14,7 @@ import javax.crypto.spec.SecretKeySpec
  * Field-level secret encryption for backups (NOT whole-file encryption — only individual secret values).
  *
  * Only individual secret values (source/proxy passwords) are encrypted; everything else in
- * owntv-backup.json stays human-readable. A user-supplied passphrase is stretched with PBKDF2 over a
+ * LunaIPtv-backup.json stays human-readable. A user-supplied passphrase is stretched with PBKDF2 over a
  * per-backup random salt (so the file is portable across devices — no Android Keystore), then each
  * field is sealed with AES-256-GCM using a fresh random IV. The GCM tag authenticates both the value
  * and lets us detect a wrong passphrase (decrypt throws) without ever comparing the passphrase itself.

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -45,24 +45,24 @@ import androidx.compose.ui.zIndex
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.NavAccentBar
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.rememberNavLadderColors
 import com.lunaiptv.ui.components.SearchBar
 import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.components.RailPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * A category as shown in the rail: a 2â€“3 char abbreviation plus its full name. Special rails
+ * A category as shown in the rail: a 2–3 char abbreviation plus its full name. Special rails
  * (Favorites / History) render an [icon] instead of the abbreviation.
  */
-data class RailCategory(val abbr: String, val fullName: String, val icon: OwnTVIcon? = null)
+data class RailCategory(val abbr: String, val fullName: String, val icon: LunaIPtvIcon? = null)
 
 /**
- * Layer 2 â€” the vertical folder rail. Collapsed (focus elsewhere) it shows compact abbreviation
- * pills (FAV, HIS, UK, â€¦); when it holds focus it expands to show full names.
+ * Layer 2 — the vertical folder rail. Collapsed (focus elsewhere) it shows compact abbreviation
+ * pills (FAV, HIS, UK, …); when it holds focus it expands to show full names.
  *
  * Performance notes (providers can have hundreds of categories):
  *  - The pills live in a [LazyColumn], so only the visible ones are composed.
@@ -78,7 +78,7 @@ fun CategoryRail(
     onFocused: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     var hasFocus by remember { mutableStateOf(false) }
     // Folder search (for big libraries). Filters the rail by name but keeps each folder's ORIGINAL
     // index, so selection highlighting and onSelect still map correctly. Reset when the rail loses
@@ -89,7 +89,7 @@ fun CategoryRail(
         if (q.isEmpty()) categories.indices.toList()
         else categories.indices.filter { categories[it].fullName.contains(q, ignoreCase = true) }
     }
-    // Phase 2 â€” the rail is a FIXED full-label column (no collapse/abbreviation overlay), so it never
+    // Phase 2 — the rail is a FIXED full-label column (no collapse/abbreviation overlay), so it never
     // reflows the layout on the D-pad. Always "expanded" = full category names.
     val expanded = true
 
@@ -105,7 +105,7 @@ fun CategoryRail(
         }
     }
 
-    // Fixed full-label column in the screen's Row â€” a real grid column (no overlay), so it takes its own
+    // Fixed full-label column in the screen's Row — a real grid column (no overlay), so it takes its own
     // space and nothing reflows when focus enters/leaves it.
     Box(modifier = modifier.fillMaxHeight().width(Dimens.RailWidthFixed).roundedPanel(fillColor = RailPanelFill)) {
         LazyColumn(
@@ -113,10 +113,10 @@ fun CategoryRail(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                // LazyColumn fill is now transparent â€” the outer Box's roundedPanel surfaceContainerLowest
+                // LazyColumn fill is now transparent — the outer Box's roundedPanel surfaceContainerLowest
                 // shows through, keeping panel 1 the same colour as panels 2/3/4 (Phase 6).
                 .onFocusChanged {
-                    // Spatial D-pad entry would land on whatever pill is horizontally aligned â€”
+                    // Spatial D-pad entry would land on whatever pill is horizontally aligned —
                     // redirect every entry (from the sidebar OR back from the content list) to the
                     // SELECTED category, so you return to the folder you're actually in (e.g. pressing
                     // Left from a channel lands back on that channel's category, not the top of the rail).
@@ -132,14 +132,14 @@ fun CategoryRail(
                             runCatching { listState.scrollToItem(selectedIndex) }
                             runCatching { selectedFocus.requestFocus() }
                         } else {
-                            // No selection (e.g. an empty/special rail) â€” fall back to the search box.
+                            // No selection (e.g. an empty/special rail) — fall back to the search box.
                             runCatching { listState.scrollToItem(0) }
                             runCatching { searchFocus.requestFocus() }
                         }
                     }
                 }
                 // Held Up/Down can outrun the lazy list's composition and escape the rail (landing
-                // on the top bar) â€” trap vertical exits; Left/Right/Back still leave normally.
+                // on the top bar) — trap vertical exits; Left/Right/Back still leave normally.
                 .trapVerticalFocusExit()
                 .focusGroup(),
             contentPadding = PaddingValues(vertical = Dimens.GapLarge, horizontal = 10.dp),
@@ -153,7 +153,7 @@ fun CategoryRail(
                     SearchBar(
                         query = query,
                         onQueryChange = { query = it },
-                        placeholder = "Search categoriesâ€¦",
+                        placeholder = "Search categories…",
                         modifier = Modifier
                             .focusRequester(searchFocus)
                             .fillMaxWidth()
@@ -166,7 +166,7 @@ fun CategoryRail(
                 RailPill(
                     category = categories[index],
                     // RailPill only lights the green "active" fill when this pill is BOTH the current
-                    // category AND focused â€” so the highlight always follows focus and nothing is auto-lit.
+                    // category AND focused — so the highlight always follows focus and nothing is auto-lit.
                     selected = index == selectedIndex,
                     expanded = expanded,
                     onClick = { onSelect(index) },
@@ -197,9 +197,9 @@ private fun RailPill(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
-    // Shared 4-state nav ladder (see NavLadder.kt) â€” identical treatment to the sidebar nav items so
-    // both panels read the same (#47): active+focused (full fill) â†’ focused cursor (outline) â†’
-    // selected-idle (tonal fill + left accent bar) â†’ idle.
+    // Shared 4-state nav ladder (see NavLadder.kt) — identical treatment to the sidebar nav items so
+    // both panels read the same (#47): active+focused (full fill) ? focused cursor (outline) ?
+    // selected-idle (tonal fill + left accent bar) ? idle.
     val ladder = rememberNavLadderColors(selected = selected, focused = focused)
     val activeSelected = selected && focused
 
@@ -222,7 +222,7 @@ private fun RailPill(
                 onClick = onClick,
             ),
     ) {
-        // Persistent left accent bar marking the active category (only in the expanded full-label rail â€”
+        // Persistent left accent bar marking the active category (only in the expanded full-label rail —
         // a vertical bar on a compact circle pill would look wrong).
         NavAccentBar(visible = ladder.showAccentBar && expanded)
 
@@ -233,13 +233,13 @@ private fun RailPill(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = if (expanded) Arrangement.Start else Arrangement.Center,
         ) {
-            // The compact badge (icon or abbreviation) â€” the row's anchor in both states.
+            // The compact badge (icon or abbreviation) — the row's anchor in both states.
             Box(
                 modifier = Modifier.size(if (expanded) 36.dp else Dimens.RailPillSize),
                 contentAlignment = Alignment.Center,
             ) {
                 if (category.icon != null) {
-                    OwnTVIcon(icon = category.icon, tint = ladder.icon, filled = activeSelected, modifier = Modifier.size(if (expanded) 20.dp else Dimens.RailPillSize / 2))
+                    LunaIPtvIcon(icon = category.icon, tint = ladder.icon, filled = activeSelected, modifier = Modifier.size(if (expanded) 20.dp else Dimens.RailPillSize / 2))
                 } else {
                     Text(
                         text = category.abbr,

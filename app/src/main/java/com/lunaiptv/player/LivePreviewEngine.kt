@@ -33,7 +33,7 @@ import com.lunaiptv.core.network.HttpClient
  * The **full** player stays on mpv (4K/HDR direct path, broad IPTV/raw-TS compatibility) — going fullscreen
  * [stop]s this engine and hands the channel to mpv. Preview and fullscreen use separate SurfaceViews on
  * separate screens, so the two decoders never share a surface. A single long-lived instance (Koin single),
- * like [OwnTVPlayer]; it's [stop]ped (not released) whenever the preview isn't on screen.
+ * like [LunaIPtvPlayer]; it's [stop]ped (not released) whenever the preview isn't on screen.
  *
  * All calls must be on the main thread (ExoPlayer is single-threaded): the VM invokes [play]/[stop]/
  * [setMuted] from the UI thread and the Compose surface invokes [setSurface] from the holder callback.
@@ -57,7 +57,7 @@ class LivePreviewEngine(
     private val _videoHeight = MutableStateFlow<Int?>(null)
     val videoHeight: StateFlow<Int?> = _videoHeight.asStateFlow()
     // PAR-corrected display aspect (w/h) + native pixel (w, h), used by ExoPreviewSurface's zoom/letterbox
-    // sizing (see Modifier.videoZoom). Mirrors OwnTVPlayer._videoAspect/_videoSize so live-on-ExoPlayer
+    // sizing (see Modifier.videoZoom). Mirrors LunaIPtvPlayer._videoAspect/_videoSize so live-on-ExoPlayer
     // zooms identically to live-on-mpv / VOD.
     private val _videoAspect = MutableStateFlow<Float?>(null)
     val videoAspect: StateFlow<Float?> = _videoAspect.asStateFlow()

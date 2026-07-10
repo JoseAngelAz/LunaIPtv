@@ -10,7 +10,7 @@ import com.lunaiptv.BuildConfig
 
 /**
  * Bounded ring buffer + rolling file for Live TV (ExoPlayer) playback diagnostics. A hang can happen at any
- * time, and this device's vendor PQ/AI logging floods logcat fast enough that OwnTV's own lines don't survive
+ * time, and this device's vendor PQ/AI logging floods logcat fast enough that LunaIPtv's own lines don't survive
  * to a bugreport — so this keeps its own bounded record independent of Logcat.
  *
  * Enabled by default in debug builds, disabled by default in release. Callers must redact URLs/credentials

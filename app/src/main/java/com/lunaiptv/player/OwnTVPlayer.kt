@@ -80,7 +80,7 @@ enum class ZoomMode(val label: String) {
  * sub on its own layer. The handoff is transparent: ExoPlayer's state is mirrored into these same flows.
  */
 @OptIn(androidx.media3.common.util.UnstableApi::class)
-class OwnTVPlayer(
+class LunaIPtvPlayer(
     private val context: Context,
     private val settings: SettingsRepository,
     private val connectivity: com.lunaiptv.core.network.ConnectivityObserver,
@@ -798,7 +798,7 @@ class OwnTVPlayer(
             mpvAsync {
                 stopWithStopClassification("handoff to exo")
                 setPropertyString("vo", "null")
-                runCatching { this.detachSurface() } // mpv's detachSurface (the receiver), not OwnTVPlayer's
+                runCatching { this.detachSurface() } // mpv's detachSurface (the receiver), not LunaIPtvPlayer's
                 scope.launch {
                     delay(250) // reduced from 600ms — enough for MediaCodec release without a long silence gap
                     if (gen != loadGeneration) return@launch // superseded meanwhile
@@ -1181,7 +1181,7 @@ class OwnTVPlayer(
             observeProperty("video-codec", MPVLib.MpvFormat.MPV_FORMAT_STRING) // for the error screen spec line
             // Current subtitle line for the app-drawn overlay (direct mode); fires only on change.
             observeProperty("sub-text", MPVLib.MpvFormat.MPV_FORMAT_STRING)
-            addObserver(this@OwnTVPlayer)
+            addObserver(this@LunaIPtvPlayer)
             addLogObserver(logObserver) // capture mpv's error output for the on-screen "err: …" detail line
         }
         diagnostics.start() // tail logcat for MediaCodec/AudioTrack errors mpv can't surface

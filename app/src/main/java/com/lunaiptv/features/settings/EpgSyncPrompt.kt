@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.settings
+package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -30,15 +30,15 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
 import com.lunaiptv.R
-import com.lunaiptv.ui.components.OwnTVButton
-import com.lunaiptv.ui.components.OwnTVButtonStyle
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.components.OwnTVSpinner
+import com.lunaiptv.ui.components.LunaIPtvButton
+import com.lunaiptv.ui.components.LunaIPtvButtonStyle
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.formatCount
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Semi-automatic EPG flow after a playlist import: ask → sync with a live programme count → done. */
+/** Semi-automatic EPG flow after a playlist import: ask ? sync with a live programme count ? done. */
 sealed interface EpgSyncUi {
     data object Hidden : EpgSyncUi
     data class Ask(val sourceName: String) : EpgSyncUi
@@ -49,13 +49,13 @@ sealed interface EpgSyncUi {
 
 /**
  * After a playlist imports, ask whether to sync its TV guide now (the old behaviour synced it automatically,
- * which was slow). "Sync now" runs in the foreground and shows a **live programme count** — exactly like the
- * playlist import — then a brief "Done", and closes itself.
+ * which was slow). "Sync now" runs in the foreground and shows a **live programme count** � exactly like the
+ * playlist import � then a brief "Done", and closes itself.
  */
 @Composable
 fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
     if (state is EpgSyncUi.Hidden) return
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val focus = remember { FocusRequester() }
     LaunchedEffect(state::class) {
         if (state !is EpgSyncUi.Syncing) {
@@ -84,33 +84,33 @@ fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
                     )
                     Spacer(Modifier.height(22.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        OwnTVButton(stringResource(R.string.epg_not_now), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                        OwnTVButton(stringResource(R.string.epg_sync_now), onClick = onSync, modifier = Modifier.focusRequester(focus))
+                        LunaIPtvButton(stringResource(R.string.epg_not_now), onClick = onDismiss, style = LunaIPtvButtonStyle.SECONDARY)
+                        LunaIPtvButton(stringResource(R.string.epg_sync_now), onClick = onSync, modifier = Modifier.focusRequester(focus))
                     }
                 }
                 is EpgSyncUi.Syncing -> {
-                    OwnTVSpinner(sizeDp = 48)
+                    LunaIPtvSpinner(sizeDp = 48)
                     Spacer(Modifier.height(18.dp))
                     Text(stringResource(R.string.epg_syncing), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        if (state.count > 0) formatCount(state.count) else "Connecting…",
+                        if (state.count > 0) formatCount(state.count) else "Connecting�",
                         style = MaterialTheme.typography.headlineLarge, color = colors.primary,
                     )
                 }
                 is EpgSyncUi.Done -> {
-                    OwnTVIcon(OwnTVIcon.EPG, tint = colors.primary, modifier = Modifier.size(40.dp))
+                    LunaIPtvIcon(LunaIPtvIcon.EPG, tint = colors.primary, modifier = Modifier.size(40.dp))
                     Spacer(Modifier.height(14.dp))
                     Text(stringResource(R.string.epg_synced), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(20.dp))
-                    OwnTVButton(stringResource(R.string.done), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+                    LunaIPtvButton(stringResource(R.string.done), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
                 }
                 is EpgSyncUi.Failed -> {
                     Text(stringResource(R.string.epg_sync_failed), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(10.dp))
                     Text(state.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(20.dp))
-                    OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+                    LunaIPtvButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
                 }
                 EpgSyncUi.Hidden -> Unit
             }

@@ -61,8 +61,8 @@ import com.lunaiptv.core.parser.XtEpgEntry
 import com.lunaiptv.core.parser.XtreamClient
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.settings.data.SettingsRepository
-import com.lunaiptv.player.OwnTVPlayer
-import com.lunaiptv.ui.components.OwnTVIcon
+import com.lunaiptv.player.LunaIPtvPlayer
+import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.format.formatSystemTime
 
 /** Layer-2 rail selection for Live TV. */
@@ -74,7 +74,7 @@ sealed interface LiveKey {
 }
 
 /** A rail entry. Favorites/History carry an [icon] (rendered instead of the abbreviation). */
-data class LiveRailItem(val key: LiveKey, val abbr: String, val title: String, val icon: OwnTVIcon? = null)
+data class LiveRailItem(val key: LiveKey, val abbr: String, val title: String, val icon: LunaIPtvIcon? = null)
 
 /** Now-playing + up-next EPG for the focused channel (null entries when the guide is unavailable). */
 data class EpgNowNext(val now: XtEpgEntry?, val next: XtEpgEntry?, val upcoming: List<XtEpgEntry> = emptyList())
@@ -93,7 +93,7 @@ class LiveViewModel(
     private val launcherIntegrationRepository: LauncherIntegrationRepository,
     private val epgDao: com.lunaiptv.core.database.dao.EpgDao,
     private val epgSourceStore: com.lunaiptv.core.epg.EpgSourceStore,
-    val player: OwnTVPlayer,
+    val player: LunaIPtvPlayer,
     val previewEngine: com.lunaiptv.player.LivePreviewEngine,
     private val forceMpvStore: com.lunaiptv.core.player.ForceMpvStore,
     private val contentOrderDao: ContentOrderDao,
@@ -860,8 +860,8 @@ class LiveViewModel(
         const val ENGINE_TAG = "LiveEngine"
         const val TAG = "LunaIPtvHome"
         val defaultRail = listOf(
-            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", OwnTVIcon.STAR),
-            LiveRailItem(LiveKey.History, "HIS", "History", OwnTVIcon.HISTORY),
+            LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", LunaIPtvIcon.STAR),
+            LiveRailItem(LiveKey.History, "HIS", "History", LunaIPtvIcon.HISTORY),
             LiveRailItem(LiveKey.All, "ALL", "All Channels"),
         )
         const val CATCHUP_LOOKBACK_CAP_MS = 48L * 60 * 60 * 1000 // bounded by the EPG we retain (~2 days)

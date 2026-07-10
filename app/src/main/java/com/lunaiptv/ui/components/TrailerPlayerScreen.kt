@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import android.content.Context
 import android.content.Intent
@@ -45,22 +45,22 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * In-app YouTube trailer player (plan Â§7.3 / U4): a fullscreen WebView-backed IFrame player
- * (`android-youtube-player`) under a minimal Compose overlay â€” just an **Exit** button and a
+ * In-app YouTube trailer player (plan §7.3 / U4): a fullscreen WebView-backed IFrame player
+ * (`android-youtube-player`) under a minimal Compose overlay — just an **Exit** button and a
  * **progress seekbar** (non-navigable for now; display-only, driven by the player's
  * currentSecond/duration callbacks). Focus stays entirely in the Compose overlay; the WebView is
  * treated as a pure video surface, which sidesteps the classic "iframe steals D-pad focus" problem.
  *
  * Graceful fallback (required by the plan): if the WebView is missing/ancient or the video errors,
- * we hand off to an external "Open in YouTube" intent and exit â€” the button always does *something*.
+ * we hand off to an external "Open in YouTube" intent and exit — the button always does *something*.
  */
 @Composable
 fun TrailerPlayerScreen(videoKey: String, onExit: () -> Unit) {
     val context = LocalContext.current
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
 
     var currentSec by remember { mutableFloatStateOf(0f) }
     var durationSec by remember { mutableFloatStateOf(0f) }
@@ -71,7 +71,7 @@ fun TrailerPlayerScreen(videoKey: String, onExit: () -> Unit) {
     LaunchedEffect(Unit) { runCatching { exitFocus.requestFocus() } }
     BackHandler { onExit() }
 
-    // Some no-name boxes ship without a usable System WebView â€” constructing the player view itself
+    // Some no-name boxes ship without a usable System WebView — constructing the player view itself
     // can throw there, so treat construction failure like a playback error (external fallback).
     val playerView = remember {
         runCatching {
@@ -120,12 +120,12 @@ fun TrailerPlayerScreen(videoKey: String, onExit: () -> Unit) {
                 if (state == PlayerConstants.PlayerState.ENDED) onExit()
             }
         }
-        // Default IFrame options already hide YouTube's own chrome (controls=0) â€” our overlay is the only UI.
+        // Default IFrame options already hide YouTube's own chrome (controls=0) — our overlay is the only UI.
         runCatching { playerView.initialize(listener) }.onFailure { failed = true }
         onDispose { player = null; runCatching { playerView.release() } }
     }
 
-    // Navigable seek (Â§7.3, additive step): D-pad â—€/â–¶ on the overlay = seek Â±10s. The Exit button is the
+    // Navigable seek (§7.3, additive step): D-pad ?/? on the overlay = seek ±10s. The Exit button is the
     // only focus target, so its key events bubble up here; consuming Left/Right also stops focus search
     // from wandering (there is nothing to the button's sides anyway).
     val onSeekKey: (androidx.compose.ui.input.key.KeyEvent) -> Boolean = onKey@{ e ->
@@ -143,7 +143,7 @@ fun TrailerPlayerScreen(videoKey: String, onExit: () -> Unit) {
     }
 
     // Same windowed treatment as the TMDB details popup (MediaDetailsScreen): a centred ~82% card over a
-    // dimmed scrim â€” a floating window, not a fullscreen takeover.
+    // dimmed scrim — a floating window, not a fullscreen takeover.
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -172,10 +172,10 @@ fun TrailerPlayerScreen(videoKey: String, onExit: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(18.dp),
             ) {
-                OwnTVButton(
+                LunaIPtvButton(
                     "Exit",
                     onClick = onExit,
-                    style = OwnTVButtonStyle.SECONDARY,
+                    style = LunaIPtvButtonStyle.SECONDARY,
                     modifier = Modifier.focusRequester(exitFocus),
                 )
                 // Display-only progress bar (plan: non-navigable seek first; D-pad seek is a later additive step).

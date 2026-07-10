@@ -26,7 +26,7 @@ import com.lunaiptv.core.database.entity.DownloadEntity
 import com.lunaiptv.core.download.DownloadManager
 import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.features.settings.data.SettingsRepository
-import com.lunaiptv.player.OwnTVPlayer
+import com.lunaiptv.player.LunaIPtvPlayer
 
 /** Phase 12 — lists the active profile's downloads and plays completed ones from local storage. */
 class DownloadsViewModel(
@@ -36,7 +36,7 @@ class DownloadsViewModel(
     private val customize: CustomizationStore,
     private val settings: SettingsRepository,
     private val downloadManager: DownloadManager,
-    val player: OwnTVPlayer,
+    val player: LunaIPtvPlayer,
     private val externalPlayerLauncher: com.lunaiptv.core.player.ExternalPlayerLauncher,
 ) : ViewModel() {
 

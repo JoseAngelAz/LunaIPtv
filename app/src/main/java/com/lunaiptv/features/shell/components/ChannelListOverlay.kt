@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.features.shell.components
+package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -36,12 +36,12 @@ import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import com.lunaiptv.core.database.entity.ChannelEntity
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.components.LunaIPtvIcon
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * A channel list that slides in over the playing video (opened with Left while the player controls are
- * hidden). Browse with the D-pad, OK switches channel, Back / Left again closes it — all without leaving
+ * hidden). Browse with the D-pad, OK switches channel, Back / Left again closes it � all without leaving
  * full-screen. The currently-playing channel is highlighted and focused first.
  */
 @Composable
@@ -52,7 +52,7 @@ fun ChannelListOverlay(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     val currentIndex = remember(channels, currentId) {
         channels.indexOfFirst { it.id == currentId }.coerceAtLeast(0)
     }
@@ -109,7 +109,7 @@ private fun ChannelRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         selected = isCurrent,
@@ -127,7 +127,7 @@ private fun ChannelRow(
                 if (!channel.logoUrl.isNullOrBlank()) {
                     AsyncImage(model = channel.logoUrl, contentDescription = null, modifier = Modifier.fillMaxSize())
                 } else {
-                    OwnTVIcon(OwnTVIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                    LunaIPtvIcon(LunaIPtvIcon.LIVE_TV, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
             Text(

@@ -1,4 +1,4 @@
-ï»¿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,11 +15,11 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.features.settings.data.SettingsRepository.SortMode
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Compact sort toggle shown next to a section's search bar. Click flips between the playlist's own
- * order and Aâ€“Z; the label names the *current* mode.
+ * order and A–Z; the label names the *current* mode.
  */
 @Composable
 fun SortChip(
@@ -28,7 +28,7 @@ fun SortChip(
     modifier: Modifier = Modifier,
     playlistLabel: String = "Playlist",
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onToggle,
         // Same height + pill shape as SearchBar so the two read as one row of controls.
@@ -43,8 +43,8 @@ fun SortChip(
             modifier = Modifier.padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            OwnTVIcon(
-                OwnTVIcon.SORT,
+            LunaIPtvIcon(
+                LunaIPtvIcon.SORT,
                 tint = if (focused) colors.primary else colors.onSurfaceVariant,
                 modifier = Modifier.size(16.dp),
             )
@@ -52,7 +52,7 @@ fun SortChip(
             Text(
                 text = when (mode) {
                     SortMode.PLAYLIST -> playlistLabel
-                    SortMode.ALPHA -> "Aâ€“Z"
+                    SortMode.ALPHA -> "A–Z"
                     SortMode.RATING -> "Rating"
                 },
                 style = MaterialTheme.typography.labelLarge,

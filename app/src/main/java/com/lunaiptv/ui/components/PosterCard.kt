@@ -1,4 +1,4 @@
-﻿package com.lunaiptv.ui.components
+package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /** A focusable poster tile for the Movies/Series grids: poster, title, rating, resume bar, fav star. */
 @Composable
@@ -42,7 +42,7 @@ fun PosterCard(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
 ) {
-    val colors = OwnTVTheme.colors
+    val colors = LunaIPtvTheme.colors
     FocusableSurface(
         onClick = onClick,
         onLongClick = onLongClick,
@@ -70,7 +70,7 @@ fun PosterCard(
                     AsyncImage(model = posterUrl, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
                 } else {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        OwnTVIcon(OwnTVIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(36.dp))
+                        LunaIPtvIcon(LunaIPtvIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.size(36.dp))
                     }
                 }
 
@@ -84,13 +84,13 @@ fun PosterCard(
                             .padding(horizontal = 8.dp, vertical = 3.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        OwnTVIcon(OwnTVIcon.STAR, tint = colors.accent, filled = true, modifier = Modifier.size(12.dp))
+                        LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.accent, filled = true, modifier = Modifier.size(12.dp))
                         Spacer(Modifier.size(4.dp))
                         Text(formatRating(rating), style = MaterialTheme.typography.labelMedium, color = Color.White)
                     }
                 }
 
-                // Watched: dim the art and stamp a teal ✓ badge (bottom-end). No progress bar is drawn
+                // Watched: dim the art and stamp a teal ? badge (bottom-end). No progress bar is drawn
                 // for a completed item (the caller passes progressFraction = null in that case).
                 if (completed) {
                     Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.45f)))
@@ -103,13 +103,13 @@ fun PosterCard(
                             .background(colors.primary),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text("✓", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = colors.onPrimary)
+                        Text("?", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold, color = colors.onPrimary)
                     }
                 }
 
                 if (isFavorite) {
-                    OwnTVIcon(
-                        OwnTVIcon.STAR,
+                    LunaIPtvIcon(
+                        LunaIPtvIcon.STAR,
                         tint = colors.favorite,
                         filled = true,
                         modifier = Modifier.align(Alignment.TopEnd).padding(6.dp).size(18.dp),
