@@ -264,6 +264,10 @@ private fun ImportBackupScreen(
     onBack: () -> Unit,
 ) {
     when (state) {
+        SetupViewModel.ImportState.Idle -> Centered {
+            OwnTVSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurface)
+        }
         SetupViewModel.ImportState.Running -> Centered {
             OwnTVSpinner(sizeDp = 56); Spacer(Modifier.height(16.dp))
             Text(stringResource(R.string.setup_restoring), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurface)
@@ -312,6 +316,9 @@ private fun ImportBackupScreen(
                 onPick = onPick,
                 onDismiss = onBack,
             )
+        }
+        is SetupViewModel.ImportState.Success -> Centered {
+            Text(stringResource(R.string.setup_all_set), style = MaterialTheme.typography.headlineLarge, color = OwnTVTheme.colors.onSurface)
         }
     }
 }
