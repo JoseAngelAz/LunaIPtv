@@ -657,8 +657,104 @@
     <!-- ===== AGREGAR FUENTE (NUEVO) ===== -->
     <string name="source_sync_desc">Elige qué importar. El resto se sincroniza en segundo plano.</string>
 
-    <!-- ===== DIÁLOGO DE ACTUALIZACIÓN (NUEVO) ===== -->
+    <!-- ===== DESCARGAS (SECCIONES) ===== -->
+    <string name="downloads_section_active">Activas</string>
+    <string name="downloads_section_waiting">En espera</string>
+    <string name="downloads_section_completed">Completadas</string>
+    <string name="downloads_section_failed">Fallidas</string>
+    <string name="downloads_resume">Reanudar</string>
+    <string name="downloads_downloading">Descargando… %1$s</string>
+    <string name="downloads_free_of">%1$s libre de %2$s</string>
+
+    <!-- ===== EPG (MISCELANEOS) ===== -->
+    <string name="epg_guide_title">Guía de TV</string>
+    <string name="epg_search_placeholder">Buscar canales de guía…</string>
+    <string name="epg_add_source_desc">Agrega una fuente EPG (XMLTV) para llenar la guía con programas.</string>
+    <string name="epg_no_guide">Sin guía.</string>
+    <string name="epg_guide_category">Categoría de guía</string>
+    <string name="epg_all_categories">Todas las categorías</string>
+    <string name="epg_review_desc">Estos canales fueron vinculados por nombre pero no son una coincidencia segura. Acepta los correctos; omite el resto.</string>
+    <string name="epg_match_channel_desc">Establece los datos de guía para \"%1$s\".</string>
+    <string name="epg_catchup_tag">↻ repetición</string>
+    <string name="epg_no_programme">No hay programa en este momento.</string>
+    <string name="epg_info_hint">Muévete a la derecha en una fila, luego navega con ◀ ▶ para previsualizar un programa.</string>
+
+    <!-- ===== REPRODUCTOR (MISCELANEOS) ===== -->
+    <string name="player_switched_exoplayer">Cambiado a ExoPlayer</string>
+    <string name="player_switched_mpv">Cambiado a MPV</string>
+    <string name="player_audio_track">Pista de audio</string>
+    <string name="player_subtitles">Subtítulos</string>
+    <string name="player_err_prefix">error: %1$s</string>
+    <string name="player_at_live_edge">● En el borde en vivo</string>
+    <string name="player_behind_live">● %1$s detrás del directo</string>
+    <string name="player_next_episode">Siguiente episodio en %1$ss</string>
+    <string name="player_play_now">Reproducir ahora</string>
+
+    <!-- ===== COPIA (MISCELANEO) ===== -->
+    <string name="backup_desc">Guarda tus perfiles, fuentes, personalizaciones, favoritos, historial y posiciones en un archivo \u2014 o restáuralos en un nuevo dispositivo. Eliges qué incluir cada vez. Canales/películas se resincronizan desde tus fuentes después de restaurar.</string>
+
+    <!-- ===== BUSCAR (MISCELANEO) ===== -->
+    <string name="search_min_chars">Escribe al menos 2 caracteres para buscar en todo.</string>
+    <string name="search_no_results">Sin resultados para \u201c%1$s\u201d.</string>
+    <string name="search_nothing_in">Nada en %1$s todavía.</string>
+    <string name="search_jump_to">Ir a</string>
+    <string name="search_recent">Búsquedas recientes</string>
+    <string name="search_no_recent">Tus búsquedas recientes aparecerán aquí.</string>
+    <string name="search_type_movie">Película</string>
+    <string name="search_type_series">Serie</string>
+
+    <!-- ===== PERSONALIZAR (MISCELANEO) ===== -->
+    <string name="customize_locked">Esta pantalla está bloqueada con PIN.</string>
+    <string name="customize_set_pin">\uD83D\uDD12 Establecer PIN</string>
+    <string name="customize_change_pin">\uD83D\uDD12 Cambiar PIN</string>
+    <string name="customize_remove_lock">Quitar bloqueo</string>
+    <string name="customize_desc">Oculta y muestra canales, películas y series, y renombra o reordena categorías para este perfil. Sobrevive resincronizaciones.</string>
+    <string name="customize_hidden_channels">Canales ocultos</string>
+    <string name="customize_hidden_movies">Películas ocultas</string>
+    <string name="customize_hidden_series">Series ocultas</string>
+    <string name="customize_unhide_hint">Muestra para devolver un ítem a las listas.</string>
+    <string name="customize_no_categories">No hay categorías en esta sección aún \u2014 agrega una fuente primero.</string>
+    <string name="customize_rename_category">Renombrar categoría</string>
+    <string name="customize_rename_hint">Solo para este perfil. Déjalo en blanco para restaurar \u201c%1$s\u201d.</string>
+    <string name="customize_remove_pin_title">¿Quitar bloqueo PIN?</string>
+    <string name="customize_remove_pin_desc">La pantalla de Personalizar se abrirá sin pedir PIN.</string>
+    <string name="customize_remove">Quitar</string>
+    <string name="customize_pin_mismatch">Los PINs no coinciden \u2014 reingresa</string>
+    <string name="customize_confirm_pin">Confirmar nuevo PIN</string>
+    <string name="customize_new_pin">Ingresa un nuevo PIN</string>
+    <string name="customize_categories_selected">%1$d categorías seleccionadas.</string>
+    <string name="customize_was">era</string>
+
+    <!-- ===== PERFILES (MISCELANEO) ===== -->
+    <string name="profiles_pin_locked">Bloqueado con PIN</string>
+
+    <!-- ===== AGREGAR FUENTE (MISCELANEO) ===== -->
+    <string name="source_kind_xtream">Xtream</string>
+    <string name="source_kind_m3u">M3U / M3U8</string>
+    <string name="source_edit_desc">Actualiza los detalles de esta fuente, o cambia su configuración de actualización automática.</string>
+    <string name="source_add_desc">LunaIPtv es un reproductor \u2014 trae tu propia fuente M3U o Xtream.</string>
+    <string name="source_password_keep">Contraseña (déjalo en blanco para mantener)</string>
+    <string name="source_playlist_file">Elige un archivo .m3u / .m3u8 local…</string>
+    <string name="source_auto_refresh_desc">Desactivado, al iniciar, o cuando los datos estén obsoletos</string>
+
+    <!-- ===== SELECCIONAR LISTA (MISCELANEO) ===== -->
+    <string name="playlist_picker_desc">Elige qué lista explorar. Esto se aplica en todas partes y se recuerda.</string>
+
+    <!-- ===== CONTINUAR (MISCELANEO) ===== -->
+    <string name="resume_stopped_at">Te detuviste en %1$s.</string>
+
+    <!-- ===== EXPLORADOR DE ARCHIVOS (MISCELANEO) ===== -->
+    <string name="browser_grant_access">Conceder acceso completo al almacenamiento</string>
+
+    <!-- ===== TMDB (MISCELANEO) ===== -->
+    <string name="tmdb_set_name_desc">Escribe el título exacto de TMDB para vincular. El año es opcional pero ayuda cuando varios títulos comparten nombre.</string>
+
+    <!-- ===== ACTUALIZAR (MISCELANEO) ===== -->
+    <string name="update_latest">Tienes la última versión (v%1$s).</string>
+    <string name="update_check_error">No se pudo buscar actualizaciones.</string>
+    <string name="update_luna_info">LunaIPtv v%1$s está listo (tienes v%2$s).</string>
+
+    <!-- ===== DIÁLOGO DE ACTUALIZACIÓN ===== -->
     <string name="update_latest_version">Esta es la última versión de LunaIPtv (v%1$s).</string>
     <string name="update_available_luna">LunaIPtv v%1$s está disponible (tienes v%2$s).</string>
-    <string name="update_try_again">Reintentar</string>
 </resources>

@@ -658,8 +658,104 @@
     <!-- ===== ADD SOURCE (NEW) ===== -->
     <string name="source_sync_desc">Pick what to import now. The rest syncs in the background.</string>
 
-    <!-- ===== UPDATE DIALOG (NEW) ===== -->
+    <!-- ===== DOWNLOADS (SECTIONS) ===== -->
+    <string name="downloads_section_active">Active</string>
+    <string name="downloads_section_waiting">Waiting</string>
+    <string name="downloads_section_completed">Completed</string>
+    <string name="downloads_section_failed">Failed</string>
+    <string name="downloads_resume">Resume</string>
+    <string name="downloads_downloading">Downloading… %1$s</string>
+    <string name="downloads_free_of">%1$s free of %2$s</string>
+
+    <!-- ===== EPG (MISC) ===== -->
+    <string name="epg_guide_title">TV Guide</string>
+    <string name="epg_search_placeholder">Search guide channels…</string>
+    <string name="epg_add_source_desc">Add an EPG (XMLTV) source to fill the guide with programmes.</string>
+    <string name="epg_no_guide">No guide.</string>
+    <string name="epg_guide_category">Guide category</string>
+    <string name="epg_all_categories">All categories</string>
+    <string name="epg_review_desc">These channels were matched by name but weren\'t a confident fit. Accept the right ones; skip the rest.</string>
+    <string name="epg_match_channel_desc">Set the guide data for \"%1$s\".</string>
+    <string name="epg_catchup_tag">↻ catch-up</string>
+    <string name="epg_no_programme">No programme at this time.</string>
+    <string name="epg_info_hint">Move right into a row, then browse with ◀ ▶ to preview a programme.</string>
+
+    <!-- ===== PLAYER HUD (MISC) ===== -->
+    <string name="player_switched_exoplayer">Switched to ExoPlayer</string>
+    <string name="player_switched_mpv">Switched to MPV</string>
+    <string name="player_audio_track">Audio Track</string>
+    <string name="player_subtitles">Subtitles</string>
+    <string name="player_err_prefix">err: %1$s</string>
+    <string name="player_at_live_edge">● At the live edge</string>
+    <string name="player_behind_live">● %1$s behind live</string>
+    <string name="player_next_episode">Next episode in %1$ds</string>
+    <string name="player_play_now">Play now</string>
+
+    <!-- ===== BACKUP (MISC) ===== -->
+    <string name="backup_desc">Save your profiles, sources, customizations, favorites, history and resume positions to a file \u2014 or restore them on a new device. You choose what to include each time. Channels/movies re-sync from your sources after restoring.</string>
+
+    <!-- ===== SEARCH (MISC) ===== -->
+    <string name="search_min_chars">Type at least 2 characters to search across everything.</string>
+    <string name="search_no_results">No results for \u201c%1$s\u201d.</string>
+    <string name="search_nothing_in">Nothing in %1$s yet.</string>
+    <string name="search_jump_to">Jump to</string>
+    <string name="search_recent">Recent searches</string>
+    <string name="search_no_recent">Your recent searches will show here.</string>
+    <string name="search_type_movie">Movie</string>
+    <string name="search_type_series">Series</string>
+
+    <!-- ===== CUSTOMIZE (MISC) ===== -->
+    <string name="customize_locked">This screen is PIN-locked.</string>
+    <string name="customize_set_pin">\uD83D\uDD12 Set PIN</string>
+    <string name="customize_change_pin">\uD83D\uDD12 Change PIN</string>
+    <string name="customize_remove_lock">Remove lock</string>
+    <string name="customize_desc">Hide &amp; unhide channels, movies and series, and rename or reorder categories for this profile. Survives re-syncs.</string>
+    <string name="customize_hidden_channels">Hidden channels</string>
+    <string name="customize_hidden_movies">Hidden movies</string>
+    <string name="customize_hidden_series">Hidden series</string>
+    <string name="customize_unhide_hint">Unhide to bring an item back to the lists.</string>
+    <string name="customize_no_categories">No categories in this section yet \u2014 add a source first.</string>
+    <string name="customize_rename_category">Rename category</string>
+    <string name="customize_rename_hint">Only for this profile. Leave blank to restore \u201c%1$s\u201d.</string>
+    <string name="customize_remove_pin_title">Remove PIN lock?</string>
+    <string name="customize_remove_pin_desc">The Customize screen will open without asking for a PIN again.</string>
+    <string name="customize_remove">Remove</string>
+    <string name="customize_pin_mismatch">PINs don\'t match \u2014 re-enter</string>
+    <string name="customize_confirm_pin">Confirm new PIN</string>
+    <string name="customize_new_pin">Enter a new PIN</string>
+    <string name="customize_categories_selected">%1$d categories selected.</string>
+    <string name="customize_was">was</string>
+
+    <!-- ===== PROFILES (MISC) ===== -->
+    <string name="profiles_pin_locked">PIN locked</string>
+
+    <!-- ===== ADD SOURCE (MISC) ===== -->
+    <string name="source_kind_xtream">Xtream</string>
+    <string name="source_kind_m3u">M3U / M3U8</string>
+    <string name="source_edit_desc">Update this source\'s details, or change its auto-refresh setting.</string>
+    <string name="source_add_desc">LunaIPtv is a player \u2014 bring your own M3U or Xtream source.</string>
+    <string name="source_password_keep">Password (leave blank to keep)</string>
+    <string name="source_playlist_file">Choose a local .m3u / .m3u8 file\u2026</string>
+    <string name="source_auto_refresh_desc">Off, on startup, or when data is stale</string>
+
+    <!-- ===== PLAYLIST PICKER (MISC) ===== -->
+    <string name="playlist_picker_desc">Choose which playlist to browse. This applies everywhere and is remembered.</string>
+
+    <!-- ===== RESUME (MISC) ===== -->
+    <string name="resume_stopped_at">You stopped at %1$s.</string>
+
+    <!-- ===== STORAGE BROWSER (MISC) ===== -->
+    <string name="browser_grant_access">Grant full storage access</string>
+
+    <!-- ===== TMDB (MISC) ===== -->
+    <string name="tmdb_set_name_desc">Type the exact TMDB title to match. Year is optional but helps when several titles share a name.</string>
+
+    <!-- ===== UPDATE (MISC) ===== -->
+    <string name="update_latest">You\'re on the latest version (v%1$s).</string>
+    <string name="update_check_error">Couldn\'t check for updates.</string>
+    <string name="update_luna_info">LunaIPtv v%1$s is ready (you have v%2$s).</string>
+
+    <!-- ===== UPDATE DIALOG ===== -->
     <string name="update_latest_version">This is the latest version of LunaIPtv (v%1$s).</string>
     <string name="update_available_luna">LunaIPtv v%1$s is available (you have v%2$s).</string>
-    <string name="update_try_again">Try again</string>
 </resources>
