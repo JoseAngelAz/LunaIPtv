@@ -241,7 +241,7 @@ class EpgViewModel(
             runCatching {
                 historyDao.record(WatchHistoryEntity(profileId = pid, mediaType = MediaType.LIVE, itemId = channel.id))
             }.onFailure { t ->
-                android.util.Log.w("OwnTVHome", "play history record failed channelId=${channel.id} profile=$pid", t)
+                android.util.Log.w("LunaIPtvHome", "play history record failed channelId=${channel.id} profile=$pid", t)
             }
         }
     }

@@ -15,7 +15,7 @@ import android.util.Log
  * tuning is validated.
  */
 object Perf {
-    private const val TAG = "OwnTVPerf"
+    private const val TAG = "LunaIPtvPerf"
 
     @Volatile private var t0 = -1L
 

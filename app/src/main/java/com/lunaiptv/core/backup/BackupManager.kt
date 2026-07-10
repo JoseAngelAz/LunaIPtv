@@ -140,7 +140,7 @@ class BackupManager(
                     }
                 }
             }
-            if (out.isEmpty()) error("Not an OwnTV backup file")
+            if (out.isEmpty()) error("Not a LunaIPtv backup file")
             Inspection(out, encrypted = root.has("crypto"))
         }
     }

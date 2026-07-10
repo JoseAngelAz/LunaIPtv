@@ -56,7 +56,7 @@ import com.lunaiptv.ui.theme.UiZoom
 
 class MainActivity : ComponentActivity() {
     companion object {
-        private const val TAG = "OwnTVHome"
+        private const val TAG = "LunaIPtvHome"
     }
 
     private val player: com.lunaiptv.player.OwnTVPlayer by inject()

@@ -91,7 +91,7 @@ class OwnTVPlayer(
 ) : MPVLib.EventObserver {
 
     private companion object {
-        const val TAG = "OwnTVPlayer"
+        const val TAG = "LunaIPtvPlayer"
         const val MAX_AUTO_RETRIES = 3 // silent retries (backoff) before showing the error UI
         // --- Live silent-freeze watchdog (mpv) -----------------------------------------------------
         // A live feed can wedge with the socket still open: mpv keeps pause=false / paused-for-cache=false

@@ -789,7 +789,7 @@ class SeriesViewModel(
     }
 
     private companion object {
-        const val TAG = "OwnTVHome"
+        const val TAG = "LunaIPtvHome"
         val defaultRail = listOf(
             LiveRailItem(LiveKey.Favorites, "FAV", "Favorites", OwnTVIcon.STAR),
             LiveRailItem(LiveKey.History, "HIS", "History", OwnTVIcon.HISTORY),

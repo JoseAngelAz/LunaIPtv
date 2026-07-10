@@ -29,6 +29,8 @@ import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.trapAllFocusExit
 import com.lunaiptv.ui.theme.OwnTVTheme
+import androidx.compose.ui.res.stringResource
+import com.lunaiptv.R
 
 /**
  * Full-screen exit confirmation shown when the user presses Back from the main menu. Cancel takes
@@ -60,14 +62,14 @@ fun ExitDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                text = "Exit OwnTV?",
+                text = stringResource(R.string.shell_exit_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = colors.textPrimary,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Are you sure you want to close the app?",
+                text = stringResource(R.string.shell_exit_msg),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.textSecondary,
                 textAlign = TextAlign.Center,
@@ -75,13 +77,13 @@ fun ExitDialog(
             Spacer(Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 OwnTVButton(
-                    label = "Cancel",
+                    label = stringResource(R.string.cancel),
                     onClick = onDismiss,
                     style = OwnTVButtonStyle.SECONDARY,
                     modifier = Modifier.focusRequester(cancelFocus),
                 )
                 OwnTVButton(
-                    label = "Exit",
+                    label = stringResource(R.string.close),
                     onClick = onConfirm,
                     style = OwnTVButtonStyle.PRIMARY,
                 )

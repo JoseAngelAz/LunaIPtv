@@ -253,7 +253,7 @@ class SearchViewModel(
     }
 
     private companion object {
-        const val TAG = "OwnTVHome"
+        const val TAG = "LunaIPtvHome"
         const val LIMIT = 40
     }
 }

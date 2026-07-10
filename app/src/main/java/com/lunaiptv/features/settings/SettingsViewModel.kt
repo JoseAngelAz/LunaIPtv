@@ -63,7 +63,7 @@ class SettingsViewModel(
     private val metadataProvider: com.lunaiptv.core.metadata.MetadataProvider,
 ) : ViewModel() {
     companion object {
-        private const val TAG = "OwnTVHome"
+        private const val TAG = "LunaIPtvHome"
     }
 
     // Semi-auto EPG: after a playlist import, if the playlist has a guide URL we offer to sync the EPG now

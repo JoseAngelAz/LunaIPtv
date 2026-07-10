@@ -502,29 +502,16 @@ class LivePreviewEngine(
         _state.value = State.LOADING
         _buffering.value = true
         runCatching {
-            if (switchingChannels) {
-                // FULL STOP: release the old decoder completely. Without this, the old decoder's
-                // output buffers linger in the SurfaceView's buffer queue — the compositor keeps
-                // showing the old channel's last frames while ExoPlayer starts the new decoder,
-                // producing the "stuck in corner + looping different channel" artifact.
-                stoppingIntentionally = true
-                player?.run {
-                    clearVideoSurface() // detach decoder from surface FIRST
-                    stop()              // release decoder + renderers
-                    clearMediaItems()   // release playlist
-                }
-                stoppingIntentionally = false
-                // Canvas-clear the surface to black so the old decoder's frames are gone
-                surface?.let { s ->
-                    runCatching {
-                        val canvas = s.lockCanvas(null)
-                        canvas?.drawColor(android.graphics.Color.BLACK)
-                        s.unlockCanvasAndPost(canvas)
-                    }
-                }
-            }
-            // Start (or restart) on the SAME surface — no token bump needed.
             val p = player ?: build().also { player = it }
+            if (switchingChannels) {
+                // Detach the old decoder from the surface. This is instant (just releases a reference)
+                // and prevents the old decoder from writing new frames while ExoPlayer internally
+                // swaps decoders for the new media source. Must NOT call stop()/clearMediaItems() or
+                // lockCanvas() here — both block on MediaCodec/compositor release and ANR the main
+                // thread on TV boxes. ExoPlayer releases the old decoder internally when prepare()
+                // creates the new one.
+                p.clearVideoSurface()
+            }
             surface?.let { p.setVideoSurface(it) }
             p.volume = if (muted) 0f else 1f
             p.setMediaSource(mediaSourceFor(url))

@@ -73,7 +73,7 @@ class WeatherRepository(
         if (m.isEmpty()) {
             val locReq = Request.Builder()
                 .url("https://ipapi.co/json/")
-                .header("User-Agent", "OwnTV/1.0")
+                .header("User-Agent", "LunaIPtv/1.0")
                 .build()
             val locJson = http.newCall(locReq).execute().use { it.body?.string() ?: return error("no loc") }
             val loc = JSONObject(locJson)

@@ -57,7 +57,7 @@ class TvHomeRepository(
     private val mutex = Mutex()
 
     companion object {
-        private const val TAG = "OwnTVHome"
+        private const val TAG = "LunaIPtvHome"
         private const val WATCH_NEXT_PUBLISH_INTERVAL_MS = 60_000L
         private const val RECENT_LIVE_MAX_ITEMS = 10
         private const val RECENT_LIVE_REFRESH_INTERVAL_MS = 5_000L

@@ -69,7 +69,7 @@ class ShellViewModel(
 ) : ViewModel() {
 
     companion object {
-        private const val TAG = "OwnTVHome"
+        private const val TAG = "LunaIPtvHome"
         /** Minimum gap between resume-triggered staleness checks, to avoid re-running when onStart fires
          *  close to a prior check (rotation, rapid background/foreground). Cold-start checks are NOT
          *  throttled by time — see [coldStartCheckDone]. */

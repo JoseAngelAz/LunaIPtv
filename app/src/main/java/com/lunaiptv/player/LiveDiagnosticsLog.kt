@@ -17,7 +17,7 @@ import com.lunaiptv.BuildConfig
  * before passing text in — this class does not inspect or strip anything itself.
  */
 object LiveDiagnosticsLog {
-    const val TAG = "OwnTV-LivePreviewEngine"
+    const val TAG = "LunaIPtv-LivePreviewEngine"
 
     @Volatile var enabled: Boolean = BuildConfig.DEBUG
 

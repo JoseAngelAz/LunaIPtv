@@ -24,7 +24,7 @@ class PlayerDiagnostics {
     fun start() {
         if (started) return
         started = true
-        Thread({ readLoop() }, "owntv-logcat").apply { isDaemon = true; start() }
+        Thread({ readLoop() }, "lunaiptv-logcat").apply { isDaemon = true; start() }
     }
 
     /** Mark the start of a new stream load, so [recentError] only reports failures from the CURRENT item. */

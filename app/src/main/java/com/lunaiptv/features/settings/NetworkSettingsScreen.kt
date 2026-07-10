@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
@@ -33,6 +34,7 @@ import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVTextField
 import com.lunaiptv.ui.components.roundedPanel
+import com.lunaiptv.R
 import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
@@ -91,7 +93,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Row2(
             icon = OwnTVIcon.SHARE,
             title = "Use proxy",
-            desc = "Send all OwnTV traffic and playback through an HTTP proxy.",
+            desc = stringResource(R.string.network_proxy_desc),
             chip = if (enabled) "On" else "Off", primaryChip = enabled,
             modifier = Modifier.focusRequester(firstFocus),
             onClick = { enabled = !enabled; save() },
