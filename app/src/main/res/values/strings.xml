@@ -331,9 +331,7 @@
     <string name="settings_about_desc">Version, license &amp; project info</string>
     <string name="settings_no_match">No settings match "%1$s"</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="settings_copyright">© 2026 Ashiq Hasan • GPLv3 License</string>
-    <string name="settings_telegram">Join us on Telegram</string>
-    <string name="settings_telegram_qr">Telegram group QR code</string>
+    <string name="settings_copyright">© 2026 Jose Angel Azucena Mendez • GPLv3</string>
     <string name="settings_clear_history_title">Clear watch history</string>
     <string name="settings_clear_history_confirm">Clear %1$s history?</string>
     <string name="settings_clear_history_warning">This can\'t be undone.</string>
@@ -369,8 +367,6 @@
     <string name="settings_catchup_device">Device</string>
     <string name="settings_catchup_manual">Manual</string>
     <string name="settings_about_description">Luna Tu IPTV Gratis \u2014 un reproductor gratuito y de código abierto para Android TV. No incluye canales ni contenido; agrega tus propias fuentes M3U o Xtream legalmente accesibles.</string>
-    <string name="settings_telegram_scan">Scan the QR to join from your phone, or open the link above.</string>
-    <string name="settings_about_contributions">Contributions, bug reports &amp; stars are welcome on GitHub.</string>
     <string name="settings_clear_history_choice_desc">Choose what to remove for this profile. Playlists, favorites and downloads are not affected.</string>
     <string name="settings_clear_history_all">All history</string>
     <string name="settings_ui_zoom_dialog_desc">Scale the whole interface (%1$d%%\u2013%2$d%%).</string>
