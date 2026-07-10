@@ -5,6 +5,7 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -125,23 +126,35 @@ fun MpvVideoSurface(player: OwnTVPlayer, modifier: Modifier = Modifier) {
  */
 @Composable
 fun ExoPreviewSurface(engine: LivePreviewEngine, modifier: Modifier = Modifier, keepAwake: Boolean = false) {
+    val state by engine.state.collectAsStateWithLifecycle()
     BoxWithConstraints(modifier.background(Color.Black).clipToBounds(), contentAlignment = Alignment.Center) {
         val aspect by engine.videoAspect.collectAsStateWithLifecycle()
         val videoSize by engine.videoSize.collectAsStateWithLifecycle()
         val zoom by engine.zoomMode.collectAsStateWithLifecycle()
-        AndroidView(
-            modifier = Modifier.videoZoom(zoom, aspect, videoSize, maxWidth, maxHeight),
-            factory = { ctx ->
-                SurfaceView(ctx).apply {
-                    holder.addCallback(object : SurfaceHolder.Callback {
-                        override fun surfaceCreated(holder: SurfaceHolder) = engine.setSurface(holder.surface)
-                        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
-                        override fun surfaceDestroyed(holder: SurfaceHolder) = engine.setSurface(null)
-                    })
-                }
-            },
-            update = { it.keepScreenOn = keepAwake },
-        )
+        // key(surfaceResetToken): when the engine bumps the token on channel switch, this entire
+        // AndroidView is disposed and recreated — destroying the old Surface and its stale decoder
+        // buffer, preventing the previous channel's image from lingering in a corner.
+        val surfaceResetToken by engine.surfaceResetToken.collectAsStateWithLifecycle()
+        androidx.compose.runtime.key(surfaceResetToken) {
+            AndroidView(
+                modifier = Modifier.videoZoom(zoom, aspect, videoSize, maxWidth, maxHeight),
+                factory = { ctx ->
+                    SurfaceView(ctx).apply {
+                        holder.addCallback(object : SurfaceHolder.Callback {
+                            override fun surfaceCreated(holder: SurfaceHolder) = engine.setSurface(holder.surface)
+                            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+                            override fun surfaceDestroyed(holder: SurfaceHolder) = engine.setSurface(null)
+                        })
+                    }
+                },
+                update = { it.keepScreenOn = keepAwake },
+            )
+        }
+        // Black overlay while not playing — hides any stale frame the SurfaceView's buffer queue
+        // retains between the old decoder's last frame and the new decoder's first frame.
+        if (state != LivePreviewEngine.State.PLAYING) {
+            Box(Modifier.fillMaxSize().background(Color.Black))
+        }
         // Subtitle overlay — mounted ONLY while subs are on, so 4K live keeps its direct hardware-overlay path.
         val subOn by engine.subtitleOn.collectAsStateWithLifecycle()
         val cues by engine.cues.collectAsStateWithLifecycle()

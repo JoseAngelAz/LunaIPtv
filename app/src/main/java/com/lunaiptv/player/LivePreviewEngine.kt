@@ -233,6 +233,12 @@ class LivePreviewEngine(
     var currentUrl: String? = null
         private set
 
+    /** Bumped to force ExoPreviewSurface to recreate its SurfaceView — prevents the old channel's
+     *  decoder buffer from lingering when switching channels (the old surface's buffer queue retains
+     *  the last frame even after ExoPlayer detaches, causing a ghost image in a corner). */
+    private val _surfaceResetToken = MutableStateFlow(0)
+    val surfaceResetToken: StateFlow<Int> = _surfaceResetToken.asStateFlow()
+
     // Live auto-reconnect: a channel that DID play and then errors/stalls (provider hiccup / Wi-Fi blip)
     // re-fetches from the live edge instead of dead-ending. A channel that NEVER opened keeps the old
     // ERROR (so the VM falls back to mpv). retryCount resets whenever playback goes healthy again.
@@ -478,6 +484,9 @@ class LivePreviewEngine(
         diagnostics.start(); diagnostics.markLoad()
         lastCodecError = null; lastVideoDecoder = null
         this.muted = muted
+        // Force a fresh SurfaceView when switching channels — prevents the old decoder's buffer
+        // from lingering on the surface (ghost image in a corner during the new stream's load).
+        if (currentUrl != null && currentUrl != url) _surfaceResetToken.value++
         currentUrl = url
         hasPlayed = false; retryCount = 0; reconnectPending = false; gaveUp = false
         mainHandler.removeCallbacks(stallWatchdog); mainHandler.removeCallbacks(progressWatchdog)
@@ -496,6 +505,17 @@ class LivePreviewEngine(
         _buffering.value = true
         runCatching {
             val p = player ?: build().also { player = it }
+            // Clear the previous channel's last frame from the surface before loading new content —
+            // the SurfaceView retains the old decoder's output until the new decoder renders its
+            // first frame, which can take seconds for HLS. Without this, the old channel image
+            // "sticks" in a corner while the new stream buffers.
+            surface?.let { s ->
+                runCatching {
+                    val canvas = s.lockCanvas(null)
+                    canvas?.drawColor(android.graphics.Color.BLACK)
+                    s.unlockCanvasAndPost(canvas)
+                }
+            }
             surface?.let { p.setVideoSurface(it) }
             p.volume = if (muted) 0f else 1f
             p.setMediaSource(mediaSourceFor(url))
@@ -599,6 +619,14 @@ class LivePreviewEngine(
             if (currentUrl != url) { reconnectPending = false; return@postDelayed } // superseded (zapped / stopped)
             reconnectPending = false
             runCatching {
+                // Clear stale frame before re-fetching from the live edge
+                surface?.let { s ->
+                    runCatching {
+                        val canvas = s.lockCanvas(null)
+                        canvas?.drawColor(android.graphics.Color.BLACK)
+                        s.unlockCanvasAndPost(canvas)
+                    }
+                }
                 p.setMediaItem(MediaItem.fromUri(url)) // fresh fetch (live edge)
                 p.prepare()
                 p.playWhenReady = true
