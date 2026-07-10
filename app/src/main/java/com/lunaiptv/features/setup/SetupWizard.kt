@@ -1,6 +1,7 @@
 ﻿package com.lunaiptv.features.setup
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -42,7 +45,6 @@ import com.lunaiptv.R
 import com.lunaiptv.core.database.entity.SourceEntity
 import com.lunaiptv.core.sync.importProgressDisplay
 import com.lunaiptv.features.profiles.ProfileEditorDialog
-import com.lunaiptv.ui.components.BrandLockup
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVButton
@@ -139,7 +141,12 @@ private fun WelcomeScreen(onNext: () -> Unit) {
     val fr = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { fr.requestFocus() } }
     Centered {
-        BrandLockup(markSize = 72, textSize = 44)
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher),
+            contentDescription = "LunaIPtv",
+            modifier = Modifier.size(100.dp),
+            contentScale = ContentScale.Fit,
+        )
         Spacer(Modifier.height(16.dp))
         Text(stringResource(R.string.setup_welcome_desc), style = MaterialTheme.typography.titleMedium, color = OwnTVTheme.colors.onSurfaceVariant)
         Spacer(Modifier.height(40.dp))

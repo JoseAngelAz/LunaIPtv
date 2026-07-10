@@ -59,7 +59,7 @@
     <string name="sync_guide_sync_failed">Guide sync failed</string>
 
     <!-- ===== SETUP / ONBOARDING ===== -->
-    <string name="setup_tagline">Your own IPTV player.</string>
+    <string name="setup_tagline">Luna Tu IPTV Gratis</string>
     <string name="setup_get_started">Get Started</string>
     <string name="setup_before_start">Before you start</string>
     <string name="setup_i_understand">I Understand</string>
@@ -160,7 +160,7 @@
     <string name="shell_show_playlist">Show playlist</string>
     <string name="shell_all_playlists">All playlists</string>
     <string name="shell_search_categories">Search categories.</string>
-    <string name="shell_preview_hint">Your own IPTV player.</string>
+    <string name="shell_preview_hint">Luna Tu IPTV Gratis</string>
 
     <!-- ===== SIDEBAR / NAVIGATION ===== -->
     <string name="nav_live">Live TV</string>
@@ -368,7 +368,7 @@
     <string name="settings_catchup_no_channels">No catch-up channels available on this playlist</string>
     <string name="settings_catchup_device">Device</string>
     <string name="settings_catchup_manual">Manual</string>
-    <string name="settings_about_description">Your own IPTV player for Android TV \u2014 a free, open-source, player-only app. It provides no channels or content; you bring your own legally accessible sources.</string>
+    <string name="settings_about_description">Luna Tu IPTV Gratis \u2014 un reproductor gratuito y de código abierto para Android TV. No incluye canales ni contenido; agrega tus propias fuentes M3U o Xtream legalmente accesibles.</string>
     <string name="settings_telegram_scan">Scan the QR to join from your phone, or open the link above.</string>
     <string name="settings_about_contributions">Contributions, bug reports &amp; stars are welcome on GitHub.</string>
     <string name="settings_clear_history_choice_desc">Choose what to remove for this profile. Playlists, favorites and downloads are not affected.</string>
@@ -582,7 +582,7 @@
     <string name="sidebar_default_profile">LunaIPtv User</string>
 
     <!-- ===== SETUP WIZARD (NEW) ===== -->
-    <string name="setup_welcome_desc">Your own IPTV player.</string>
+    <string name="setup_welcome_desc">Luna Tu IPTV Gratis</string>
     <string name="setup_own_tv">Set up LunaIPtv</string>
     <string name="setup_existing_playlists">Use existing playlists</string>
     <string name="setup_existing_playlists_desc">Pick the playlists to add to this profile.</string>

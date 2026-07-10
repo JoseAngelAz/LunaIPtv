@@ -59,7 +59,7 @@
     <string name="sync_guide_sync_failed">Error al sincronizar la guía</string>
 
     <!-- ===== CONFIGURACIÓN / ONBOARDING ===== -->
-    <string name="setup_tagline">Tu propio reproductor IPTV.</string>
+    <string name="setup_tagline">Luna Tu IPTV Gratis</string>
     <string name="setup_get_started">Comenzar</string>
     <string name="setup_before_start">Antes de comenzar</string>
     <string name="setup_i_understand">Entendido</string>
@@ -160,7 +160,7 @@
     <string name="shell_show_playlist">Mostrar lista</string>
     <string name="shell_all_playlists">Todas las listas</string>
     <string name="shell_search_categories">Buscar categorías.</string>
-    <string name="shell_preview_hint">Tu propio reproductor IPTV.</string>
+    <string name="shell_preview_hint">Luna Tu IPTV Gratis</string>
 
     <!-- ===== BARRA LATERAL / NAVEGACIÓN ===== -->
     <string name="nav_live">TV en vivo</string>
@@ -367,7 +367,7 @@
     <string name="settings_catchup_no_channels">No hay canales con catch-up disponibles en esta lista</string>
     <string name="settings_catchup_device">Dispositivo</string>
     <string name="settings_catchup_manual">Manual</string>
-    <string name="settings_about_description">Tu propio reproductor IPTV para Android TV \u2014 una app gratuita, de código abierto, solo reproductor. No proporciona canales ni contenido; tú traes tus propias fuentes legalmente accesibles.</string>
+    <string name="settings_about_description">Luna Tu IPTV Gratis \u2014 un reproductor gratuito y de código abierto para Android TV. No incluye canales ni contenido; agrega tus propias fuentes M3U o Xtream legalmente accesibles.</string>
     <string name="settings_telegram_scan">Escanea el código QR para unirte desde tu teléfono, o abre el enlace de arriba.</string>
     <string name="settings_about_contributions">Contribuciones, reportes de errores y estrellas son bienvenidos en GitHub.</string>
     <string name="settings_clear_history_choice_desc">Elige qué eliminar para este perfil. Las listas, favoritos y descargas no se ven afectados.</string>
@@ -581,7 +581,7 @@
     <string name="sidebar_default_profile">Usuario LunaIPtv</string>
 
     <!-- ===== ASISTENTE DE CONFIGURACIÓN (NUEVO) ===== -->
-    <string name="setup_welcome_desc">Tu propio reproductor IPTV.</string>
+    <string name="setup_welcome_desc">Luna Tu IPTV Gratis</string>
     <string name="setup_own_tv">Configurar LunaIPtv</string>
     <string name="setup_existing_playlists">Usar listas existentes</string>
     <string name="setup_existing_playlists_desc">Elige las listas para este perfil.</string>

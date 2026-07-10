@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -77,7 +79,6 @@ import com.lunaiptv.R
 import com.lunaiptv.core.launcher.LauncherContinuationItem
 import com.lunaiptv.core.launcher.LauncherWatchNextType
 import com.lunaiptv.player.HeroPreviewEngine
-import com.lunaiptv.ui.components.BrandLockup
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
@@ -1221,7 +1222,12 @@ private fun HeroFallbackPane(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            BrandLockup(markSize = 72, textSize = 42)
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher),
+                contentDescription = "LunaIPtv",
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Fit,
+            )
             Spacer(Modifier.height(14.dp))
             Text(
                 text = stringResource(R.string.home_empty_preview),
@@ -1254,7 +1260,12 @@ private fun EmptyHomeState(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            BrandLockup(markSize = 84, textSize = 48)
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher),
+                contentDescription = "LunaIPtv",
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Fit,
+            )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.home_empty_start),
@@ -1286,7 +1297,12 @@ private fun AllRowsHiddenState(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            BrandLockup(markSize = 84, textSize = 48)
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher),
+                contentDescription = "LunaIPtv",
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Fit,
+            )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.home_all_hidden),

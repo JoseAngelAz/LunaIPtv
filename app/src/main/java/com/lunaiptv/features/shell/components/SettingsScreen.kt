@@ -36,6 +36,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +58,6 @@ import com.lunaiptv.features.settings.ManageSourcesScreen
 import com.lunaiptv.features.settings.SettingsViewModel
 import com.lunaiptv.features.settings.VideoPlayerSettingsScreen
 import com.lunaiptv.features.shell.MainSection
-import com.lunaiptv.ui.components.BrandLockup
 import com.lunaiptv.ui.components.BrowseMode
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVTextField
@@ -778,7 +779,12 @@ private fun AboutDialog(onDismiss: () -> Unit) {
             modifier = Modifier.width(520.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            BrandLockup(markSize = 48, textSize = 30)
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher),
+                contentDescription = "LunaIPtv",
+                modifier = Modifier.size(64.dp),
+                contentScale = ContentScale.Fit,
+            )
             Spacer(Modifier.height(6.dp))
             Text(stringResource(R.string.settings_version, com.lunaiptv.BuildConfig.VERSION_NAME), style = MaterialTheme.typography.titleMedium, color = colors.primary)
             Spacer(Modifier.height(14.dp))
