@@ -161,7 +161,10 @@ class LiveViewModel(
     val previewChannel: StateFlow<ChannelEntity?> = _previewChannel.asStateFlow()
 
     private data class CachedEpg(val at: Long, val data: EpgNowNext)
-    private val epgCache = HashMap<Long, CachedEpg>()
+    /** Bounded LRU cache: at most 200 EPG entries to prevent memory leaks over long sessions. */
+    private val epgCache = object : LinkedHashMap<Long, CachedEpg>(64, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, CachedEpg>?) = size > 200
+    }
 
     /** Now/next for the focused channel — fetched (debounced) from the Xtream `get_short_epg` API. */
     val nowNext: StateFlow<EpgNowNext?> = _previewChannel
@@ -279,6 +282,8 @@ class LiveViewModel(
 
     val count: StateFlow<Int> = combine(_selected, ctx, hiddenCategoryIds) { key, c, hidden -> Triple(key, c, hidden) }
         .flatMapLatest { (key, c, hidden) -> countFlow(key, c, hidden) }
+        .debounce(500) // avoid re-querying on every table invalidation during background syncs
+        .distinctUntilChanged()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val favoriteIds: StateFlow<Set<Long>> = ctx

@@ -353,7 +353,11 @@ private fun SeriesGrid(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(series.itemCount) { index ->
+                    items(
+                        count = series.itemCount,
+                        key = { index -> series[index]?.id ?: index.toLong() },
+                        contentType = { "series" },
+                    ) { index ->
                         val s = series[index]
                         if (s != null) {
                             SeriesListRow(
@@ -379,7 +383,11 @@ private fun SeriesGrid(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(series.itemCount) { index ->
+                    items(
+                        count = series.itemCount,
+                        key = { index -> series[index]?.id ?: index.toLong() },
+                        contentType = { "series" },
+                    ) { index ->
                         val s = series[index]
                         if (s != null) {
                             PosterCard(
@@ -421,8 +429,8 @@ private fun SeriesGrid(
                 val year = if (tmdbWins) meta?.year ?: s.year else s.year ?: meta?.year
                 val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: s.rating?.takeIf { it > 0 }
                     else s.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
-                val genres = jsonStringList(meta?.genresJson)
-                val cast = jsonStringList(meta?.castJson)
+                val genres = remember(meta?.genresJson) { jsonStringList(meta?.genresJson) }
+                val cast = remember(meta?.castJson) { jsonStringList(meta?.castJson) }
                 Column(
                     modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Dimens.CardCorner)).background(OwnTVTheme.colors.panel).verticalScroll(rememberScrollState()).padding(Dimens.GapLarge),
                 ) {
@@ -921,7 +929,11 @@ private fun EpisodeView(
                             Spacer(Modifier.height(14.dp))
                         }
                         LazyColumn(state = epListState, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            items(visibleEpisodes.size) { index ->
+                            items(
+                                count = visibleEpisodes.size,
+                                key = { index -> visibleEpisodes[index].id },
+                                contentType = { "episode" },
+                            ) { index ->
                                 val ep = visibleEpisodes[index]
                                 val prog = episodeProgress[ep.id]
                                 val completed = ep.id in completedIds

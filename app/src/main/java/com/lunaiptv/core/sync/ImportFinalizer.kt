@@ -55,14 +55,10 @@ class ImportFinalizer(
     suspend fun finalize(source: SourceEntity, deferIndexes: Boolean = false): SyncCounts {
         val counts = contentCounts(source.id)
         if (!deferIndexes) {
-            // A sync does REPLACE on 100k+ rows, which invalidates SQLite's planner statistics
-            // (sqlite_stat1). With stale stats the query planner IGNORES the single-column and
-            // composite indices on channels/movies/series and falls back to a full table scan +
-            // temp B-tree sort — the Movies/Series grids' 2–3s cold-open. ANALYZE refreshes the
-            // stats so the existing indices get used again, dropping the open back to <300ms. Same
-            // trick EPG uses after its bulk sync (EpgRepository.refreshUrl). Safe, idempotent,
-            // <1s even on 100k rows.
-            ensureContentIndexes()
+            // Only run the expensive ANALYZE when there are enough rows to matter (>5k). On small
+            // syncs (e.g. a few changed channels), the existing stats are fine and ANALYZE wastes 1s+.
+            val totalRows = counts.channels + counts.movies + counts.series
+            ensureContentIndexes(skipAnalyze = totalRows < 5000)
         }
         return counts
     }
@@ -81,7 +77,7 @@ class ImportFinalizer(
      * choosing them instead of reverting to a full-table sort. Mirrors `EpgRepository.ensureEpgIndexes`.
      * Called inline for normal re-syncs and from the deferred background worker for first-ever imports.
      */
-    suspend fun ensureContentIndexes() = withContext(Dispatchers.IO) {
+    suspend fun ensureContentIndexes(skipAnalyze: Boolean = false) = withContext(Dispatchers.IO) {
         val startedAt = SystemClock.elapsedRealtime()
         Log.i(TAG, "ensureContentIndexes start")
         runCatching {
@@ -119,9 +115,14 @@ class ImportFinalizer(
 
             // Refresh planner stats so the indices above are chosen for the grids' "WHERE … ORDER BY …" —
             // without this, stale stats from a bulk REPLACE make SQLite ignore them and full-sort.
-            val analyzeStartedAt = SystemClock.elapsedRealtime()
-            bulkInsertHelper.analyzeTables("movies", "series", "channels", "categories")
-            Log.d(TAG, "ensureContentIndexes analyze ms=${SystemClock.elapsedRealtime() - analyzeStartedAt}")
+            // Skip on small syncs (<5k rows) where ANALYZE is pure overhead.
+            if (!skipAnalyze) {
+                val analyzeStartedAt = SystemClock.elapsedRealtime()
+                bulkInsertHelper.analyzeTables("movies", "series", "channels", "categories")
+                Log.d(TAG, "ensureContentIndexes analyze ms=${SystemClock.elapsedRealtime() - analyzeStartedAt}")
+            } else {
+                Log.d(TAG, "ensureContentIndexes analyze skipped (small sync)")
+            }
         }.onSuccess {
             Log.i(TAG, "ensureContentIndexes end ms=${SystemClock.elapsedRealtime() - startedAt}")
         }.onFailure {

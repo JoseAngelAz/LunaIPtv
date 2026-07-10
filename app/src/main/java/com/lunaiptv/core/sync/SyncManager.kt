@@ -804,6 +804,7 @@ class SyncManager(
                 ctx.ensureActive()
                 val start = SystemClock.elapsedRealtime()
                 val shows = seriesAccumulator.values.toList()
+                // Batch 1: upsert all series in one call
                 val seriesIds = seriesDao.upsertSeriesReturnIds(
                     shows.map { show ->
                         SeriesEntity(
@@ -816,28 +817,37 @@ class SyncManager(
                         )
                     },
                 )
+                // Batch 2: collect ALL unique seasons across ALL shows and upsert them in one call
+                data class SeasonKey(val seriesId: Long, val seasonNumber: Int)
+                val allSeasonEntities = mutableListOf<SeasonEntity>()
+                val seasonKeyList = mutableListOf<SeasonKey>()
+                shows.forEachIndexed { index, show ->
+                    val seriesId = seriesIds.getOrNull(index) ?: return@forEachIndexed
+                    show.episodes.map { it.season }.distinct().sorted().forEach { n ->
+                        seasonKeyList += SeasonKey(seriesId, n)
+                        allSeasonEntities += SeasonEntity(seriesId = seriesId, seasonNumber = n, name = "Season $n")
+                    }
+                }
+                val allSeasonIds = seriesDao.upsertSeasonsReturnIds(allSeasonEntities)
+                val seasonIdMap = seasonKeyList.zip(allSeasonIds).toMap()
+                // Batch 3: collect ALL episodes across ALL shows and upsert them in one call
+                val allEpisodes = mutableListOf<EpisodeEntity>()
                 var episodesWritten = 0
                 shows.forEachIndexed { index, show ->
                     val seriesId = seriesIds.getOrNull(index) ?: return@forEachIndexed
-                    val seasonNumbers = show.episodes.map { it.season }.distinct().sorted()
-                    val seasonIds = seriesDao.upsertSeasonsReturnIds(
-                        seasonNumbers.map { n -> SeasonEntity(seriesId = seriesId, seasonNumber = n, name = "Season $n") },
-                    )
-                    val seasonIdByNumber = seasonNumbers.zip(seasonIds).toMap()
-                    seriesDao.upsertEpisodes(
-                        show.episodes.map { ep ->
-                            EpisodeEntity(
-                                seriesId = seriesId,
-                                seasonId = seasonIdByNumber[ep.season],
-                                seasonNumber = ep.season,
-                                episodeNumber = ep.episode,
-                                name = ep.title,
-                                streamUrl = ep.streamUrl,
-                            )
-                        },
-                    )
+                    show.episodes.forEach { ep ->
+                        allEpisodes += EpisodeEntity(
+                            seriesId = seriesId,
+                            seasonId = seasonIdMap[SeasonKey(seriesId, ep.season)],
+                            seasonNumber = ep.season,
+                            episodeNumber = ep.episode,
+                            name = ep.title,
+                            streamUrl = ep.streamUrl,
+                        )
+                    }
                     episodesWritten += show.episodes.size
                 }
+                seriesDao.upsertEpisodes(allEpisodes)
                 seriesProcessed = shows.size
                 Log.d(TAG, "M3U series flush sourceId=${s.id} shows=${shows.size} episodes=$episodesWritten ms=${SystemClock.elapsedRealtime() - start}")
                 seriesAccumulator.clear()

@@ -281,7 +281,11 @@ fun MoviesScreen(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(movies.itemCount) { index ->
+                    items(
+                        count = movies.itemCount,
+                        key = { index -> movies[index]?.id ?: index.toLong() },
+                        contentType = { "movie" },
+                    ) { index ->
                         val movie = movies[index]
                         if (movie != null) {
                             val prog = movieProgress[movie.id]
@@ -309,7 +313,11 @@ fun MoviesScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(movies.itemCount) { index ->
+                    items(
+                        count = movies.itemCount,
+                        key = { index -> movies[index]?.id ?: index.toLong() },
+                        contentType = { "movie" },
+                    ) { index ->
                         val movie = movies[index]
                         if (movie != null) {
                             val prog = movieProgress[movie.id]
@@ -613,7 +621,7 @@ private fun MovieDetailsPane(
         Spacer(Modifier.height(6.dp))
         Text(metaLine(movie, meta, tmdbWins), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         // Genres & cast are TMDB-only (§7.1) — a whole layer the provider never had.
-        val genres = jsonList(meta?.genresJson)
+        val genres = remember(meta?.genresJson) { jsonList(meta?.genresJson) }
         if (genres.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
             Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
@@ -622,7 +630,7 @@ private fun MovieDetailsPane(
             Spacer(Modifier.height(12.dp))
             Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, maxLines = 6)
         }
-        val cast = jsonList(meta?.castJson)
+        val cast = remember(meta?.castJson) { jsonList(meta?.castJson) }
         if (cast.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
             Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = colors.onSurface)

@@ -252,7 +252,11 @@ fun LiveScreen(
                 }
             } else {
                 LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    items(channels.itemCount) { index ->
+                    items(
+                        count = channels.itemCount,
+                        key = { index -> channels[index]?.id ?: index.toLong() },
+                        contentType = { "channel" },
+                    ) { index ->
                         val channel = channels[index]
                         if (channel != null) {
                             ChannelRow(

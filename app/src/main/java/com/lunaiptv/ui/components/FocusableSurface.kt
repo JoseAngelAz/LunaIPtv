@@ -49,8 +49,10 @@ fun FocusableSurface(
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
 
+    // Skip scale animation when focusedScale is 1f (default for list rows) — halves animation objects per item.
+    val animateScale = focusedScale > 1f
     val scale by animateFloatAsState(
-        if (focused) focusedScale else 1f,
+        if (!animateScale) 1f else if (focused) focusedScale else 1f,
         animationSpec = ownTvTween(140),
         label = "focusScale",
     )
@@ -67,13 +69,15 @@ fun FocusableSurface(
 
     Box(
         modifier = modifier
-            .scale(scale)
-            .shadow(
-                elevation = if (focused) glowElevation.dp else 0.dp,
-                shape = shape,
-                clip = false,
-                ambientColor = colors.focusGlow,
-                spotColor = colors.focusGlow,
+            .then(if (animateScale) Modifier.scale(scale) else Modifier)
+            .then(
+                if (focused) Modifier.shadow(
+                    elevation = glowElevation.dp,
+                    shape = shape,
+                    clip = false,
+                    ambientColor = colors.focusGlow,
+                    spotColor = colors.focusGlow,
+                ) else Modifier
             )
             .clip(shape)
             .background(container)

@@ -3,6 +3,8 @@ package com.lunaiptv.features.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -268,53 +270,68 @@ class HomeViewModel(
     private suspend fun loadHomeData(profileId: Long) {
         val previous = _uiState.value
         val state = withContext(Dispatchers.IO) {
-            val config = settings.homeConfig(profileId).first()
-            // Active-playlist filter: when a "Default" playlist is chosen, the home rails narrow to it too
-            // (Continue Watching / Recent / Favorites). No default → activeIds == all profile ids → no-op.
-            val activeIds = activeSourceIds(settings, sourceDao, profileId).toSet()
-            val allIds = sourceDao.sourceIdsForProfile(profileId).toSet()
-            val filtering = activeIds != allIds
+            // Phase 1: independent queries in parallel — config, active IDs, and all IDs don't depend
+            // on each other, so they run concurrently instead of sequentially.
+            coroutineScope {
+                val configDef = async { settings.homeConfig(profileId).first() }
+                val activeIdsDef = async { activeSourceIds(settings, sourceDao, profileId).toSet() }
+                val allIdsDef = async { sourceDao.sourceIdsForProfile(profileId).toSet() }
+                val config = configDef.await()
+                val activeIds = activeIdsDef.await()
+                val allIds = allIdsDef.await()
+                val filtering = activeIds != allIds
 
-            // Hidden items / hidden categories (per profile) never surface on Home either.
-            val hidden = hiddenState(profileId, allIds.toList())
+                // Phase 2: hidden state + continuation items (both depend on allIds/filtering)
+                val hiddenDef = async { hiddenState(profileId, allIds.toList()) }
+                val allItemsDef = async { planner.buildContinuationItems(profileId) }
+                val hidden = hiddenDef.await()
+                val allItems = allItemsDef.await()
+                val items = (if (!filtering) allItems else allItems.filter { continuationSourceId(it) in activeIds })
+                    .filterNot { isContinuationHidden(it, hidden) }
+                val movies = items.filter { it.kind == LauncherContinuationKind.MOVIE }
+                val series = items.filter { it.kind == LauncherContinuationKind.EPISODE }
 
-            val allItems = planner.buildContinuationItems(profileId)
-            val items = (if (!filtering) allItems else allItems.filter { continuationSourceId(it) in activeIds })
-                .filterNot { isContinuationHidden(it, hidden) }
-            val movies = items.filter { it.kind == LauncherContinuationKind.MOVIE }
-            val series = items.filter { it.kind == LauncherContinuationKind.EPISODE }
-            val liveWithTs = recentlyWatchedLive(profileId, activeIds, filtering, RECENT_LIVE_ROW_LIMIT)
-                .filterNot { isChannelHidden(it.channel, hidden) }
-            val live = liveWithTs.map { it.channel }
-            val favLive = channelDao.favoritesListAlpha(profileId).first()
-                .let { if (!filtering) it else it.filter { c -> c.sourceId in activeIds } }
-                .filterNot { isChannelHidden(it, hidden) }
-            val heroItems = buildHeroItems(items, liveWithTs, config)
-            val recentGuide = if (HomeRow.RECENT_CHANNELS in config.visibleOrder && config.recentLiveMode == HomeLiveRowMode.ON_NOW) {
-                buildLiveGuide(profileId, activeIds, live)
-            } else {
-                GuideSliceState()
+                // Phase 3: live + favorites in parallel (both depend on filtering + hidden)
+                val liveDef = async { recentlyWatchedLive(profileId, activeIds, filtering, RECENT_LIVE_ROW_LIMIT) }
+                val favDef = async { channelDao.favoritesListAlpha(profileId).first() }
+                val liveWithTs = liveDef.await().filterNot { isChannelHidden(it.channel, hidden) }
+                val live = liveWithTs.map { it.channel }
+                val favLive = favDef.await()
+                    .let { if (!filtering) it else it.filter { c -> c.sourceId in activeIds } }
+                    .filterNot { isChannelHidden(it, hidden) }
+                val heroItems = buildHeroItems(items, liveWithTs, config)
+
+                // Phase 4: guide slices in parallel (depend on live/favLive lists)
+                val recentGuideDef = async {
+                    if (HomeRow.RECENT_CHANNELS in config.visibleOrder && config.recentLiveMode == HomeLiveRowMode.ON_NOW) {
+                        buildLiveGuide(profileId, activeIds, live)
+                    } else {
+                        GuideSliceState()
+                    }
+                }
+                val favGuideDef = async {
+                    if (HomeRow.FAVORITE_CHANNELS in config.visibleOrder && config.favoriteLiveMode == HomeLiveRowMode.ON_NOW) {
+                        buildLiveGuide(profileId, activeIds, favLive)
+                    } else {
+                        GuideSliceState()
+                    }
+                }
+
+                HomeUiState(
+                    heroItems = heroItems,
+                    activeHeroIndex = 0,
+                    continueMovies = movies,
+                    continueSeries = series,
+                    heroMetadata = previous.heroMetadata.filterKeys { key -> heroItems.any { homeHeroKey(it) == key } },
+                    continuationArtwork = previous.continuationArtwork.filterKeys { key -> series.any { it.stableKey == key } },
+                    recentLive = live,
+                    favoriteLive = favLive,
+                    config = config,
+                    recentGuide = recentGuideDef.await(),
+                    favoriteGuide = favGuideDef.await(),
+                    isLoading = false,
+                )
             }
-            val favoriteGuide = if (HomeRow.FAVORITE_CHANNELS in config.visibleOrder && config.favoriteLiveMode == HomeLiveRowMode.ON_NOW) {
-                buildLiveGuide(profileId, activeIds, favLive)
-            } else {
-                GuideSliceState()
-            }
-
-            HomeUiState(
-                heroItems = heroItems,
-                activeHeroIndex = 0,
-                continueMovies = movies,
-                continueSeries = series,
-                heroMetadata = previous.heroMetadata.filterKeys { key -> heroItems.any { homeHeroKey(it) == key } },
-                continuationArtwork = previous.continuationArtwork.filterKeys { key -> series.any { it.stableKey == key } },
-                recentLive = live,
-                favoriteLive = favLive,
-                config = config,
-                recentGuide = recentGuide,
-                favoriteGuide = favoriteGuide,
-                isLoading = false,
-            )
         }
         _uiState.value = state
         com.lunaiptv.Perf.stamp("home-data")

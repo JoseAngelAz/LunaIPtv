@@ -202,6 +202,7 @@ fun OwnTVShell(
     val expandPlayer = { restoreFocus = false; playerMode = PlayerMode.FULLSCREEN }
     val exitPlayer = {
         playerMode = PlayerMode.NONE
+        player.suppressBackgroundStop = false
         showChannelList = false
         liveVm.onFullscreenExited() // no longer full-screen on ExoPlayer → let the preview re-take the engine
         player.stop()
@@ -212,6 +213,7 @@ fun OwnTVShell(
     }
     val dockPlayer = {
         playerMode = PlayerMode.MINI
+        player.suppressBackgroundStop = true // prevent onStop() from killing audio while in mini-player
         restoreFocus = true
         runCatching { sidebarFocus.requestFocus() }
         Unit

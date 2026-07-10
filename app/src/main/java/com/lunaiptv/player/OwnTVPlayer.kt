@@ -133,6 +133,23 @@ class OwnTVPlayer(
             android.os.Build.PRODUCT.contains("simulator")
     }
 
+    /** Audio focus manager — requests exclusive STREAM_MUSIC focus on play, abandons on stop. */
+    private val audioFocus = AudioFocusHelper(context).apply {
+        onFocusChanged = { gained ->
+            if (!gained && _isPlaying.value) {
+                // Lost focus (e.g. system notification, another app) → pause to avoid silent audio clash.
+                togglePlayPause()
+            }
+        }
+    }
+
+    /**
+     * When true, [onAppBackgrounded] is a no-op — used when the player is docked to the mini-player
+     * and some Android TV launchers briefly trigger onStop(). Without this flag, the launcher's
+     * transient onStop() kills audio mid-stream.
+     */
+    @Volatile var suppressBackgroundStop = false
+
     private var mpv: MPVLib? = null
     private var initialized = false
     private var pendingSeekMs = 0L
@@ -783,7 +800,7 @@ class OwnTVPlayer(
                 setPropertyString("vo", "null")
                 runCatching { this.detachSurface() } // mpv's detachSurface (the receiver), not OwnTVPlayer's
                 scope.launch {
-                    delay(600) // let mpv's MediaCodec finish releasing before ExoPlayer claims the decoder
+                    delay(250) // reduced from 600ms — enough for MediaCodec release without a long silence gap
                     if (gen != loadGeneration) return@launch // superseded meanwhile
                     pendingUrl = url
                     pendingSeekMs = pos
@@ -798,6 +815,7 @@ class OwnTVPlayer(
 
     private fun startExo(url: String, pos: Long, surface: Surface, sub: TrackOption?) {
         exoActive = true
+        audioFocus.request() // ensure audio focus for the ExoPlayer path
         _engineChip.value = "EXO"
         _exoActiveState.value = true // mount the SubtitleView overlay now (only while Exo owns playback)
         _directRender.value = true // ExoPlayer also renders direct-to-surface → the view sizes for zoom
@@ -846,7 +864,7 @@ class OwnTVPlayer(
             // then start ExoPlayer on whatever surface is current (a recreated one re-points via
             // attachSurface → exoEngine.setSurface).
             scope.launch {
-                delay(500)
+                delay(250)
                 val s = attachedSurface ?: return@launch
                 startExo(url, pos, s, sub = null)
             }
@@ -858,7 +876,7 @@ class OwnTVPlayer(
                 setPropertyString("vo", "null")
                 runCatching { this.detachSurface() }
                 scope.launch {
-                    delay(500) // let mpv's MediaCodec release — a busy decoder would fail Exo instantly
+                    delay(250) // reduced from 500ms — enough for MediaCodec release without a long silence gap
                     val s = attachedSurface ?: return@launch
                     startExo(url, pos, s, sub = null)
                 }
@@ -908,7 +926,7 @@ class OwnTVPlayer(
             // Remember the choice for THIS item (like Live's compatibility mode remembers the channel).
             scope.launch { vodEngineStore.pin(url, com.lunaiptv.core.player.VodEnginePin.MPV) }
             scope.launch {
-                delay(600) // let ExoPlayer's MediaCodec finish releasing before mpv claims the decoder
+                delay(250) // reduced from 600ms — enough for MediaCodec release without a long silence gap
                 if (currentUrl != url) return@launch // superseded (user zapped/backed out meanwhile)
                 forceSurfaceResetNextLoad = true
                 loadUrl(url, MediaMeta(currentTitle, currentSubtitle, currentYear, currentLogoUrl), isLive = false, pos, resetRetries = false)
@@ -939,7 +957,7 @@ class OwnTVPlayer(
                 setPropertyString("vo", "null")
                 runCatching { this.detachSurface() }
                 scope.launch {
-                    delay(600) // let mpv's MediaCodec finish releasing before ExoPlayer claims the decoder
+                    delay(250) // reduced from 600ms — enough for MediaCodec release without a long silence gap
                     if (gen != loadGeneration) return@launch // superseded meanwhile
                     // Start Exo on a FRESH surface: attachSurface sees pendingExoStart and routes the
                     // recreated surface straight into startExo (mpv never touches it).
@@ -1047,7 +1065,7 @@ class OwnTVPlayer(
         _subTrackList.value = _subTrackList.value.map { it.copy(selected = thenSelectSid != null && it.mpvId == thenSelectSid) }
         _buffering.value = true
         scope.launch {
-            delay(600) // let ExoPlayer's MediaCodec finish releasing before mpv claims the decoder
+            delay(250) // reduced from 600ms — enough for MediaCodec release without a long silence gap
             if (currentUrl != url) return@launch // superseded (user zapped/backed out meanwhile)
             forceSurfaceResetNextLoad = true // Exo left the surface dirty — mpv gets a fresh one
             loadUrl(url, MediaMeta(currentTitle, currentSubtitle, currentYear, currentLogoUrl), isLiveContent, pos, resetRetries = false)
@@ -1532,6 +1550,7 @@ class OwnTVPlayer(
 
     private fun startLoad(url: String) {
         pendingUrl = null
+        audioFocus.request() // ensure we hold audio focus before the stream opens
         val gen = loadGeneration
         mpvAsync {
             // Superseded by a newer load or a stop while waiting in the queue? Skip the dead load —
@@ -1634,6 +1653,7 @@ class OwnTVPlayer(
 
     fun stop() {
         deactivateExo() // give the surface back to mpv before tearing down
+        audioFocus.abandon() // release audio focus so other apps can use the stream
         pendingExoStart = false
         loadGeneration++ // cancels any queued-but-not-yet-executed load
         expectingPlayback = false
@@ -1705,6 +1725,7 @@ class OwnTVPlayer(
      * Holding them got the process LMK-killed at 490–620 MB PSS while invisible ("empty" state).
      */
     fun onAppBackgrounded() {
+        if (suppressBackgroundStop) return // player is docked to mini — don't kill audio
         val url = currentUrl ?: pendingUrl
         if (url != null) {
             // Remember a non-live item so the screensaver/Home → return can restore it paused at its
@@ -1742,6 +1763,7 @@ class OwnTVPlayer(
     }
 
     fun release() {
+        audioFocus.abandon()
         errorCheckJob?.cancel()
         exoTickJob?.cancel()
         exoActive = false
