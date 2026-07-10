@@ -32,6 +32,7 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import tv.own.owntv.core.model.MediaType
+import tv.own.owntv.R
 import tv.own.owntv.features.profiles.PinDialog
 import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.components.OwnTVButton
@@ -86,16 +88,16 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Column(
             modifier = modifier.fillMaxSize().roundedPanel().padding(horizontal = 40.dp, vertical = 28.dp),
         ) {
-            Text("Customize & Hidden Items", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+            Text(stringResource(R.string.customize_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.height(4.dp))
             Text(
-                "This screen is PIN-locked.",
+                stringResource(R.string.customize_locked),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
         }
         PinDialog(
-            title = if (pinError) "Wrong PIN — try again" else "Enter PIN",
+            title = if (pinError) stringResource(R.string.profile_wrong_pin) else stringResource(R.string.profile_enter_pin),
             onSubmit = { entered ->
                 if (entered == pinLock.pin) {
                     unlocked = true
@@ -126,7 +128,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                "Customize & Hidden Items",
+                stringResource(R.string.customize_title),
                 style = MaterialTheme.typography.headlineLarge,
                 color = colors.onSurface,
                 modifier = Modifier.weight(1f),
@@ -136,18 +138,18 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             // entered it, so changing or removing it needs no further verification.
             if (pinLock.pin == null) {
                 OwnTVButton(
-                    "🔒 Set PIN",
+                    stringResource(R.string.customize_set_pin),
                     onClick = { firstPin = ""; confirmPinStage = false; pinMismatch = false; editingPin = PinEdit.SET },
                 )
             } else {
                 OwnTVButton(
-                    "🔒 Change PIN",
+                    stringResource(R.string.customize_change_pin),
                     onClick = { firstPin = ""; confirmPinStage = false; pinMismatch = false; editingPin = PinEdit.CHANGE },
                     style = OwnTVButtonStyle.SECONDARY,
                 )
                 Spacer(Modifier.width(10.dp))
                 OwnTVButton(
-                    "Remove lock",
+                    stringResource(R.string.customize_remove_lock),
                     onClick = { editingPin = PinEdit.REMOVE },
                     style = OwnTVButtonStyle.SECONDARY,
                 )
@@ -155,8 +157,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            "Hide & unhide channels, movies and series, and rename or reorder categories for this " +
-                "profile. Survives re-syncs.",
+            stringResource(R.string.customize_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = colors.onSurfaceVariant,
         )
@@ -164,9 +165,9 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
         // Section picker
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            SectionChip("Live TV", section == MediaType.LIVE, Modifier.focusRequester(firstFocus)) { vm.selectSection(MediaType.LIVE) }
-            SectionChip("Movies", section == MediaType.MOVIE) { vm.selectSection(MediaType.MOVIE) }
-            SectionChip("Series", section == MediaType.SERIES) { vm.selectSection(MediaType.SERIES) }
+            SectionChip(stringResource(R.string.source_live_tv), section == MediaType.LIVE, Modifier.focusRequester(firstFocus)) { vm.selectSection(MediaType.LIVE) }
+            SectionChip(stringResource(R.string.source_movies), section == MediaType.MOVIE) { vm.selectSection(MediaType.MOVIE) }
+            SectionChip(stringResource(R.string.source_series), section == MediaType.SERIES) { vm.selectSection(MediaType.SERIES) }
         }
         Spacer(Modifier.height(16.dp))
 
@@ -186,7 +187,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(10.dp))
-                OwnTVButton("Cancel", onClick = { vm.cancelRange() }, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = { vm.cancelRange() }, style = OwnTVButtonStyle.SECONDARY)
             }
             Spacer(Modifier.height(12.dp))
         }
@@ -198,16 +199,16 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 item {
                     Text(
                         when (section) {
-                            MediaType.LIVE -> "Hidden channels"
-                            MediaType.MOVIE -> "Hidden movies"
-                            else -> "Hidden series"
+                            MediaType.LIVE -> stringResource(R.string.customize_hidden_channels)
+                            MediaType.MOVIE -> stringResource(R.string.customize_hidden_movies)
+                            else -> stringResource(R.string.customize_hidden_series)
                         },
                         style = MaterialTheme.typography.titleLarge,
                         color = colors.onSurface,
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Unhide to bring an item back to the lists.",
+                        stringResource(R.string.customize_unhide_hint),
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.onSurfaceVariant,
                     )
@@ -227,12 +228,12 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                             modifier = Modifier.weight(1f),
                         )
                         Spacer(Modifier.width(10.dp))
-                        OwnTVButton("Unhide", onClick = { vm.unhideChannel(key) }, style = OwnTVButtonStyle.SECONDARY)
+                        OwnTVButton(stringResource(R.string.customize_unhide), onClick = { vm.unhideChannel(key) }, style = OwnTVButtonStyle.SECONDARY)
                     }
                 }
                 item {
                     Spacer(Modifier.height(14.dp))
-                    Text("Categories", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+                    Text(stringResource(R.string.customize_categories), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
                     Spacer(Modifier.height(4.dp))
                 }
             }
@@ -240,7 +241,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             if (rows.isEmpty()) {
                 item {
                     Text(
-                        "No categories in this section yet — add a source first.",
+                        stringResource(R.string.customize_no_categories),
                         style = MaterialTheme.typography.bodyLarge,
                         color = colors.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 24.dp),
@@ -267,9 +268,9 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     renaming?.let { row ->
         TextInputDialog(
-            title = "Rename category",
+            title = stringResource(R.string.customize_rename_category),
             initial = row.displayName,
-            hint = "Only for this profile. Leave blank to restore “${row.originalName}”.",
+            hint = stringResource(R.string.customize_rename_hint, row.originalName),
             onConfirm = { vm.renameCategory(row, it.takeIf { t -> t.isNotBlank() }); renaming = null },
             onDismiss = { renaming = null },
         )
@@ -288,9 +289,9 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     editingPin?.let { mode ->
         when (mode) {
             PinEdit.REMOVE -> PinConfirmDialog(
-                title = "Remove PIN lock?",
-                message = "The Customize screen will open without asking for a PIN again.",
-                confirmLabel = "Remove",
+                title = stringResource(R.string.customize_remove_pin_title),
+                message = stringResource(R.string.customize_remove_pin_desc),
+                confirmLabel = stringResource(R.string.customize_remove),
                 onConfirm = { vm.setPin(null); editingPin = null },
                 onDismiss = { editingPin = null },
             )
@@ -300,7 +301,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 if (confirmPinStage) {
                     key("confirm", pinMismatch) {
                         PinDialog(
-                            title = if (pinMismatch) "PINs don't match — re-enter" else "Confirm new PIN",
+                            title = if (pinMismatch) stringResource(R.string.customize_pin_mismatch) else stringResource(R.string.customize_confirm_pin),
                             onSubmit = { entered ->
                                 if (entered == firstPin) {
                                     vm.setPin(entered); editingPin = null
@@ -314,7 +315,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 } else {
                     key("first") {
                         PinDialog(
-                            title = "Enter a new PIN",
+                            title = stringResource(R.string.customize_new_pin),
                             onSubmit = { entered ->
                                 firstPin = entered
                                 confirmPinStage = true
@@ -346,19 +347,19 @@ private fun RangeHideDialog(count: Int, onHide: () -> Unit, onShow: () -> Unit, 
         Column(
             Modifier.width(480.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(28.dp),
         ) {
-            Text("Hide or show categories", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text(stringResource(R.string.customize_hide_show), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(6.dp))
             Text(
-                "$count ${if (count == 1) "category" else "categories"} selected.",
+                stringResource(R.string.customize_categories_selected, count),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton("Show", onClick = onShow, style = OwnTVButtonStyle.SECONDARY)
-                OwnTVButton("Hide", onClick = onHide, modifier = Modifier.focusRequester(hideFocus))
+                OwnTVButton(stringResource(R.string.show), onClick = onShow, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.hide), onClick = onHide, modifier = Modifier.focusRequester(hideFocus))
             }
         }
     }
@@ -404,6 +405,7 @@ private fun CategoryRow(
     onPickRangeEnd: () -> Unit,
 ) {
     val colors = OwnTVTheme.colors
+    val wasLabel = stringResource(R.string.customize_was)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -427,7 +429,8 @@ private fun CategoryRow(
                         if (row.hidden) append("Hidden")
                         if (row.renamed) {
                             if (row.hidden) append("  ·  ")
-                            append("was “${row.originalName}”")
+                            append(wasLabel)
+                            append(" \u201c${row.originalName}\u201d")
                         }
                     },
                     style = MaterialTheme.typography.labelSmall,
@@ -446,10 +449,10 @@ private fun CategoryRow(
         Spacer(Modifier.width(6.dp))
         OwnTVButton("⤓", onClick = onMoveBottom, style = OwnTVButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        OwnTVButton("Rename", onClick = onRename, style = OwnTVButtonStyle.SECONDARY)
+        OwnTVButton(stringResource(R.string.customize_rename), onClick = onRename, style = OwnTVButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
         OwnTVButton(
-            label = if (row.hidden) "Show" else "Hide",
+            label = if (row.hidden) stringResource(R.string.show) else stringResource(R.string.hide),
             // Long-press anchors a range; a normal press picks the span end while a range is active,
             // otherwise it toggles just this category.
             onClick = { if (inRangeMode) onPickRangeEnd() else onToggleHidden() },
@@ -490,7 +493,7 @@ private fun PinConfirmDialog(
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
                 OwnTVButton(confirmLabel, onClick = onConfirm, modifier = Modifier.focusRequester(confirmFocus))
             }

@@ -31,12 +31,14 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.database.entity.ProfileEntity
 import tv.own.owntv.features.profiles.ProfileEditorDialog
 import tv.own.owntv.features.profiles.ProfilesViewModel
@@ -78,9 +80,9 @@ fun ManageProfilesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .padding(horizontal = 40.dp, vertical = 28.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Profiles", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+            Text(stringResource(R.string.profiles_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton("Add Profile", onClick = { creating = true }, icon = OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
+            OwnTVButton(stringResource(R.string.profiles_add), onClick = { creating = true }, icon = OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
         }
         Spacer(Modifier.height(20.dp))
 
@@ -112,8 +114,8 @@ fun ManageProfilesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     }
     confirmDelete?.let { p ->
         ConfirmDialog(
-            title = "Delete “${p.name}”?",
-            message = "Removes this profile and its favorites and history. Sources are kept.",
+            title = stringResource(R.string.profiles_delete_confirm, p.name),
+            message = stringResource(R.string.profiles_delete_desc),
             onConfirm = { vm.delete(p); confirmDelete = null },
             onDismiss = { confirmDelete = null },
         )
@@ -132,18 +134,18 @@ private fun ProfileRow(profile: ProfileEntity, canDelete: Boolean, onEdit: () ->
         Column(Modifier.weight(1f)) {
             Text(profile.name, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
             val tags = buildList {
-                if (profile.isKids) add("Kids")
-                if (profile.pinHash != null) add("PIN locked")
+                if (profile.isKids) add(stringResource(R.string.profile_kids))
+                if (profile.pinHash != null) add(stringResource(R.string.profiles_pin_locked))
             }
             if (tags.isNotEmpty()) {
                 Text(tags.joinToString(" • "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
             }
         }
         Spacer(Modifier.width(12.dp))
-        OwnTVButton("Edit", onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
+        OwnTVButton(stringResource(R.string.edit), onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
         if (canDelete) {
             Spacer(Modifier.width(10.dp))
-            OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
         }
     }
 }

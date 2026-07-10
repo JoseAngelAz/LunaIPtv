@@ -36,6 +36,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.player.ZoomMode
 import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.components.OwnTVButton
@@ -135,79 +137,73 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
             .padding(horizontal = 40.dp, vertical = 28.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Header("Video Player", onBack)
+        Header(stringResource(R.string.video_player_title), onBack)
         Spacer(Modifier.height(8.dp))
 
-        GroupLabel("Decoding")
+        GroupLabel(stringResource(R.string.video_group_decoding))
         Row2(
-            icon = OwnTVIcon.VIDEO, title = "Hardware decoding",
-            desc = "Use the TV's hardware decoder. Turn off if some streams stutter or show artifacts.",
-            chip = if (hw) "On" else "Off", primaryChip = hw,
+            icon = OwnTVIcon.VIDEO, title = stringResource(R.string.video_hw_decoding),
+            desc = stringResource(R.string.video_hw_decoding_desc),
+            chip = if (hw) stringResource(R.string.on) else stringResource(R.string.off), primaryChip = hw,
             modifier = Modifier.focusRequester(firstFocus),
             onClick = { vm.setHwDecoding(!hw) },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = "Movies & Series player",
-            desc = "mpv (recommended) has the widest format support — DTS/TrueHD audio, unusual files — " +
-                "plus the A/V sync fix. Switch to ExoPlayer only if movies or episodes fail to start: " +
-                "it plays some streams mpv can't on certain TVs, but can't decode DTS/TrueHD audio and " +
-                "has no A/V sync fix. Whichever you pick, the other is tried automatically if it fails.",
+            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_vod_player),
+            desc = stringResource(R.string.video_vod_player_desc),
             chip = if (vodExo) "ExoPlayer" else "mpv", primaryChip = !vodExo,
             onClick = { vm.setVodPreferExo(!vodExo) },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = "External player",
-            desc = "Open movies, series, and downloads in an external app (VLC, MX Player) instead of the " +
-                "built-in player. Useful for streams this app can't decode, or if you prefer another " +
-                "player. Resume position and prev/next are unavailable while playing externally; streams " +
-                "needing a custom User-Agent or referer may not play. Live TV is unaffected.",
-            chip = if (externalPlayer) "On" else "Off", primaryChip = externalPlayer,
+            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_external),
+            desc = stringResource(R.string.video_external_desc),
+            chip = if (externalPlayer) stringResource(R.string.on) else stringResource(R.string.off), primaryChip = externalPlayer,
             onClick = { vm.setExternalPlayer(!externalPlayer) },
         )
         Row2(
-            icon = OwnTVIcon.ASPECT, title = "Default zoom",
-            desc = "Aspect/zoom applied when playback starts.",
+            icon = OwnTVIcon.ASPECT, title = stringResource(R.string.video_default_zoom),
+            desc = stringResource(R.string.video_default_zoom_desc),
             chip = zoomMode.label, chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.ZOOM)),
             onClick = { dialog = Dialog.ZOOM },
         )
         Row2(
-            icon = OwnTVIcon.PLAY, title = "Resume playback",
-            desc = "What to do when a movie or episode has a saved position.",
+            icon = OwnTVIcon.PLAY, title = stringResource(R.string.video_resume),
+            desc = stringResource(R.string.video_resume_desc),
             chip = resumeMode.label, chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.RESUME)),
             onClick = { dialog = Dialog.RESUME },
         )
 
         Divider()
-        GroupLabel("Subtitles")
+        GroupLabel(stringResource(R.string.video_group_subtitles))
         Row2(
-            icon = OwnTVIcon.SUBTITLE, title = "Subtitle size",
-            desc = "Scale subtitle text.",
+            icon = OwnTVIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_size),
+            desc = stringResource(R.string.video_subtitle_size_desc),
             chip = subSizeName(subScale), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.SUB_SIZE)),
             onClick = { dialog = Dialog.SUB_SIZE },
         )
         Row2(
-            icon = OwnTVIcon.SUBTITLE, title = "Preferred subtitle language",
-            desc = "Auto-select this subtitle track when available.",
+            icon = OwnTVIcon.SUBTITLE, title = stringResource(R.string.video_subtitle_lang),
+            desc = stringResource(R.string.video_subtitle_lang_desc),
             chip = langName(subLang), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.SUB_LANG)),
             onClick = { dialog = Dialog.SUB_LANG },
         )
 
         Divider()
-        GroupLabel("Audio")
+        GroupLabel(stringResource(R.string.video_group_audio))
         Row2(
-            icon = OwnTVIcon.AUDIO, title = "Preferred audio language",
-            desc = "Auto-select this audio track when available.",
+            icon = OwnTVIcon.AUDIO, title = stringResource(R.string.video_audio_lang),
+            desc = stringResource(R.string.video_audio_lang_desc),
             chip = langName(audioLang), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.AUDIO_LANG)),
             onClick = { dialog = Dialog.AUDIO_LANG },
         )
         Row2(
-            icon = OwnTVIcon.AUDIO, title = "Audio sync",
-            desc = "Shift audio earlier or later to match the video.",
+            icon = OwnTVIcon.AUDIO, title = stringResource(R.string.video_audio_sync),
+            desc = stringResource(R.string.video_audio_sync_desc),
             chip = "%+d ms".format(audioDelay), chevron = true,
             modifier = Modifier.focusRequester(dialogRowFocus.getValue(Dialog.AUDIO_SYNC)),
             onClick = { dialog = Dialog.AUDIO_SYNC },
@@ -216,42 +212,42 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
 
     when (dialog) {
         Dialog.ZOOM -> PickerDialog(
-            title = "Default zoom",
+            title = stringResource(R.string.video_default_zoom),
             options = ZoomMode.entries.map { it.name to it.label },
             selected = zoomMode.name,
             onSelect = { vm.setDefaultZoom(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.RESUME -> PickerDialog(
-            title = "Resume playback",
+            title = stringResource(R.string.video_resume),
             options = tv.own.owntv.features.settings.data.SettingsRepository.ResumeMode.entries.map { it.name to it.label },
             selected = resumeMode.name,
             onSelect = { vm.setResumeMode(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.SUB_SIZE -> PickerDialog(
-            title = "Subtitle size",
+            title = stringResource(R.string.video_subtitle_size),
             options = SUB_SIZES.map { it.first.toString() to it.second },
             selected = (SUB_SIZES.minByOrNull { kotlin.math.abs(it.first - subScale) }?.first ?: 1.0f).toString(),
             onSelect = { vm.setSubtitleScale(it.toFloat()); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.SUB_LANG -> PickerDialog(
-            title = "Subtitle language",
+            title = stringResource(R.string.video_subtitle_lang),
             options = LANGUAGES,
             selected = subLang,
             onSelect = { vm.setPreferredSubLang(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.AUDIO_LANG -> PickerDialog(
-            title = "Audio language",
+            title = stringResource(R.string.video_audio_lang),
             options = LANGUAGES,
             selected = audioLang,
             onSelect = { vm.setPreferredAudioLang(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.AUDIO_SYNC -> StepperDialog(
-            title = "Audio sync",
+            title = stringResource(R.string.video_audio_sync),
             value = audioDelay, step = 50, min = -2000, max = 2000,
             format = { "%+d ms".format(it) },
             onSet = { vm.setAudioDelayMs(it) },
@@ -379,7 +375,7 @@ internal fun PickerDialog(
                 tv.own.owntv.ui.components.SearchBar(
                     query = query,
                     onQueryChange = { query = it },
-                    placeholder = "Search…",
+                    placeholder = stringResource(R.string.video_search),
                     modifier = Modifier.fillMaxWidth().focusRequester(searchFr),
                 )
                 Spacer(Modifier.height(12.dp))
@@ -404,7 +400,7 @@ internal fun PickerDialog(
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                OwnTVButton("Close", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
             }
         }
     }
@@ -441,9 +437,9 @@ internal fun StepperDialog(
             }
             Spacer(Modifier.height(24.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Reset", onClick = onReset, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.reset), onClick = onReset, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton("Done", onClick = onDismiss)
+                OwnTVButton(stringResource(R.string.done), onClick = onDismiss)
             }
         }
     }

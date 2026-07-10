@@ -45,6 +45,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +59,7 @@ import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.components.OwnTVButton
 import tv.own.owntv.ui.components.OwnTVIcon
 import tv.own.owntv.ui.components.OwnTVSpinner
+import tv.own.owntv.R
 import tv.own.owntv.ui.theme.OwnTVTheme
 
 private val SPEEDS = listOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
@@ -154,11 +156,13 @@ fun PlayerHud(
     var engineFlash by remember { mutableIntStateOf(0) }
     LaunchedEffect(engineFlash) { if (engineFlash > 0) { delay(1800); engineMsg = null } }
     // Wrap the engine toggles so a click also surfaces the toast naming the engine we're switching TO.
+    val switchedExoText = stringResource(R.string.player_switched_exoplayer)
+    val switchedMpvText = stringResource(R.string.player_switched_mpv)
     val toggleCompat: (() -> Unit)? = onToggleCompatMode?.let { cb -> {
-        engineMsg = if (compatMode == true) "Switched to ExoPlayer" else "Switched to MPV"; engineFlash++; cb()
+        engineMsg = if (compatMode == true) switchedExoText else switchedMpvText; engineFlash++; cb()
     } }
     val toggleVod: (() -> Unit)? = onToggleVodEngine?.let { cb -> {
-        engineMsg = if (vodOnExo == true) "Switched to MPV" else "Switched to ExoPlayer"; engineFlash++; cb()
+        engineMsg = if (vodOnExo == true) switchedMpvText else switchedExoText; engineFlash++; cb()
     } }
 
     LaunchedEffect(forceShow) { if (forceShow) controlsVisible = true }
@@ -279,7 +283,7 @@ fun PlayerHud(
         // Status overlay (always shown).
         when {
             error != null -> Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Playback error", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                Text(stringResource(R.string.player_playback_error), style = MaterialTheme.typography.titleLarge, color = Color.White)
                 Spacer(Modifier.height(8.dp))
                 Text(error ?: "", style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.7f), textAlign = TextAlign.Center)
                 // Structured technical detail so a user can report the real cause without adb/logcat:
@@ -295,11 +299,11 @@ fun PlayerHud(
                     }
                     info.raw?.takeIf { it.isNotBlank() }?.let {
                         Spacer(Modifier.height(4.dp))
-                        Text("err: $it", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(0.8f))
+                        Text(stringResource(R.string.player_err_prefix, it), style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.6f), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(0.8f))
                     }
                 }
                 Spacer(Modifier.height(18.dp))
-                OwnTVButton("Retry", onClick = { player.retry() }, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(retryFocus))
+                OwnTVButton(stringResource(R.string.retry), onClick = { player.retry() }, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(retryFocus))
             }
             buffering -> OwnTVSpinner(modifier = Modifier.align(Alignment.Center), sizeDp = 56)
         }
@@ -314,7 +318,7 @@ fun PlayerHud(
             var audioTracks by remember { mutableStateOf(player.audioTracks()) }
             LaunchedEffect(Unit) { while (audioTracks.isEmpty()) { delay(300); audioTracks = player.audioTracks() } }
             TrackDialog(
-                "Audio Track", audioTracks,
+                stringResource(R.string.player_audio_track), audioTracks,
                 onSelect = { player.selectAudio(it.mpvId); dialog = HudDialog.NONE }, onOff = null,
                 onDismiss = { dialog = HudDialog.NONE },
                 // A/V-sync nudge only for VOD (mpv) — live A/V is the provider's; ExoPlayer has no audio-delay.
@@ -325,7 +329,7 @@ fun PlayerHud(
         HudDialog.SUBS -> {
             var subTracks by remember { mutableStateOf(player.textTracks()) }
             LaunchedEffect(Unit) { while (subTracks.isEmpty()) { delay(300); subTracks = player.textTracks() } }
-            TrackDialog("Subtitles", subTracks, onSelect = { player.selectSubtitle(it.mpvId); dialog = HudDialog.NONE }, onOff = { player.disableSubtitles(); dialog = HudDialog.NONE }, onDismiss = { dialog = HudDialog.NONE })
+            TrackDialog(stringResource(R.string.player_subtitles), subTracks, onSelect = { player.selectSubtitle(it.mpvId); dialog = HudDialog.NONE }, onOff = { player.disableSubtitles(); dialog = HudDialog.NONE }, onDismiss = { dialog = HudDialog.NONE })
         }
         HudDialog.SPEED -> SpeedDialog(current = speed, onSelect = { player.setSpeed(it); dialog = HudDialog.NONE }, onDismiss = { dialog = HudDialog.NONE })
         HudDialog.ZOOM -> ZoomDialog(current = zoomMode, onSelect = { player.setZoomMode(it); dialog = HudDialog.NONE }, onDismiss = { dialog = HudDialog.NONE })
@@ -379,7 +383,7 @@ private fun LiveBadge() {
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Box(Modifier.size(6.dp).clip(CircleShape).background(Color.White))
-        Text("LIVE", style = MaterialTheme.typography.labelSmall, color = Color.White, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.live), style = MaterialTheme.typography.labelSmall, color = Color.White, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -419,7 +423,7 @@ private fun CenterControls(
         if (timeshifting) {
             // Counts down as the archive catches up to the live edge; grows if you pause.
             Text(
-                if (timeshiftOffsetSec!! <= 1) "● At the live edge" else "● ${mmss(timeshiftOffsetSec)} behind live",
+                if (timeshiftOffsetSec!! <= 1) stringResource(R.string.player_at_live_edge) else stringResource(R.string.player_behind_live, mmss(timeshiftOffsetSec)),
                 style = MaterialTheme.typography.labelLarge,
                 color = OwnTVTheme.colors.accent,
             )
@@ -571,7 +575,7 @@ private fun NextEpisodeCard(
             .padding(horizontal = 18.dp, vertical = 14.dp),
     ) {
         Text(
-            "Next episode in ${seconds}s",
+            stringResource(R.string.player_next_episode, seconds.toString()),
             style = MaterialTheme.typography.labelLarge,
             color = colors.primary,
             fontWeight = FontWeight.Bold,
@@ -587,13 +591,13 @@ private fun NextEpisodeCard(
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             OwnTVButton(
-                "Play now",
+                stringResource(R.string.player_play_now),
                 onClick = onPlayNow,
                 icon = OwnTVIcon.PLAY,
                 modifier = Modifier.focusRequester(playFocus),
             )
             OwnTVButton(
-                "Cancel",
+                stringResource(R.string.cancel),
                 onClick = onCancel,
                 icon = OwnTVIcon.CLOSE,
                 style = tv.own.owntv.ui.components.OwnTVButtonStyle.SECONDARY,
@@ -728,7 +732,7 @@ private fun LiveTimelineBar(offsetSec: Int, onScrub: (Int) -> Unit) {
             }
             Box(Modifier.fillMaxWidth(frac), contentAlignment = Alignment.CenterEnd) {
                 Box(Modifier.padding(bottom = 30.dp).clip(RoundedCornerShape(8.dp)).background(Color.Black.copy(alpha = 0.9f)).padding(horizontal = 8.dp, vertical = 3.dp)) {
-                    Text(if (offsetSec <= 1) "LIVE" else "-${mmss(offsetSec)}", style = MaterialTheme.typography.labelMedium, color = Color.White)
+                    Text(if (offsetSec <= 1) stringResource(R.string.live) else "-${mmss(offsetSec)}", style = MaterialTheme.typography.labelMedium, color = Color.White)
                 }
             }
         }
@@ -763,12 +767,12 @@ private fun TrackDialog(
     LaunchedEffect(tracks.size, focusOff) { requestFocusRetrying(focus) }
     DialogScaffold(title = title, onDismiss = onDismiss) {
         if (tracks.isEmpty() && onOff == null) {
-            item { Text("No tracks available.", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, modifier = Modifier.padding(16.dp)) }
+            item { Text(stringResource(R.string.player_no_tracks), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, modifier = Modifier.padding(16.dp)) }
         }
         if (onOff != null) {
             item {
                 if (focusOff) LaunchedEffect(Unit) { androidx.compose.runtime.withFrameNanos {}; runCatching { focus.requestFocus() } }
-                OptionRow(label = "Off", selected = selectedIndex < 0, modifier = if (focusOff) Modifier.focusRequester(focus) else Modifier, onClick = onOff)
+                OptionRow(label = stringResource(R.string.player_off), selected = selectedIndex < 0, modifier = if (focusOff) Modifier.focusRequester(focus) else Modifier, onClick = onOff)
             }
         }
         items(tracks.size) { index ->
@@ -792,7 +796,7 @@ private fun TrackDialog(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Text("A/V sync", style = MaterialTheme.typography.titleSmall, color = colors.onSurface, modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.player_av_sync), style = MaterialTheme.typography.titleSmall, color = colors.onSurface, modifier = Modifier.weight(1f))
                     StepButton("–", enabled = (audioDelayMs ?: 0) > -5_000) { onAdjustAudioDelay(-50) }
                     Text(
                         formatDelay(audioDelayMs ?: 0),
@@ -831,11 +835,11 @@ private fun SpeedDialog(current: Double, onSelect: (Double) -> Unit, onDismiss: 
     LaunchedEffect(Unit) { requestFocusRetrying(focus) }
     BackHandler { onDismiss() }
     val selectedIndex = SPEEDS.indexOfFirst { kotlin.math.abs(it - current) < 0.01 }.coerceAtLeast(0)
-    DialogScaffold(title = "Playback Speed", onDismiss = onDismiss) {
+    DialogScaffold(title = stringResource(R.string.player_speed_title), onDismiss = onDismiss) {
         items(SPEEDS.size) { index ->
             val speed = SPEEDS[index]
             OptionRow(
-                label = if (speed == 1.0) "1.0x (Normal)" else "${speed}x",
+                label = if (speed == 1.0) stringResource(R.string.player_speed_normal) else "${speed}x",
                 selected = kotlin.math.abs(speed - current) < 0.01,
                 modifier = if (index == selectedIndex) Modifier.focusRequester(focus) else Modifier,
                 onClick = { onSelect(speed) },
@@ -851,7 +855,7 @@ private fun ZoomDialog(current: ZoomMode, onSelect: (ZoomMode) -> Unit, onDismis
     BackHandler { onDismiss() }
     // Land focus on the current mode (not always the first row) so re-opening starts on your selection.
     val selectedIndex = ZoomMode.entries.indexOf(current).coerceAtLeast(0)
-    DialogScaffold(title = "Player Zoom", onDismiss = onDismiss) {
+    DialogScaffold(title = stringResource(R.string.player_zoom_title), onDismiss = onDismiss) {
         items(ZoomMode.entries.size) { index ->
             val mode = ZoomMode.entries[index]
             OptionRow(label = mode.label, selected = mode == current, modifier = if (index == selectedIndex) Modifier.focusRequester(focus) else Modifier, onClick = { onSelect(mode) })
@@ -872,7 +876,7 @@ private fun VolumeDialog(player: PlaybackEngine, onDismiss: () -> Unit) {
     ) {
         Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.7f)), contentAlignment = Alignment.Center) {
             Column(Modifier.width(440.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Volume", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+                Text(stringResource(R.string.player_volume), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
                 Spacer(Modifier.height(20.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                     StepButton("–", enabled = volume > 0, modifier = Modifier.focusRequester(focus)) { player.adjustVolume(-5) }
@@ -881,9 +885,9 @@ private fun VolumeDialog(player: PlaybackEngine, onDismiss: () -> Unit) {
                 }
                 Spacer(Modifier.height(22.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OwnTVButton(if (volume == 0) "Unmute" else "Mute", onClick = { player.toggleMute() }, style = tv.own.owntv.ui.components.OwnTVButtonStyle.SECONDARY)
+                    OwnTVButton(if (volume == 0) stringResource(R.string.player_unmute) else stringResource(R.string.player_mute), onClick = { player.toggleMute() }, style = tv.own.owntv.ui.components.OwnTVButtonStyle.SECONDARY)
                     Spacer(Modifier.weight(1f))
-                    OwnTVButton("Done", onClick = onDismiss)
+                    OwnTVButton(stringResource(R.string.done), onClick = onDismiss)
                 }
             }
         }

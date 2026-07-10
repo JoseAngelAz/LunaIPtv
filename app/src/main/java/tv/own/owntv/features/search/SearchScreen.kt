@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,6 +41,7 @@ import tv.own.owntv.core.database.dao.ChannelSearchResult
 import tv.own.owntv.core.database.entity.ChannelEntity
 import tv.own.owntv.core.database.entity.MovieEntity
 import tv.own.owntv.core.database.entity.SeriesEntity
+import tv.own.owntv.R
 import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.components.OwnTVIcon
 import tv.own.owntv.ui.components.SearchBar
@@ -97,12 +99,12 @@ fun SearchScreen(
             .onFocusChanged { if (it.hasFocus) onChildFocused() }
             .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
     ) {
-        Text("Search", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+        Text(stringResource(R.string.search_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(14.dp))
         SearchBar(
             query = query,
             onQueryChange = vm::setQuery,
-            placeholder = "Search channels, movies & series…",
+            placeholder = stringResource(R.string.search_placeholder),
             modifier = Modifier.fillMaxWidth().focusRequester(searchFocus),
         )
         Spacer(Modifier.height(20.dp))
@@ -116,11 +118,11 @@ fun SearchScreen(
                     onIntent = { vm.setIntent(it) },
                 )
             searching && query.trim().length < 2 ->
-                CenterHint("Type at least 2 characters to search across everything.")
+                CenterHint(stringResource(R.string.search_min_chars))
             shown.isEmpty ->
                 CenterHint(
-                    if (searching) "No results for “${query.trim()}”."
-                    else "Nothing in ${intent?.label ?: "this list"} yet.",
+                    if (searching) stringResource(R.string.search_no_results, query.trim())
+                    else stringResource(R.string.search_nothing_in, intent?.label ?: "this list"),
                 )
             else -> ResultsWithDetail(
                 results = shown,
@@ -152,7 +154,7 @@ private fun LauncherEmptyState(
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         // Intent launcher chips
-        SectionLabel("Jump to")
+        SectionLabel(stringResource(R.string.search_jump_to))
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             SearchIntent.entries.forEach { i ->
                 PillChip(label = i.label, tonal = true) { onIntent(i) }
@@ -162,8 +164,8 @@ private fun LauncherEmptyState(
         // Recent searches
         if (recent.isNotEmpty()) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                SectionLabel("Recent searches")
-                PillChip(label = "Clear", tonal = false, onClick = onClearRecent)
+                SectionLabel(stringResource(R.string.search_recent))
+                PillChip(label = stringResource(R.string.search_clear), tonal = false, onClick = onClearRecent)
             }
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 recent.chunked(4).forEach { rowTerms ->
@@ -176,7 +178,7 @@ private fun LauncherEmptyState(
             }
         } else {
             Text(
-                "Your recent searches will show here.",
+                stringResource(R.string.search_no_recent),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
@@ -240,7 +242,7 @@ private fun ResultsWithDetail(
                             thumbUrl = item.movie.posterUrl,
                             fallbackIcon = OwnTVIcon.MOVIES,
                             title = item.movie.name,
-                            subtitle = metaLine(item.movie.year, item.movie.rating, "Movie"),
+                            subtitle = metaLine(item.movie.year, item.movie.rating, stringResource(R.string.search_type_movie)),
                             isFavorite = false,
                             focusRequester = if (item == firstItem) firstRowFocus else null,
                             onFocused = { selected = item },
@@ -253,7 +255,7 @@ private fun ResultsWithDetail(
                             thumbUrl = item.series.posterUrl,
                             fallbackIcon = OwnTVIcon.SERIES,
                             title = item.series.name,
-                            subtitle = metaLine(item.series.year, item.series.rating, "Series"),
+                            subtitle = metaLine(item.series.year, item.series.rating, stringResource(R.string.search_type_series)),
                             isFavorite = false,
                             focusRequester = if (item == firstItem) firstRowFocus else null,
                             onFocused = { selected = item },
@@ -299,17 +301,17 @@ private fun DetailPane(
         is SearchItem.ChannelItem -> {
             posterUrl = item.row.channel.logoUrl; icon = OwnTVIcon.LIVE_TV
             title = item.row.channel.name; subtitle = channelDetail(item.row); plot = null
-            actionLabel = "Watch live"; action = { onPlayChannel(item.row.channel) }
+            actionLabel = stringResource(R.string.search_watch_live); action = { onPlayChannel(item.row.channel) }
         }
         is SearchItem.MovieItem -> {
             posterUrl = item.movie.posterUrl; icon = OwnTVIcon.MOVIES
-            title = item.movie.name; subtitle = metaLine(item.movie.year, item.movie.rating, "Movie"); plot = item.movie.plot
-            actionLabel = "Play"; action = { onPlayMovie(item.movie) }
+            title = item.movie.name; subtitle = metaLine(item.movie.year, item.movie.rating, stringResource(R.string.search_type_movie)); plot = item.movie.plot
+            actionLabel = stringResource(R.string.play); action = { onPlayMovie(item.movie) }
         }
         is SearchItem.SeriesItem -> {
             posterUrl = item.series.posterUrl; icon = OwnTVIcon.SERIES
-            title = item.series.name; subtitle = metaLine(item.series.year, item.series.rating, "Series"); plot = item.series.plot
-            actionLabel = "Open series"; action = { onOpenSeries(item.series) }
+            title = item.series.name; subtitle = metaLine(item.series.year, item.series.rating, stringResource(R.string.search_type_series)); plot = item.series.plot
+            actionLabel = stringResource(R.string.search_open_series); action = { onOpenSeries(item.series) }
         }
     }
 

@@ -28,10 +28,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.database.entity.SourceEntity
 import tv.own.owntv.core.model.SourceType
 import tv.own.owntv.features.settings.PickerDialog
@@ -105,10 +107,12 @@ fun AddSourceScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(modifier = Modifier.widthIn(max = 560.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(if (editing) "Edit source" else "Add your source", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+            Text(if (editing) stringResource(R.string.source_edit_title) else stringResource(R.string.source_add_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.height(6.dp))
+            val editDesc = stringResource(R.string.source_edit_desc)
+            val addDesc = stringResource(R.string.source_add_desc)
             Text(
-                if (editing) "Update this source's details, or change its auto-refresh setting." else "OwnTV is a player — bring your own M3U or Xtream source.",
+                if (editing) editDesc else addDesc,
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
@@ -117,30 +121,32 @@ fun AddSourceScreen(
             // Source type selector (locked while editing — the type can't change, so initial focus
             // goes to the Name field instead of a dead chip).
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                KindChip("Xtream", kind == SourceKind.XTREAM, Modifier.weight(1f).then(if (!editing) Modifier.focusRequester(firstFocus) else Modifier)) { if (!editing) kind = SourceKind.XTREAM }
-                KindChip("M3U / M3U8", kind == SourceKind.M3U, Modifier.weight(1f)) { if (!editing) kind = SourceKind.M3U }
+                KindChip(stringResource(R.string.source_kind_xtream), kind == SourceKind.XTREAM, Modifier.weight(1f).then(if (!editing) Modifier.focusRequester(firstFocus) else Modifier)) { if (!editing) kind = SourceKind.XTREAM }
+                KindChip(stringResource(R.string.source_kind_m3u), kind == SourceKind.M3U, Modifier.weight(1f)) { if (!editing) kind = SourceKind.M3U }
             }
             Spacer(Modifier.height(20.dp))
 
-            OwnTVTextField(name, { name = it }, label = "Name (optional)", placeholder = "My IPTV", modifier = Modifier.fillMaxWidth(), focusRequester = if (editing) firstFocus else null)
+            OwnTVTextField(name, { name = it }, label = stringResource(R.string.source_name_optional), placeholder = "My IPTV", modifier = Modifier.fillMaxWidth(), focusRequester = if (editing) firstFocus else null)
             Spacer(Modifier.height(14.dp))
 
             when (kind) {
                 SourceKind.XTREAM -> {
-                    OwnTVTextField(server, { server = it }, label = "Server URL", placeholder = "http://host:port", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
+                    OwnTVTextField(server, { server = it }, label = stringResource(R.string.source_server_url), placeholder = "http://host:port", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(14.dp))
-                    OwnTVTextField(username, { username = it }, label = "Username", modifier = Modifier.fillMaxWidth())
+                    OwnTVTextField(username, { username = it }, label = stringResource(R.string.source_username), modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(14.dp))
-                    OwnTVTextField(password, { password = it }, label = if (editing) "Password (leave blank to keep)" else "Password", isPassword = true, modifier = Modifier.fillMaxWidth())
+                    val pwLabel = if (editing) stringResource(R.string.source_password_keep) else stringResource(R.string.source_password)
+                    OwnTVTextField(password, { password = it }, label = pwLabel, isPassword = true, modifier = Modifier.fillMaxWidth())
                 }
                 SourceKind.M3U -> {
                     val pickedName = remember(m3uUrl) {
                         if (m3uUrl.startsWith("/")) java.io.File(m3uUrl).name else null
                     }
-                    OwnTVTextField(m3uUrl, { m3uUrl = it }, label = "Playlist URL or local file", placeholder = "http://…/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
+                    OwnTVTextField(m3uUrl, { m3uUrl = it }, label = stringResource(R.string.source_playlist_url), placeholder = "http://…/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
+                    val fileLabel = if (pickedName != null) stringResource(R.string.source_local_file, pickedName) else stringResource(R.string.source_playlist_file)
                     OwnTVButton(
-                        label = if (pickedName != null) "Local file: $pickedName" else "Choose a local .m3u / .m3u8 file…",
+                        label = fileLabel,
                         onClick = { showFileBrowser = true },
                         style = OwnTVButtonStyle.SECONDARY,
                         modifier = Modifier.fillMaxWidth(),
@@ -148,44 +154,43 @@ fun AddSourceScreen(
                 }
             }
 
-            // EPG is managed separately now (Settings → EPG Sources), so no EPG field here. For an
-            // Xtream server the guide URL is still derived automatically; M3U EPG can be added there.
             Spacer(Modifier.height(14.dp))
-            OwnTVTextField(userAgent, { userAgent = it }, label = "User-Agent (optional)", placeholder = "e.g. VLC/3.0.20 LibVLC/3.0.20", modifier = Modifier.fillMaxWidth())
+            OwnTVTextField(userAgent, { userAgent = it }, label = stringResource(R.string.source_user_agent), placeholder = "e.g. VLC/3.0.20 LibVLC/3.0.20", modifier = Modifier.fillMaxWidth())
 
             Spacer(Modifier.height(16.dp))
-            // Auto-refresh dropdown (replaces the old binary "Refresh on startup" toggle). Off/Startup or a
-            // staleness threshold — the source is refreshed when its data is at least this old.
             AutoRefreshRow(selected = autoRefresh) { showAutoRefreshPicker = true }
 
             if (showDefaultToggle) {
                 Spacer(Modifier.height(16.dp))
+                val defLabel = stringResource(R.string.source_default_playlist)
+                val defDesc = stringResource(R.string.source_default_playlist_desc)
                 ToggleRow(
-                    label = "Default playlist",
-                    desc = "Show only this playlist across the app. Turn off for all playlists; change anytime from the top bar.",
+                    label = defLabel,
+                    desc = defDesc,
                     checked = isDefault,
                 ) { isDefault = it }
             }
 
             if (showContentToggles) {
                 Spacer(Modifier.height(20.dp))
-                Text("Sync first", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                Text(stringResource(R.string.source_sync_first), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 Spacer(Modifier.height(4.dp))
-                Text("Pick what to import now. The rest syncs in the background.", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                Text(stringResource(R.string.source_sync_first_desc), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 Spacer(Modifier.height(10.dp))
-                ToggleRow(label = "Live TV", desc = "Channels and categories", checked = syncLive) { syncLive = it }
+                ToggleRow(label = stringResource(R.string.source_live_tv), desc = stringResource(R.string.source_live_tv_desc), checked = syncLive) { syncLive = it }
                 Spacer(Modifier.height(8.dp))
-                ToggleRow(label = "Movies", desc = "VOD movie catalog", checked = syncMovies) { syncMovies = it }
+                ToggleRow(label = stringResource(R.string.source_movies), desc = stringResource(R.string.source_movies_desc), checked = syncMovies) { syncMovies = it }
                 Spacer(Modifier.height(8.dp))
-                ToggleRow(label = "Series", desc = "TV series catalog", checked = syncSeries) { syncSeries = it }
+                ToggleRow(label = stringResource(R.string.source_series), desc = stringResource(R.string.source_series_desc), checked = syncSeries) { syncSeries = it }
             }
 
             Spacer(Modifier.height(28.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Back", onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.back), onClick = onBack, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
+                val startLabel = if (editing) stringResource(R.string.save) else stringResource(R.string.source_start_import)
                 OwnTVButton(
-                    label = if (editing) "Save" else "Start Import",
+                    label = startLabel,
                     onClick = {
                         when (kind) {
                             SourceKind.XTREAM -> onStartXtream(name, server, username, password, userAgent, epgUrl, autoRefresh, syncLive, syncMovies, syncSeries, isDefault)
@@ -200,7 +205,7 @@ fun AddSourceScreen(
       // In-app, TV-safe file picker (SAF / system file picker is missing on many TVs).
       if (showFileBrowser) {
           StorageBrowser(
-              title = "Pick a playlist file (.m3u / .m3u8)",
+              title = stringResource(R.string.source_pick_file_title),
               mode = BrowseMode.FILE,
               fileExtensions = setOf("m3u", "m3u8"),
               onPick = { file ->
@@ -213,7 +218,7 @@ fun AddSourceScreen(
       }
       if (showAutoRefreshPicker) {
           PickerDialog(
-              title = "Auto refresh",
+              title = stringResource(R.string.source_auto_refresh),
               options = PlaylistAutoRefresh.entries.map { it.name to it.label },
               selected = autoRefresh.name,
               onSelect = { value ->
@@ -238,9 +243,9 @@ private fun AutoRefreshRow(selected: PlaylistAutoRefresh, onClick: () -> Unit) {
     ) { _ ->
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Auto refresh", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                Text(stringResource(R.string.source_auto_refresh), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 Text(
-                    "Off, on startup, or when data is stale",
+                    stringResource(R.string.source_auto_refresh_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.onSurfaceVariant,
                 )

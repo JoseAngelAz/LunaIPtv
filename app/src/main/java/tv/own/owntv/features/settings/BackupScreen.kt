@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.focusGroup
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -35,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.backup.BackupManager
 import tv.own.owntv.ui.components.BrowseMode
 import tv.own.owntv.ui.components.FocusableSurface
@@ -113,19 +115,19 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .focusGroup()
             .padding(horizontal = 40.dp, vertical = 28.dp),
     ) {
-        Text("Backup & Restore", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+        Text(stringResource(R.string.backup_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(8.dp))
         Text(
-            "Save your profiles, sources, customizations, favorites, history and resume positions to a " +
-                "file — or restore them on a new device. You choose what to include each time. " +
-                "Channels/movies re-sync from your sources after restoring.",
+            stringResource(R.string.backup_desc),
             style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, modifier = Modifier.widthIn(max = 680.dp),
         )
         Spacer(Modifier.height(24.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton("Export backup", onClick = { dialogReturn = firstFocus; showExportPicker = true }, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(firstFocus))
-            OwnTVButton("Restore backup", onClick = { dialogReturn = restoreBtnFocus; browser = BrowseMode.FILE; showBrowser = true }, style = OwnTVButtonStyle.SECONDARY, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(restoreBtnFocus))
+        val exportBtnLabel = stringResource(R.string.backup_export)
+        val restoreBtnLabel = stringResource(R.string.backup_restore)
+        OwnTVButton(exportBtnLabel, onClick = { dialogReturn = firstFocus; showExportPicker = true }, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(firstFocus))
+        OwnTVButton(restoreBtnLabel, onClick = { dialogReturn = restoreBtnFocus; browser = BrowseMode.FILE; showBrowser = true }, style = OwnTVButtonStyle.SECONDARY, enabled = state != BackupViewModel.State.Working, modifier = Modifier.focusRequester(restoreBtnFocus))
         }
         Spacer(Modifier.height(20.dp))
 
@@ -133,7 +135,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             BackupViewModel.State.Working -> Row(verticalAlignment = Alignment.CenterVertically) {
                 OwnTVSpinner(sizeDp = 22)
                 Spacer(Modifier.width(12.dp))
-                Text("Working…", style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant)
+                Text(stringResource(R.string.backup_working), style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant)
             }
             is BackupViewModel.State.Done -> Text(s.message, style = MaterialTheme.typography.bodyLarge, color = colors.primary)
             is BackupViewModel.State.Error -> Text(s.message, style = MaterialTheme.typography.bodyLarge, color = Color(0xFFEF4444))
@@ -143,11 +145,13 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Export step 1: choose what to include, then pick the folder.
     if (showExportPicker) {
+        val whatBackupTitle = stringResource(R.string.backup_what_backup)
+        val chooseFolderLabel = stringResource(R.string.backup_choose_folder)
         SectionPickerDialog(
-            title = "What to back up",
+            title = whatBackupTitle,
             sections = BackupManager.Section.entries,
             initial = BackupManager.Section.entries.toSet(),
-            confirmLabel = "Choose folder",
+            confirmLabel = chooseFolderLabel,
             onConfirm = { chosen ->
                 exportSections = chosen
                 showExportPicker = false
@@ -159,19 +163,23 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Restore step 2: the picked file was inspected — choose which of its sections to apply.
     (state as? BackupViewModel.State.ChooseRestore)?.let { choose ->
+        val whatRestoreTitle = stringResource(R.string.backup_what_restore)
+        val restoreBtnLabel = stringResource(R.string.backup_restore_btn)
         SectionPickerDialog(
-            title = "What to restore",
+            title = whatRestoreTitle,
             sections = BackupManager.Section.entries.filter { it in choose.available },
             initial = choose.available,
-            confirmLabel = "Restore",
+            confirmLabel = restoreBtnLabel,
             onConfirm = { chosen -> vm.beginImport(choose.file, chosen, choose.encrypted) },
             onDismiss = { vm.reset() },
         )
     }
 
     if (showBrowser) {
+        val folderTitle = stringResource(R.string.backup_choose_save)
+        val fileTitle = stringResource(R.string.backup_choose_file)
         StorageBrowser(
-            title = if (browser == BrowseMode.FOLDER) "Choose a folder to save the backup" else "Pick a backup file to restore",
+            title = if (browser == BrowseMode.FOLDER) folderTitle else fileTitle,
             mode = browser,
             fileExtensions = setOf("json"),
             onPick = { file -> showBrowser = false; if (browser == BrowseMode.FOLDER) exportFolder = file else vm.inspect(file) },
@@ -181,13 +189,15 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Export step 3: ask whether to protect passwords with a backup passphrase (or export without them).
     exportFolder?.let { folder ->
+        val protectTitle = stringResource(R.string.source_pw_protect)
+        val protectMsg = stringResource(R.string.source_pw_protect_desc)
+        val encryptLabel = stringResource(R.string.source_encrypt_export)
+        val exportNoPwLabel = stringResource(R.string.source_export_no_pw)
         BackupPasswordDialog(
-            title = "Protect passwords?",
-            message = "Source and proxy passwords can be encrypted with a backup password you choose. " +
-                "You'll need the same password to restore them on another device. Without one, passwords " +
-                "are left out of the file and must be re-entered after restoring.",
-            confirmLabel = "Encrypt & export",
-            skipLabel = "Export without passwords",
+            title = protectTitle,
+            message = protectMsg,
+            confirmLabel = encryptLabel,
+            skipLabel = exportNoPwLabel,
             onConfirm = { pass -> exportFolder = null; vm.export(folder, exportSections, pass) },
             onSkip = { exportFolder = null; vm.export(folder, exportSections, null) },
             onDismiss = { exportFolder = null },
@@ -196,15 +206,17 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Restore step 3 (encrypted only): prompt for the backup password, allow skipping or retrying.
     (state as? BackupViewModel.State.NeedPassword)?.let { need ->
+        val wrongPwTitle = stringResource(R.string.source_wrong_password)
+        val enterPwTitle = stringResource(R.string.source_enter_password)
+        val pwWrongMsg = stringResource(R.string.source_pw_wrong_msg)
+        val pwInfoMsg = stringResource(R.string.source_pw_info)
+        val restoreLabel = stringResource(R.string.backup_restore_btn)
+        val skipNoPwLabel = stringResource(R.string.setup_skip_no_pw)
         BackupPasswordDialog(
-            title = if (need.retry) "Wrong backup password" else "Enter backup password",
-            message = if (need.retry)
-                "That password didn't match. Try again, or skip to restore everything except saved passwords."
-            else
-                "This backup's passwords are encrypted. Enter the backup password to restore them, or skip " +
-                    "to restore everything else and re-enter passwords later.",
-            confirmLabel = "Restore",
-            skipLabel = "Skip (no passwords)",
+            title = if (need.retry) wrongPwTitle else enterPwTitle,
+            message = if (need.retry) pwWrongMsg else pwInfoMsg,
+            confirmLabel = restoreLabel,
+            skipLabel = skipNoPwLabel,
             onConfirm = { pass -> vm.import(need.file, need.sections, pass) },
             onSkip = { vm.import(need.file, need.sections, null) },
             onDismiss = { vm.reset() },
@@ -235,16 +247,18 @@ private fun BackupPasswordDialog(
             Spacer(Modifier.height(12.dp))
             Text(message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
             Spacer(Modifier.height(20.dp))
+            val backupPwLabel = stringResource(R.string.setup_backup_password)
             OwnTVTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = "Backup password",
+                label = backupPwLabel,
                 isPassword = true,
                 focusRequester = firstFocus,
             )
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                val cancelLabel = stringResource(R.string.cancel)
+                OwnTVButton(cancelLabel, onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
                 OwnTVButton(skipLabel, onClick = onSkip, style = OwnTVButtonStyle.SECONDARY)
                 OwnTVButton(confirmLabel, onClick = { onConfirm(password) }, enabled = password.isNotBlank())
@@ -274,8 +288,9 @@ private fun SectionPickerDialog(
             Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(16.dp))
 
+            val everythingLabel = stringResource(R.string.backup_everything)
             CheckRow(
-                label = "Everything",
+                label = everythingLabel,
                 desc = null,
                 checked = selected.size == sections.size,
                 onToggle = { selected = if (selected.size == sections.size) emptySet() else sections.toSet() },
@@ -293,7 +308,8 @@ private fun SectionPickerDialog(
 
             Spacer(Modifier.height(20.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                val cancelLabel = stringResource(R.string.cancel)
+                OwnTVButton(cancelLabel, onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
                 OwnTVButton(confirmLabel, onClick = { onConfirm(selected) }, enabled = selected.isNotEmpty())
             }

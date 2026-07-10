@@ -754,6 +754,17 @@
     <string name="update_check_error">No se pudo buscar actualizaciones.</string>
     <string name="update_luna_info">LunaIPtv v%1$s está listo (tienes v%2$s).</string>
 
+    <!-- ===== FUENTES EPG (DESCRIPCIÓN) ===== -->
+    <string name="epg_sources_desc">Feeds XMLTV que llenan la Guía de TV. Se sincronizan automáticamente al agregarse y se fusionan con los canales de tus listas.</string>
+    <string name="epg_user_agent_placeholder">Déjalo en blanco para usar el predeterminado</string>
+    <string name="epg_sync_download_desc">Descarga la guía de programas (EPG) para \u201c%1$s\u201d. También puedes hacerlo después en Configuración \u2192 EPG.</string>
+
+    <!-- ===== REPRODUCTOR DE VIDEO (GRUPOS) ===== -->
+    <string name="video_player_title">Reproductor de video</string>
+    <string name="video_group_decoding">Decodificación</string>
+    <string name="video_group_subtitles">Subtítulos</string>
+    <string name="video_group_audio">Audio</string>
+
     <!-- ===== DIÁLOGO DE ACTUALIZACIÓN ===== -->
     <string name="update_latest_version">Esta es la última versión de LunaIPtv (v%1$s).</string>
     <string name="update_available_luna">LunaIPtv v%1$s está disponible (tienes v%2$s).</string>

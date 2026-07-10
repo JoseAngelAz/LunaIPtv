@@ -31,11 +31,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.epg.EpgSource
 import tv.own.owntv.features.settings.data.EpgAutoRefresh
 import tv.own.owntv.ui.components.FocusableSurface
@@ -102,21 +104,20 @@ fun EpgSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier, startOnA
             .padding(horizontal = 40.dp, vertical = 28.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("EPG Sources", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+            Text(stringResource(R.string.epg_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
             Spacer(Modifier.weight(1f))
-            OwnTVButton("Add EPG", onClick = { adding = true }, icon = OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
+            OwnTVButton(stringResource(R.string.epg_add), onClick = { adding = true }, icon = OwnTVIcon.ADD, modifier = Modifier.focusRequester(addFocus))
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            "XMLTV guide feeds that fill the TV Guide. They sync automatically when added and merge " +
-                "with your playlists' channels.",
+            stringResource(R.string.epg_sources_desc),
             style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, modifier = Modifier.widthIn(max = 700.dp),
         )
         Spacer(Modifier.height(20.dp))
 
         if (sources.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No EPG sources yet. Add an XMLTV link.", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.epg_empty), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -139,9 +140,11 @@ fun EpgSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier, startOnA
     }
 
     confirmDelete?.let { s ->
+        val deleteTitle = stringResource(R.string.epg_delete_confirm, s.name)
+        val deleteDesc = stringResource(R.string.epg_delete_desc)
         ConfirmDialog(
-            title = "Delete “${s.name}”?",
-            message = "Removes this EPG source and its guide data. Your channels stay.",
+            title = deleteTitle,
+            message = deleteDesc,
             onConfirm = { vm.delete(s); confirmDelete = null },
             onDismiss = { confirmDelete = null },
         )
@@ -180,8 +183,9 @@ private fun EpgRow(
                 Text(source.name, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 if (activeSync != null) {
                     Spacer(Modifier.width(8.dp))
+                    val syncBadge = syncPercent?.let { stringResource(R.string.sync_badge_percent, it) } ?: stringResource(R.string.sync_badge)
                     Text(
-                        syncPercent?.let { "Syncing $it%" } ?: "Syncing",
+                        syncBadge,
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.onPrimaryContainer,
                         modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(colors.primaryContainer).padding(horizontal = 8.dp, vertical = 2.dp),
@@ -218,12 +222,12 @@ private fun EpgRow(
         Spacer(Modifier.width(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (syncState.isActive) {
-                OwnTVButton("Cancel", onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onCancelSync, style = OwnTVButtonStyle.SECONDARY)
             } else {
-                OwnTVButton("Re-sync", onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.epg_resync), onClick = onResync, style = OwnTVButtonStyle.SECONDARY)
             }
-            OwnTVButton("Edit", onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
-            OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(stringResource(R.string.edit), onClick = onEdit, style = OwnTVButtonStyle.SECONDARY)
+            OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
         }
     }
 }
@@ -251,16 +255,16 @@ internal fun EpgSourceForm(
     Column(
         modifier = modifier.fillMaxSize().roundedPanel().padding(horizontal = 40.dp, vertical = 28.dp),
     ) {
-        Text(if (initial == null) "Add EPG source" else "Edit EPG source", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+        Text(if (initial == null) stringResource(R.string.epg_add_title) else stringResource(R.string.epg_edit_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(20.dp))
-        OwnTVTextField(name, { name = it }, label = "Name", placeholder = "e.g. UK Guide", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusRequester(firstFocus))
+        OwnTVTextField(name, { name = it }, label = stringResource(R.string.epg_name), placeholder = "e.g. UK Guide", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusRequester(firstFocus))
         Spacer(Modifier.height(14.dp))
         val fillButtonFocus = remember { FocusRequester() }
-        OwnTVTextField(url, { url = it }, label = "XMLTV URL", placeholder = "https://…/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
+        OwnTVTextField(url, { url = it }, label = stringResource(R.string.epg_url), placeholder = "https://…/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
         Spacer(Modifier.height(8.dp))
-        OwnTVButton("Fill from playlist", onClick = { showPlaylistPicker = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAYLIST, modifier = Modifier.focusRequester(fillButtonFocus))
+        OwnTVButton(stringResource(R.string.epg_fill_from_playlist), onClick = { showPlaylistPicker = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.PLAYLIST, modifier = Modifier.focusRequester(fillButtonFocus))
         Spacer(Modifier.height(14.dp))
-        OwnTVTextField(ua, { ua = it }, label = "User-Agent (optional)", placeholder = "Leave blank for default", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp))
+        OwnTVTextField(ua, { ua = it }, label = stringResource(R.string.epg_user_agent), placeholder = stringResource(R.string.epg_user_agent_placeholder), modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp))
 
         Spacer(Modifier.height(14.dp))
         // Auto-refresh dropdown — same Off/Startup/staleness-threshold semantics as playlist sources.
@@ -268,8 +272,9 @@ internal fun EpgSourceForm(
 
         Spacer(Modifier.height(24.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OwnTVButton("Cancel", onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
-            OwnTVButton(if (initial == null) "Add & sync" else "Save & sync", onClick = { onSave(name, url, ua, autoRefresh) }, enabled = url.isNotBlank())
+            OwnTVButton(stringResource(R.string.cancel), onClick = onCancel, style = OwnTVButtonStyle.SECONDARY)
+            val syncLabel = if (initial == null) stringResource(R.string.epg_add_sync) else stringResource(R.string.epg_save_sync)
+            OwnTVButton(syncLabel, onClick = { onSave(name, url, ua, autoRefresh) }, enabled = url.isNotBlank())
         }
     }
 
@@ -282,7 +287,7 @@ internal fun EpgSourceForm(
     }
     if (showAutoRefreshPicker) {
         PickerDialog(
-            title = "Auto refresh",
+            title = stringResource(R.string.epg_auto_refresh),
             options = EpgAutoRefresh.entries.map { it.name to it.label },
             selected = autoRefresh.name,
             onSelect = { value ->
@@ -306,9 +311,9 @@ private fun EpgAutoRefreshRow(selected: EpgAutoRefresh, onClick: () -> Unit) {
     ) { _ ->
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text("Auto refresh", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                Text(stringResource(R.string.epg_auto_refresh), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                 Text(
-                    "Off, on startup, or when data is stale",
+                    stringResource(R.string.source_auto_refresh_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.onSurfaceVariant,
                 )
@@ -336,12 +341,12 @@ private fun PlaylistEpgPicker(
 
     Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.7f)).focusGroup(), contentAlignment = Alignment.Center) {
         Column(Modifier.width(560.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp)) {
-            Text("Fill from playlist", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text(stringResource(R.string.epg_fill_title), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(14.dp))
             val opts = options
             when {
                 opts == null -> Box(Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) { OwnTVSpinner(sizeDp = 28) }
-                opts.isEmpty() -> Text("None of your playlists provide an EPG URL.", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                opts.isEmpty() -> Text(stringResource(R.string.epg_no_playlist_epg), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                 else -> LazyColumn(Modifier.fillMaxWidth().height(280.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(opts) { opt ->
                         FocusableSurface(
@@ -360,7 +365,7 @@ private fun PlaylistEpgPicker(
             }
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                OwnTVButton("Close", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.close), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
             }
         }
     }

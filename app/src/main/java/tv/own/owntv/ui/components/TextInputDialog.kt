@@ -25,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.ui.theme.OwnTVTheme
 
 /**
@@ -40,8 +42,8 @@ fun TextInputDialog(
     initial: String,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
-    label: String = "Name",
-    confirmLabel: String = "Save",
+    label: String = stringResource(R.string.ui_title),
+    confirmLabel: String = stringResource(R.string.save),
     hint: String? = null,
 ) {
     val colors = OwnTVTheme.colors
@@ -65,7 +67,7 @@ fun TextInputDialog(
             OwnTVTextField(value = value, onValueChange = { value = it }, label = label, modifier = Modifier.fillMaxWidth(), focusRequester = fieldFocus)
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
                 OwnTVButton(confirmLabel, onClick = { onConfirm(value.trim()) })
             }

@@ -23,9 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.ui.theme.OwnTVTheme
 
 /**
@@ -49,18 +51,18 @@ fun ResumeDialog(
         contentAlignment = Alignment.Center,
     ) {
         Column(Modifier.width(440.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh.copy(alpha = 0.88f)).padding(28.dp)) {
-            Text("Resume playback?", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text(stringResource(R.string.ui_resume_title), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(8.dp))
             Text(
-                "You stopped at ${formatTimestamp(positionMs)}.",
+                stringResource(R.string.resume_stopped_at, formatTimestamp(positionMs)),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
             Spacer(Modifier.height(22.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Start over", onClick = onStartOver, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.ui_start_over), onClick = onStartOver, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton("Resume", onClick = onResume, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(focus))
+                OwnTVButton(stringResource(R.string.ui_resume_btn), onClick = onResume, icon = OwnTVIcon.PLAY, modifier = Modifier.focusRequester(focus))
             }
         }
     }

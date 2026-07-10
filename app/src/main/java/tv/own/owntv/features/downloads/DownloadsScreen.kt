@@ -33,9 +33,11 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import tv.own.owntv.R
 import org.koin.androidx.compose.koinViewModel
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
@@ -69,7 +71,13 @@ fun DownloadsScreen(
     val colors = OwnTVTheme.colors
 
     // Grouped rows (Active / Waiting / Completed / Failed) with section headers interleaved.
-    val rows = remember(downloads) { buildDownloadRows(downloads) }
+    val sectionLabels = mapOf(
+        "Active" to stringResource(R.string.downloads_section_active),
+        "Waiting" to stringResource(R.string.downloads_section_waiting),
+        "Completed" to stringResource(R.string.downloads_section_completed),
+        "Failed" to stringResource(R.string.downloads_section_failed),
+    )
+    val rows = remember(downloads, sectionLabels) { buildDownloadRows(downloads, sectionLabels) }
     val firstItemId = rows.firstNotNullOfOrNull { (it as? DownloadListRow.Item)?.download?.id }
 
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
@@ -101,9 +109,9 @@ fun DownloadsScreen(
             .onFocusChanged { if (it.hasFocus) onChildFocused() }
             .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
     ) {
-        Text("Downloads", style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
+        Text(stringResource(R.string.downloads_title), style = MaterialTheme.typography.headlineLarge, color = colors.onSurface)
         Spacer(Modifier.height(6.dp))
-        Text("Movies & episodes saved for offline playback.", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
+        Text(stringResource(R.string.downloads_subtitle), style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(18.dp))
 
         storage?.let {
@@ -113,7 +121,7 @@ fun DownloadsScreen(
 
         if (downloads.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("No downloads yet. Open a movie or episode and press Download.", color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.downloads_empty), color = colors.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
             }
         } else {
             LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.focusGroup()) {
@@ -156,15 +164,15 @@ private sealed interface DownloadListRow {
 }
 
 /** Groups downloads into Active / Waiting / Completed / Failed with a header before each non-empty group. */
-private fun buildDownloadRows(downloads: List<DownloadEntity>): List<DownloadListRow> {
+private fun buildDownloadRows(downloads: List<DownloadEntity>, labels: Map<String, String>): List<DownloadListRow> {
     val active = downloads.filter { it.status == DownloadStatus.RUNNING || it.status == DownloadStatus.PAUSED }
     val waiting = downloads.filter { it.status == DownloadStatus.QUEUED }
     val completed = downloads.filter { it.status == DownloadStatus.COMPLETED }
     val failed = downloads.filter { it.status == DownloadStatus.FAILED }
     return buildList {
-        listOf("Active" to active, "Waiting" to waiting, "Completed" to completed, "Failed" to failed).forEach { (label, list) ->
+        listOf(labels["Active"] to active, labels["Waiting"] to waiting, labels["Completed"] to completed, labels["Failed"] to failed).forEach { (label, list) ->
             if (list.isNotEmpty()) {
-                add(DownloadListRow.Header(label, list.size))
+                add(DownloadListRow.Header(label ?: "", list.size))
                 list.forEach { add(DownloadListRow.Item(it)) }
             }
         }
@@ -184,9 +192,9 @@ private fun StorageBar(info: tv.own.owntv.core.download.DownloadStorageInfo) {
     val colors = OwnTVTheme.colors
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Storage", style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.downloads_storage), style = MaterialTheme.typography.labelLarge, color = colors.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.weight(1f))
-            Text("${gb(info.freeBytes)} free of ${gb(info.totalBytes)}", style = MaterialTheme.typography.labelLarge, color = colors.primary, fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.downloads_free_of, gb(info.freeBytes), gb(info.totalBytes)), style = MaterialTheme.typography.labelLarge, color = colors.primary, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.height(6.dp))
         Box(Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)).background(colors.surfaceContainerLowest)) {
@@ -224,16 +232,16 @@ private fun DownloadRow(
         Spacer(Modifier.width(12.dp))
         when (download.status) {
             DownloadStatus.COMPLETED -> Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OwnTVButton("Play", onClick = onPlay, icon = OwnTVIcon.PLAY, modifier = focusModifier)
+                OwnTVButton(stringResource(R.string.play), onClick = onPlay, icon = OwnTVIcon.PLAY, modifier = focusModifier)
                 // Phase B: one-off external playback, independent of the global "External player" toggle.
-                OwnTVButton("External", onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.downloads_external), onClick = onPlayExternal, style = OwnTVButtonStyle.SECONDARY)
             }
-            DownloadStatus.FAILED -> OwnTVButton("Retry", onClick = onRetry, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
-            DownloadStatus.PAUSED -> OwnTVButton("Resume", onClick = onResume, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
-            DownloadStatus.RUNNING, DownloadStatus.QUEUED -> OwnTVButton("Pause", onClick = onPause, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.FAILED -> OwnTVButton(stringResource(R.string.retry), onClick = onRetry, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.PAUSED -> OwnTVButton(stringResource(R.string.downloads_resume), onClick = onResume, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
+            DownloadStatus.RUNNING, DownloadStatus.QUEUED -> OwnTVButton(stringResource(R.string.downloads_pause), onClick = onPause, style = OwnTVButtonStyle.SECONDARY, modifier = focusModifier)
         }
         Spacer(Modifier.width(10.dp))
-        OwnTVButton("Delete", onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
+        OwnTVButton(stringResource(R.string.delete), onClick = onDelete, style = OwnTVButtonStyle.SECONDARY)
     }
 }
 
@@ -249,9 +257,9 @@ private fun folderCrumb(filePath: String?): String? {
 private fun StatusLine(d: DownloadEntity) {
     val colors = OwnTVTheme.colors
     when (d.status) {
-        DownloadStatus.COMPLETED -> Text("Downloaded · ${mb(d.totalBytes)}", style = MaterialTheme.typography.bodySmall, color = colors.primary, fontWeight = FontWeight.SemiBold)
-        DownloadStatus.FAILED -> Text("Download failed — couldn't reach the source. Tap Retry.", style = MaterialTheme.typography.bodySmall, color = Color(0xFFEF4444))
-        DownloadStatus.QUEUED -> Text("Queued…", style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+        DownloadStatus.COMPLETED -> Text(stringResource(R.string.downloads_status_downloaded, mb(d.totalBytes)), style = MaterialTheme.typography.bodySmall, color = colors.primary, fontWeight = FontWeight.SemiBold)
+        DownloadStatus.FAILED -> Text(stringResource(R.string.downloads_status_failed), style = MaterialTheme.typography.bodySmall, color = Color(0xFFEF4444))
+        DownloadStatus.QUEUED -> Text(stringResource(R.string.downloads_status_queued), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
         else -> { // RUNNING / PAUSED
             val frac = if (d.totalBytes > 0) (d.downloadedBytes.toFloat() / d.totalBytes).coerceIn(0f, 1f) else 0f
             Column {
@@ -260,7 +268,7 @@ private fun StatusLine(d: DownloadEntity) {
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% · ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else "Downloading… ${mb(d.downloadedBytes)}",
+                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% · ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else stringResource(R.string.downloads_downloading, mb(d.downloadedBytes)),
                     style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
                 )
             }

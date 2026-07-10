@@ -758,4 +758,17 @@
     <!-- ===== UPDATE DIALOG ===== -->
     <string name="update_latest_version">This is the latest version of LunaIPtv (v%1$s).</string>
     <string name="update_available_luna">LunaIPtv v%1$s is available (you have v%2$s).</string>
+
+    <!-- ===== EPG SOURCES (ADDITIONAL) ===== -->
+    <string name="epg_sources_desc">XMLTV guide feeds that fill the TV Guide. They sync automatically when added and merge with your playlists\' channels.</string>
+    <string name="epg_user_agent_placeholder">Leave blank for default</string>
+
+    <!-- ===== EPG SYNC (ADDITIONAL) ===== -->
+    <string name="epg_sync_download_desc">Download the program guide (EPG) for \u201c%1$s\u201d. You can also do this later in Settings \u2192 EPG.</string>
+
+    <!-- ===== VIDEO PLAYER (ADDITIONAL) ===== -->
+    <string name="video_player_title">Video Player</string>
+    <string name="video_group_decoding">Decoding</string>
+    <string name="video_group_subtitles">Subtitles</string>
+    <string name="video_group_audio">Audio</string>
 </resources>

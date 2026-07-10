@@ -26,10 +26,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.database.entity.SourceEntity
 import tv.own.owntv.ui.components.FocusableSurface
 import tv.own.owntv.ui.theme.OwnTVTheme
@@ -59,10 +61,10 @@ fun PlaylistPickerDialog(
         Column(
             Modifier.width(460.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp),
         ) {
-            Text("Show playlist", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text(stringResource(R.string.shell_show_playlist), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(4.dp))
             Text(
-                "Choose which playlist to browse. This applies everywhere and is remembered.",
+                stringResource(R.string.playlist_picker_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant,
             )
@@ -73,7 +75,7 @@ fun PlaylistPickerDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 PlaylistRow(
-                    label = "All playlists",
+                    label = stringResource(R.string.shell_all_playlists),
                     selected = activeId <= 0,
                     modifier = if (activeId <= 0) Modifier.focusRequester(selectedFocus) else Modifier,
                     onClick = { onSelect(-1L); onDismiss() },

@@ -32,10 +32,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import tv.own.owntv.R
 import tv.own.owntv.core.storage.StorageAccess
 import tv.own.owntv.ui.theme.OwnTVTheme
 import java.io.File
@@ -78,7 +80,7 @@ fun StorageBrowser(
         Column(Modifier.width(660.dp).clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainerHigh).padding(24.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(4.dp))
-            Text(current?.absolutePath ?: "Pick a location", style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(current?.absolutePath ?: stringResource(R.string.ui_pick_location), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(12.dp))
 
             val dir = current
@@ -92,7 +94,7 @@ fun StorageBrowser(
                 if (dir == null) {
                     if (!hasAccess) {
                         item {
-                            BrowserRow(OwnTVIcon.SETTINGS, "Grant full storage access", Modifier.focusRequester(firstFocus)) {
+                            BrowserRow(OwnTVIcon.SETTINGS, stringResource(R.string.browser_grant_access), Modifier.focusRequester(firstFocus)) {
                                 StorageAccess.requestAllFilesAccess(context); hasAccess = StorageAccess.hasAllFilesAccess()
                             }
                         }
@@ -110,10 +112,10 @@ fun StorageBrowser(
 
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                if (current != null) OwnTVButton("New folder", onClick = { showNewFolder = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.ADD)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                if (current != null) OwnTVButton(stringResource(R.string.ui_new_folder), onClick = { showNewFolder = true }, style = OwnTVButtonStyle.SECONDARY, icon = OwnTVIcon.ADD)
                 Spacer(Modifier.weight(1f))
-                if (mode == BrowseMode.FOLDER && current != null) OwnTVButton("Use this folder", onClick = { current?.let(onPick) })
+                if (mode == BrowseMode.FOLDER && current != null) OwnTVButton(stringResource(R.string.browser_use_folder), onClick = { current?.let(onPick) })
             }
         }
     }
@@ -139,14 +141,14 @@ private fun NewFolderDialog(onCreate: (String) -> Unit, onDismiss: () -> Unit) {
     BackHandler { onDismiss() }
     Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.8f)).focusGroup(), contentAlignment = Alignment.Center) {
         Column(Modifier.width(420.dp).clip(RoundedCornerShape(18.dp)).background(colors.surfaceContainerHighest).padding(24.dp)) {
-            Text("New folder", style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
+            Text(stringResource(R.string.ui_new_folder), style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(14.dp))
-            OwnTVTextField(name, { name = it }, label = "Folder name", placeholder = "e.g. My TV", modifier = Modifier.fillMaxWidth().focusRequester(focus))
+            OwnTVTextField(name, { name = it }, label = stringResource(R.string.ui_folder_name), placeholder = "e.g. My TV", modifier = Modifier.fillMaxWidth().focusRequester(focus))
             Spacer(Modifier.height(18.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OwnTVButton("Cancel", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                OwnTVButton(stringResource(R.string.cancel), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
                 Spacer(Modifier.weight(1f))
-                OwnTVButton("Create", onClick = { onCreate(name) }, enabled = name.isNotBlank())
+                OwnTVButton(stringResource(R.string.create), onClick = { onCreate(name) }, enabled = name.isNotBlank())
             }
         }
     }

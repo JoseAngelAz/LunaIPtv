@@ -23,11 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
+import tv.own.owntv.R
 import tv.own.owntv.ui.components.OwnTVButton
 import tv.own.owntv.ui.components.OwnTVButtonStyle
 import tv.own.owntv.ui.components.OwnTVIcon
@@ -74,22 +76,23 @@ fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
         ) {
             when (state) {
                 is EpgSyncUi.Ask -> {
-                    Text("Sync the TV guide now?", style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.epg_sync_prompt), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "Download the program guide (EPG) for “${state.sourceName}”. You can also do this later in Settings → EPG.",
+                        stringResource(R.string.epg_sync_download_desc, state.sourceName),
                         style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(22.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        OwnTVButton("Not now", onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
-                        OwnTVButton("Sync now", onClick = onSync, modifier = Modifier.focusRequester(focus))
+                        OwnTVButton(stringResource(R.string.epg_not_now), onClick = onDismiss, style = OwnTVButtonStyle.SECONDARY)
+                        OwnTVButton(stringResource(R.string.epg_sync_now), onClick = onSync, modifier = Modifier.focusRequester(focus))
                     }
+                }
                 }
                 is EpgSyncUi.Syncing -> {
                     OwnTVSpinner(sizeDp = 48)
                     Spacer(Modifier.height(18.dp))
-                    Text("Syncing TV guide…", style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
+                    Text(stringResource(R.string.epg_syncing), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                     Spacer(Modifier.height(8.dp))
                     Text(
                         if (state.count > 0) formatCount(state.count) else "Connecting…",
@@ -99,16 +102,16 @@ fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
                 is EpgSyncUi.Done -> {
                     OwnTVIcon(OwnTVIcon.EPG, tint = colors.primary, modifier = Modifier.size(40.dp))
                     Spacer(Modifier.height(14.dp))
-                    Text("TV guide synced", style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.epg_synced), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(20.dp))
-                    OwnTVButton("Done", onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+                    OwnTVButton(stringResource(R.string.done), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
                 }
                 is EpgSyncUi.Failed -> {
-                    Text("TV guide sync failed", style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.epg_sync_failed), style = MaterialTheme.typography.titleLarge, color = colors.onSurface, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(10.dp))
                     Text(state.message, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(20.dp))
-                    OwnTVButton("Close", onClick = onDismiss, modifier = Modifier.focusRequester(focus))
+                    OwnTVButton(stringResource(R.string.close), onClick = onDismiss, modifier = Modifier.focusRequester(focus))
                 }
                 EpgSyncUi.Hidden -> Unit
             }
