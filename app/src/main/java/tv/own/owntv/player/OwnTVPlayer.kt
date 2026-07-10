@@ -1100,6 +1100,10 @@ class OwnTVPlayer(
             setOptionString("sub-create-cc-track", "yes")
             // Allow volume boost above 100% (Kodi-style amplification) for quiet streams; mpv soft-limits.
             setOptionString("volume-max", "150")
+            // Dynamic audio normalization: evens out volume across channels/streams so quiet IPTV
+            // sources aren't whisper-quiet and loud ones don't blow the speakers. Uses mpv's built-in
+            // dynaudnorm filter (frame-level RMS normalization, ~20ms lookahead).
+            setOptionString("af", "dynaudnorm=f=20:g=31:p=0.9")
             // A/V sync on hardware decode: a few movies (high bitrate / 50–60 fps) decode just behind
             // real time, so the picture drifts slightly behind the audio. mpv's default framedrop is "vo",
             // which is a no-op with the direct mediacodec surface (the decoder presents its own frames) — so
