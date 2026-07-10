@@ -1,4 +1,4 @@
-package com.lunaiptv.features.settings
+﻿package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -46,7 +46,7 @@ import com.lunaiptv.ui.components.OwnTVSpinner
 import com.lunaiptv.ui.components.OwnTVTextField
 import com.lunaiptv.ui.components.StorageBrowser
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import java.io.File
 
 /**

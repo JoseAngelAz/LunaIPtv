@@ -1,4 +1,4 @@
-package com.lunaiptv.features.home
+﻿package com.lunaiptv.features.home
 
 import android.text.format.DateFormat
 import coil3.compose.AsyncImage
@@ -50,7 +50,7 @@ import com.lunaiptv.core.database.entity.EpgProgrammeEntity
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import java.util.Date
 
 @Composable

@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.EmptyState
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Layer 3 — content list/grid area. Phase 1/2 render the header plus a reusable [EmptyState]; the

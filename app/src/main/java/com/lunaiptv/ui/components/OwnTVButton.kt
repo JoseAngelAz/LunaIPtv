@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Visual emphasis for [OwnTVButton]. */
 enum class OwnTVButtonStyle { PRIMARY, SECONDARY }

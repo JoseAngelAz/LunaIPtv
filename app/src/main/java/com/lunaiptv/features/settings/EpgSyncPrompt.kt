@@ -1,4 +1,4 @@
-package com.lunaiptv.features.settings
+﻿package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -36,7 +36,7 @@ import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVSpinner
 import com.lunaiptv.ui.components.formatCount
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Semi-automatic EPG flow after a playlist import: ask → sync with a live programme count → done. */
 sealed interface EpgSyncUi {

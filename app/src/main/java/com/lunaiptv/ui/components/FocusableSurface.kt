@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,7 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.ownTvTween
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 @Composable
 fun FocusableSurface(
@@ -50,7 +51,7 @@ fun FocusableSurface(
 
     val scale by animateFloatAsState(
         if (focused) focusedScale else 1f,
-        animationSpec = com.lunaiptv.ui.Theme.LunaIPtvTween(140),
+        animationSpec = ownTvTween(140),
         label = "focusScale",
     )
     val container by animateColorAsState(
@@ -59,7 +60,7 @@ fun FocusableSurface(
             selected -> selectedContainerColor
             else -> unfocusedContainerColor
         },
-        animationSpec = com.lunaiptv.ui.Theme.LunaIPtvTween(140),
+        animationSpec = ownTvTween(140),
         label = "focusContainer",
     )
     val showBorder = showFocusBorder && (focused || selected)

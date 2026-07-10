@@ -1,4 +1,4 @@
-package com.lunaiptv.features.update
+﻿package com.lunaiptv.features.update
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -33,7 +33,7 @@ import com.lunaiptv.core.update.UpdateManager
 import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVSpinner
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Small semi-transparent status card (top-right corner) for the automatic startup update check:

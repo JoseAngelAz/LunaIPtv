@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Lightweight indeterminate spinner drawn with Canvas (no Material dependency). */
 @Composable

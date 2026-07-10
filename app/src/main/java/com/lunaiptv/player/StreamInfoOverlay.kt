@@ -1,4 +1,4 @@
-package com.lunaiptv.player
+﻿package com.lunaiptv.player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Non-interactive technical readout for the current stream (codec, resolution, HDR, bitrate, decoder, audio,

@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.BrandLockup
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Layer 4 — preview / detail / player pane. Idle state shows OwnTV branding and a hint, per the plan.

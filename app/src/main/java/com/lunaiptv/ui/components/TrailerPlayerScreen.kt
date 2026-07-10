@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import android.content.Context
 import android.content.Intent
@@ -45,7 +45,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * In-app YouTube trailer player (plan §7.3 / U4): a fullscreen WebView-backed IFrame player

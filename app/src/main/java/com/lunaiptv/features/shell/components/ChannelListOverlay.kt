@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ import coil3.compose.AsyncImage
 import com.lunaiptv.core.database.entity.ChannelEntity
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * A channel list that slides in over the playing video (opened with Left while the player controls are

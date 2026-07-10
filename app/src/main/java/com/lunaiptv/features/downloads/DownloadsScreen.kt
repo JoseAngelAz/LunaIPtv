@@ -1,4 +1,4 @@
-package com.lunaiptv.features.downloads
+﻿package com.lunaiptv.features.downloads
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -50,7 +50,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Phase 12 — the Downloads section: offline movies & episodes with progress and playback. */
 @Composable

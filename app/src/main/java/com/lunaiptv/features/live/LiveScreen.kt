@@ -1,4 +1,4 @@
-package com.lunaiptv.features.live
+﻿package com.lunaiptv.features.live
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -70,7 +70,7 @@ import com.lunaiptv.ui.components.PreviewPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.format.rememberSystemTimeFormatter
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Layer 2–4 for Live TV: real category rail, Paging channel list, and a live preview pane. */
 @Composable

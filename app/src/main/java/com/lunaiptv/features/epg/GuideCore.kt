@@ -1,4 +1,4 @@
-package com.lunaiptv.features.epg
+﻿package com.lunaiptv.features.epg
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -46,7 +46,7 @@ import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.format.rememberSystemTimeFormatter
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 internal object GuideGridDefaults {
     val ChannelCol = 176.dp

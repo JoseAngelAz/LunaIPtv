@@ -1,4 +1,4 @@
-package com.lunaiptv.features.home
+﻿package com.lunaiptv.features.home
 
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
@@ -88,7 +88,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.format.formatSystemTime
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import androidx.compose.foundation.layout.widthIn

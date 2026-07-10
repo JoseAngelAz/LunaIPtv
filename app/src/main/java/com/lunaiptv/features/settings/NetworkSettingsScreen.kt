@@ -1,4 +1,4 @@
-package com.lunaiptv.features.settings
+﻿package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +33,7 @@ import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Network → Proxy (Approach 1): one app-wide HTTP proxy. Enabling it routes all app traffic (playlist,

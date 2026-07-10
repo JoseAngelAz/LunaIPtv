@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -28,7 +28,7 @@ import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Full-screen exit confirmation shown when the user presses Back from the main menu. Cancel takes

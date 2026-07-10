@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import android.text.format.DateFormat
 import androidx.compose.animation.core.animateFloatAsState
@@ -40,8 +40,8 @@ import com.lunaiptv.R
 import com.lunaiptv.core.weather.WeatherInfo
 import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
-import com.lunaiptv.ui.Theme.LunaIPtvTween
+import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.ownTvTween
 import java.util.Date
 
 @Composable

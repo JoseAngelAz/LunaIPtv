@@ -1,4 +1,4 @@
-package com.lunaiptv.features.setup
+﻿package com.lunaiptv.features.setup
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -52,7 +52,7 @@ import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVSpinner
 import com.lunaiptv.features.settings.EpgSyncDialog
 import com.lunaiptv.ui.components.StorageBrowser
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 private enum class Step { WELCOME, DISCLAIMER, SETUP_CHOICE, CREATE_PROFILE, ADD_CONTENT, ADD_SOURCE, IMPORTING, EXISTING, IMPORT_BACKUP }
 

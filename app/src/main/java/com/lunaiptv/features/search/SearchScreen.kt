@@ -1,4 +1,4 @@
-package com.lunaiptv.features.search
+﻿package com.lunaiptv.features.search
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -48,7 +48,7 @@ import com.lunaiptv.ui.components.SearchBar
 import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** One row in the flattened results list — drives both the list rows and the detail pane. */
 private sealed interface SearchItem {

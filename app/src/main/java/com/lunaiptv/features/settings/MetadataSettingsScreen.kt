@@ -1,4 +1,4 @@
-package com.lunaiptv.features.settings
+﻿package com.lunaiptv.features.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Settings → Metadata (TMDB). Phase M1 of the enrichment plan: the master toggle and the two advanced

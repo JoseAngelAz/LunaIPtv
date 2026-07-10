@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
-import com.lunaiptv.ui.Theme.LunaIPtvTween
+import com.lunaiptv.ui.theme.OwnTVTheme
+import com.lunaiptv.ui.theme.ownTvTween
 
 /**
  * The single 4-state visual "ladder" shared by every top-level navigation surface (the [Sidebar]

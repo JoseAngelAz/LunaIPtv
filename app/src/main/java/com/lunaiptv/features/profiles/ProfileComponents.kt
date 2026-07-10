@@ -1,4 +1,4 @@
-package com.lunaiptv.features.profiles
+﻿package com.lunaiptv.features.profiles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +44,7 @@ import com.lunaiptv.ui.components.OwnTVAvatars
 import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVTextField
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Modal scrim wrapper for the profile dialogs. Phase 7 — Popup(focusable=true) creates
  *  a hard focus boundary on Android TV so D-pad stays inside the dialog. */

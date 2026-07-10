@@ -1,4 +1,4 @@
-package com.lunaiptv.features.series
+﻿package com.lunaiptv.features.series
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -86,7 +86,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.PreviewPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 @Composable
 fun SeriesScreen(

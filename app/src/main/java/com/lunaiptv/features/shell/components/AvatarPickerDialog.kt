@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -32,7 +32,7 @@ import com.lunaiptv.ui.components.ProfileIcon
 import com.lunaiptv.ui.components.OwnTVAvatars
 import com.lunaiptv.ui.components.longPressMenuGuard
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Full-screen avatar picker: a grid of the preset cartoon avatars. Picking one applies & closes. */
 @Composable

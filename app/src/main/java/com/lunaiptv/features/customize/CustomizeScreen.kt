@@ -1,4 +1,4 @@
-package com.lunaiptv.features.customize
+﻿package com.lunaiptv.features.customize
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -49,7 +49,7 @@ import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.TextInputDialog
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Settings → Customize & Hidden Items: hide / rename / reorder categories per section, and unhide

@@ -1,4 +1,4 @@
-package com.lunaiptv.ui.components
+﻿package com.lunaiptv.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.ui.theme.AccentSilver
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Theme-adaptive "LunaIPtv" wordmark. Silver moon accent for the play mark and "IPtv" suffix,

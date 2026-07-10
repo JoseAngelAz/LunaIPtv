@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -67,7 +67,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.components.StorageBrowser
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import com.lunaiptv.ui.theme.ThemeMode
 import com.lunaiptv.ui.theme.UiZoom
 

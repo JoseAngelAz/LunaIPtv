@@ -1,4 +1,4 @@
-package com.lunaiptv.features.movies
+﻿package com.lunaiptv.features.movies
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -82,7 +82,7 @@ import com.lunaiptv.ui.components.ContentPanelFill
 import com.lunaiptv.ui.components.PreviewPanelFill
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 @Composable
 fun MoviesScreen(

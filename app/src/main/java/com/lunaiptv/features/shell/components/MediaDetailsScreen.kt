@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 import com.lunaiptv.R
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.trapAllFocusExit
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Read-only, already-merged data for the [MediaDetailsScreen] window. The caller applies the §7.1/§4.1

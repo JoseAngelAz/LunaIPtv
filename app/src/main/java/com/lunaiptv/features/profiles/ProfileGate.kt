@@ -1,4 +1,4 @@
-package com.lunaiptv.features.profiles
+﻿package com.lunaiptv.features.profiles
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
@@ -38,7 +38,7 @@ import com.lunaiptv.ui.components.FocusableSurface
 import com.lunaiptv.R
 import com.lunaiptv.ui.components.OwnTVAvatar
 import com.lunaiptv.ui.components.OwnTVIcon
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * Phase 6.5 — the "Who's watching?" launch gate. Shown when more than one profile exists. Picking a

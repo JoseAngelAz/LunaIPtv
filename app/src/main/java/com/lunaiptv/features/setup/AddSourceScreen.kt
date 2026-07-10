@@ -1,4 +1,4 @@
-package com.lunaiptv.features.setup
+﻿package com.lunaiptv.features.setup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,7 +45,7 @@ import com.lunaiptv.ui.components.StorageBrowser
 import com.lunaiptv.ui.components.OwnTVButtonStyle
 import com.lunaiptv.ui.components.OwnTVTextField
 import com.lunaiptv.ui.components.roundedPanel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 private enum class SourceKind { XTREAM, M3U }
 

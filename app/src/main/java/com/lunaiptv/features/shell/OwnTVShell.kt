@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell
+﻿package com.lunaiptv.features.shell
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -66,7 +66,7 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import com.lunaiptv.ui.theme.ThemeMode
 
 /** Which layer currently holds focus (drives Back navigation). */

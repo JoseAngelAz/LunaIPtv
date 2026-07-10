@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
@@ -59,7 +59,7 @@ import com.lunaiptv.ui.components.OwnTVAvatar
 import com.lunaiptv.ui.components.NavDuotoneIcon
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /** Golden glow color for the floating tooltip. */
 private val GoldGlow = Color(0xFFFFD700)

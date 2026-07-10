@@ -1,4 +1,4 @@
-package com.lunaiptv.features.epg
+﻿package com.lunaiptv.features.epg
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -85,7 +85,7 @@ import com.lunaiptv.ui.format.rememberSystemTimeFormatter
 import androidx.compose.ui.res.stringResource
 import com.lunaiptv.R
 import com.lunaiptv.ui.theme.Dimens
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

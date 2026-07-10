@@ -1,4 +1,4 @@
-package com.lunaiptv.player
+﻿package com.lunaiptv.player
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -60,7 +60,7 @@ import com.lunaiptv.ui.components.OwnTVButton
 import com.lunaiptv.ui.components.OwnTVIcon
 import com.lunaiptv.ui.components.OwnTVSpinner
 import com.lunaiptv.R
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 private val SPEEDS = listOf(0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
 private val TEAL = Color(0xFF52DBC8)

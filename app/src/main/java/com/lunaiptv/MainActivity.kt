@@ -1,4 +1,4 @@
-package com.lunaiptv
+﻿package com.lunaiptv
 
 import android.content.Intent
 import android.os.Bundle
@@ -51,7 +51,7 @@ import com.lunaiptv.features.profiles.ProfilesViewModel
 import com.lunaiptv.features.setup.Onboarding
 import com.lunaiptv.features.shell.OwnTVShell
 import com.lunaiptv.features.shell.ShellViewModel
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 import com.lunaiptv.ui.theme.UiZoom
 
 class MainActivity : ComponentActivity() {

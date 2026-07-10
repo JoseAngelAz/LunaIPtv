@@ -1,4 +1,4 @@
-package com.lunaiptv.features.shell.components
+﻿package com.lunaiptv.features.shell.components
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import androidx.tv.material3.Text
 import com.lunaiptv.R
 import com.lunaiptv.core.database.entity.SourceEntity
 import com.lunaiptv.ui.components.FocusableSurface
-import com.lunaiptv.ui.Theme.LunaIPtvTheme
+import com.lunaiptv.ui.theme.OwnTVTheme
 
 /**
  * The top-bar quick switcher: pick which playlist the whole app shows right now. "All playlists" (id -1)
