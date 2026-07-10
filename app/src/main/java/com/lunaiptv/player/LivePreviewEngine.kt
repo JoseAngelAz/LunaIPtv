@@ -239,6 +239,14 @@ class LivePreviewEngine(
     private val _surfaceResetToken = MutableStateFlow(0)
     val surfaceResetToken: StateFlow<Int> = _surfaceResetToken.asStateFlow()
 
+    /** Pending play deferred until surfaceCreated delivers a fresh surface. When surfaceResetToken
+     *  bumps, the old SurfaceView is destroyed (surfaceDestroyed → setSurface(null)) and a new one
+     *  is created (surfaceCreated → setSurface(newSurface)). setSurface() detects the pending URL
+     *  and starts ExoPlayer on the NEW surface instead of the old one. */
+    @Volatile private var pendingPlayUrl: String? = null
+    @Volatile private var pendingPlayMeta: MediaMeta = MediaMeta()
+    @Volatile private var pendingPlayMuted: Boolean = true
+
     // Live auto-reconnect: a channel that DID play and then errors/stalls (provider hiccup / Wi-Fi blip)
     // re-fetches from the live edge instead of dead-ending. A channel that NEVER opened keeps the old
     // ERROR (so the VM falls back to mpv). retryCount resets whenever playback goes healthy again.
@@ -455,10 +463,41 @@ class LivePreviewEngine(
         }
     }
 
-    /** Attach the preview SurfaceView's surface, or null when it's destroyed. */
+    /** Attach the preview SurfaceView's surface, or null when it's destroyed.
+     *  When a pending play exists (from play()'s deferred path), this is where ExoPlayer actually
+     *  starts — guaranteed to receive the FRESH surface from surfaceCreated, not the old dying one. */
     fun setSurface(s: Surface?) {
         surface = s
-        if (s != null) player?.setVideoSurface(s) else player?.clearVideoSurface()
+        if (s != null) {
+            player?.setVideoSurface(s)
+            // Deferred play: play() bumped surfaceResetToken, the old SurfaceView was destroyed,
+            // and now surfaceCreated delivered this fresh surface. Start ExoPlayer HERE so it's
+            // bound to the correct surface from frame one.
+            val pending = pendingPlayUrl
+            if (pending != null) {
+                pendingPlayUrl = null
+                val meta = pendingPlayMeta
+                val muted = pendingPlayMuted
+                LiveDiagnosticsLog.event("setSurface() deferred play → ${HttpClient.redactUrl(pending)} muted=$muted")
+                runCatching {
+                    val p = player ?: build().also { player = it }
+                    p.setVideoSurface(s)
+                    p.volume = if (muted) 0f else 1f
+                    p.setMediaSource(mediaSourceFor(pending))
+                    p.prepare()
+                    p.playWhenReady = true
+                }.onFailure {
+                    android.util.Log.w(LiveDiagnosticsLog.TAG, "deferred play() failed for ${HttpClient.redactUrl(pending)}", it)
+                    LiveDiagnosticsLog.event("deferred play() failed: ${it.message}")
+                    _state.value = State.ERROR
+                    _error.value = "Couldn't play this channel."
+                    val raw = lastCodecError ?: diagnostics.recentError() ?: it.message
+                    _errorInfo.value = raw?.let { r -> ErrorInfo(PlayerErrors.reasonFor(r), exoSpec(), r) }
+                }
+            }
+        } else {
+            player?.clearVideoSurface()
+        }
     }
 
     /** Start (or switch to) [url] as a muted/unmuted preview. Never throws — a stream ExoPlayer can't set
@@ -486,7 +525,8 @@ class LivePreviewEngine(
         this.muted = muted
         // Force a fresh SurfaceView when switching channels — prevents the old decoder's buffer
         // from lingering on the surface (ghost image in a corner during the new stream's load).
-        if (currentUrl != null && currentUrl != url) _surfaceResetToken.value++
+        val switchingChannels = currentUrl != null && currentUrl != url
+        if (switchingChannels) _surfaceResetToken.value++
         currentUrl = url
         hasPlayed = false; retryCount = 0; reconnectPending = false; gaveUp = false
         mainHandler.removeCallbacks(stallWatchdog); mainHandler.removeCallbacks(progressWatchdog)
@@ -503,12 +543,22 @@ class LivePreviewEngine(
         _volume.value = if (muted) 0 else 100
         _state.value = State.LOADING
         _buffering.value = true
+        // When switching channels, the surfaceResetToken bump triggers a SurfaceView recreate.
+        // The old surface is destroyed (surfaceDestroyed → setSurface(null)) and a new one is
+        // created (surfaceCreated → setSurface(newSurface)). If we call setMediaSource()+prepare()
+        // HERE, ExoPlayer binds to the OLD surface which is about to be destroyed — the decoder
+        // renders the new channel onto the dying surface (stuck in a corner) while the new surface
+        // stays black. Instead, defer the actual ExoPlayer setup to setSurface(), which fires when
+        // the NEW surface is ready.
+        if (switchingChannels) {
+            pendingPlayUrl = url
+            pendingPlayMeta = meta
+            pendingPlayMuted = muted
+            return // setSurface(surfaceCreated) will call startExoOnSurface()
+        }
+        pendingPlayUrl = null // no surface recreate pending — play immediately
         runCatching {
             val p = player ?: build().also { player = it }
-            // Clear the previous channel's last frame from the surface before loading new content —
-            // the SurfaceView retains the old decoder's output until the new decoder renders its
-            // first frame, which can take seconds for HLS. Without this, the old channel image
-            // "sticks" in a corner while the new stream buffers.
             surface?.let { s ->
                 runCatching {
                     val canvas = s.lockCanvas(null)
@@ -566,6 +616,7 @@ class LivePreviewEngine(
     fun stop() {
         LiveDiagnosticsLog.event("stop() — intentional")
         stoppingIntentionally = true
+        pendingPlayUrl = null // cancel any deferred play
         currentUrl = null
         hasPlayed = false; retryCount = 0; reconnectPending = false; gaveUp = false
         mainHandler.removeCallbacks(stallWatchdog); mainHandler.removeCallbacks(progressWatchdog)
