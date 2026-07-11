@@ -103,12 +103,19 @@ app/src/main/java/com/lunaiptv/
 - **Audio**: mpv `dynaudnorm` filter for consistent volume, AudioFocus integration
 - **Channel switch**: `clearVideoSurface()` only — no `stop()`/`lockCanvas()` (causes ANR)
 - **Home loading**: 4 phases run in parallel with `coroutineScope { async {} }`
+- **Focus management (Movies/Series)**: Two separate FocusRequesters — `selFocus` (selected item only) + `firstItemFocus` (always index 0). `onEnter` uses `try(selFocus) → catch(firstItemFocus)` pattern matching LiveScreen. Never share one requester for both purposes.
+- **CategoryRail**: Vertical `LazyColumn` (despite name). `onSelect` → `vm.select(key)`. `defaultRail`: Favorites, History, All. Folders appended dynamically.
+- **LiveKey hierarchy**: `LiveKey.All` (object), `LiveKey.Favorites` (object), `LiveKey.History` (object), `LiveKey.Folder(id: Long)` (data class).
+- **Paging**: `PagingConfig(pageSize=60, prefetchDistance=30, initialLoadSize=90, maxSize=300)`. `movies`/`series` Flow rebuilt via `flatMapLatest` when category/sort/search/customization changes.
 
 ## Git Info
-- **Remote**: `origin https://github.com/ahXN00/OwnTV.git`
+- **Remote**: `origin https://github.com/ahXN00/OwnTV.git` (your fork)
+- **Branch**: `main` (24+ commits ahead of origin/main, NOT pushed)
+- **Isolation**: All changes are LOCAL. `git push` goes to your fork only, never the original OwnTV repo
 - **User**: Jose Angel Azucena Mendez
 - **Email**: lunaipTV@users.noreply.github.com
 
 ## Known Issues
 - PiP/channel-switch visual bug: old channel frame can linger in corner (investigated, `clearVideoSurface()` approach — needs device testing)
 - `LunaIPtvDatabase` class name and schema directory must stay in sync (renaming the class requires renaming the schema export directory)
+- Auto-scroll bug: Cards scroll up/down on section load (6 fix attempts, latest mirrors LiveScreen pattern with separate FocusRequesters — needs device testing)
