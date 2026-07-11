@@ -73,9 +73,9 @@ import com.lunaiptv.ui.components.ResumeDialog
 import com.lunaiptv.ui.components.SetTmdbNameDialog
 import com.lunaiptv.ui.components.TrailerPlayerScreen
 import com.lunaiptv.ui.components.longPressMenuGuard
+import com.lunaiptv.ui.components.trapVerticalFocusExit
 import androidx.compose.foundation.layout.width
 import com.lunaiptv.ui.components.SearchBar
-import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.components.SortChip
 import com.lunaiptv.ui.components.formatCount
 import com.lunaiptv.ui.components.ContentPanelFill
@@ -105,11 +105,11 @@ fun MoviesScreen(
     val metadataMode by vm.metadataMode.collectAsStateWithLifecycle()
     val moveState by vm.moveState.collectAsStateWithLifecycle()
     var contextMovie by remember { mutableStateOf<MovieEntity?>(null) }
-    // Fullscreen TMDB details window (§11.1); null = closed.
+    // Fullscreen TMDB details window (ï¿½11.1); null = closed.
     var detailsMovie by remember { mutableStateOf<MovieEntity?>(null) }
-    // "Set TMDB name" dialog target (§11.2 U5b); null = closed.
+    // "Set TMDB name" dialog target (ï¿½11.2 U5b); null = closed.
     var setTmdbNameMovie by remember { mutableStateOf<MovieEntity?>(null) }
-    // In-app trailer playback (§7.3 U4); non-null = fullscreen player open with this YouTube key.
+    // In-app trailer playback (ï¿½7.3 U4); non-null = fullscreen player open with this YouTube key.
     var trailerVideoKey by remember { mutableStateOf<String?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
     val toast = rememberInAppToast()
@@ -151,6 +151,13 @@ fun MoviesScreen(
     val listState = rememberLazyListState()
     val selFocus = remember { FocusRequester() }
     val firstItemFocus = remember { FocusRequester() }
+    // When the selected category changes, scroll the grid/list back to the top so the user starts
+    // from position 0 â€” without this, switching from a Folder back to "All" could leave the scroll
+    // position deep in the list (hundreds of items down) which causes a visible "jump".
+    LaunchedEffect(selectedKey) {
+        if (viewMode == SettingsRepository.VodViewMode.LIST) listState.scrollToItem(0)
+        else gridState.scrollToItem(0)
+    }
     // Returning from the player: scroll to and focus the movie you just played (waits for the grid to load).
     LaunchedEffect(restoreFocus, movies.itemCount) {
         if (!restoreFocus || movies.itemCount == 0) return@LaunchedEffect
@@ -172,7 +179,7 @@ fun MoviesScreen(
     LaunchedEffect(contextMovie) {
         if (contextMovie != null) return@LaunchedEffect
         // Opening the TMDB Details window or the Set TMDB name dialog closes the menu; don't yank focus
-        // back to the grid — they need it (and trap it). The grid is refocused when they close (see below).
+        // back to the grid ï¿½ they need it (and trap it). The grid is refocused when they close (see below).
         if (detailsMovie != null) return@LaunchedEffect
         if (setTmdbNameMovie != null) return@LaunchedEffect
         if (trailerVideoKey != null) return@LaunchedEffect
@@ -181,7 +188,7 @@ fun MoviesScreen(
         val items = movies.itemSnapshotList.items
         val idx = items.indexOfFirst { it?.id == targetId }
         if (idx >= 0) {
-            // Item survived — re-focus it directly.
+            // Item survived ï¿½ re-focus it directly.
             runCatching {
                 if (viewMode == SettingsRepository.VodViewMode.LIST) listState.scrollToItem(idx)
                 else gridState.scrollToItem(idx)
@@ -193,7 +200,7 @@ fun MoviesScreen(
             withFrameNanos { }
             val settled = movies.itemSnapshotList.items.filterNotNull()
             if (settled.isEmpty()) {
-                runCatching { firstItemFocus.requestFocus() } // nothing left; firstItemFocus attaches to the next item that loads
+                runCatching { selFocus.requestFocus() } // nothing left; selFocus attaches to the next item that loads
             } else {
                 val neighbor = settled.getOrNull(contextMovieIndex.coerceAtLeast(0)) ?: settled.last()
                 val neighborIdx = items.indexOfFirst { it?.id == neighbor.id }.coerceAtLeast(0)
@@ -201,7 +208,7 @@ fun MoviesScreen(
                     if (viewMode == SettingsRepository.VodViewMode.LIST) listState.scrollToItem(neighborIdx)
                     else gridState.scrollToItem(neighborIdx)
                 }
-                // selFocus is bound to selectedMovie; reuse the generic firstItemFocus path only if that
+                // selFocus is bound to selectedMovie; reuse the generic selFocus path only if that
                 // fails. Here we re-purpose contextFocus by re-binding it: re-request after a frame so the
                 // neighbour row (now at contextMovieIndex) receives focus.
                 contextMovieId = neighbor.id
@@ -225,8 +232,10 @@ fun MoviesScreen(
                 .fillMaxSize()
                 .roundedPanel(fillColor = ContentPanelFill)
                 // Entering this pane must land on a poster, never the search bar: prefer the
-                // last-focused movie, else the first one. onEnter fires only for directional entry
-                // from outside (internal moves don't re-trigger it).
+                // last-focused movie (selFocus), else the first one (firstItemFocus). onEnter fires
+                // only for directional entry from outside (internal moves don't re-trigger it).
+                // Mirrors LiveScreen's proven pattern: two separate requesters avoid the shared-selFocus
+                // recomposeâ†’refocus cycle that caused auto-scroll on section load.
                 .focusProperties {
                     onEnter = {
                         if (runCatching { selFocus.requestFocus() }.isFailure) {
@@ -234,8 +243,6 @@ fun MoviesScreen(
                         }
                     }
                 }
-                // Held Up/Down can outrun the lazy grid's composition and escape this pane
-                // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
                 .trapVerticalFocusExit()
                 .focusGroup()
                 .padding(horizontal = Dimens.ScreenPaddingH, vertical = Dimens.ScreenPaddingV),
@@ -307,39 +314,42 @@ fun MoviesScreen(
                     }
                 }
             } else {
-                LazyVerticalGrid(
-                    state = gridState,
-                    columns = GridCells.Adaptive(minSize = 130.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(
-                        count = movies.itemCount,
-                        key = { index -> movies[index]?.id ?: index.toLong() },
-                        contentType = { "movie" },
-                    ) { index ->
-                        val movie = movies[index]
-                        if (movie != null) {
-                            val prog = movieProgress[movie.id]
-                            val done = prog?.let { vm.isMovieCompleted(it) } == true
-                            PosterCard(
-                                posterUrl = movie.posterUrl,
-                                title = movie.name,
-                                rating = movie.rating,
-                                completed = done,
-                                progressFraction = if (done || prog == null || prog.durationMs <= 0) null
+                androidx.compose.foundation.layout.BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+                    val columns = ((maxWidth + 12.dp) / (130.dp + 12.dp)).toInt().coerceAtLeast(1)
+                    LazyVerticalGrid(
+                        state = gridState,
+                        columns = GridCells.Fixed(columns),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        items(
+                            count = movies.itemCount,
+                            key = { index -> movies[index]?.id ?: index.toLong() },
+                            contentType = { "movie" },
+                        ) { index ->
+                            val movie = movies[index]
+                            if (movie != null) {
+                                val prog = movieProgress[movie.id]
+                                val done = prog?.let { vm.isMovieCompleted(it) } == true
+                                PosterCard(
+                                    posterUrl = movie.posterUrl,
+                                    title = movie.name,
+                                    rating = movie.rating,
+                                    completed = done,
+                                    progressFraction = if (done || prog == null || prog.durationMs <= 0) null
                                     else (prog.positionMs.toFloat() / prog.durationMs).takeIf { it > 0f },
-                                isFavorite = favoriteIds.contains(movie.id),
-                                modifier = when {
-                                    movie.id == contextMovieId -> Modifier.focusRequester(contextFocus)
-                                    movie.id == selectedMovie?.id -> Modifier.focusRequester(selFocus)
-                                    index == 0 -> Modifier.focusRequester(firstItemFocus)
-                                    else -> Modifier
-                                },
-                                onFocus = { vm.onMovieFocused(movie) },
-                                onClick = { startMovie(movie) },
-                                onLongClick = { contextMovie = movie; contextMovieId = movie.id; contextMovieIndex = index },
-                            )
+                                    isFavorite = favoriteIds.contains(movie.id),
+                                    modifier = when {
+                                        movie.id == contextMovieId -> Modifier.focusRequester(contextFocus)
+                                        movie.id == selectedMovie?.id -> Modifier.focusRequester(selFocus)
+                                        index == 0 -> Modifier.focusRequester(firstItemFocus)
+                                        else -> Modifier
+                                    },
+                                    onFocus = { vm.onMovieFocused(movie) },
+                                    onClick = { startMovie(movie) },
+                                    onLongClick = { contextMovie = movie; contextMovieId = movie.id; contextMovieIndex = index },
+                                )
+                            }
                         }
                     }
                 }
@@ -392,7 +402,7 @@ fun MoviesScreen(
             onRemoveFromHistory = { vm.removeFromHistory(m.id); contextMovie = null },
             onDownload = {
                 contextMovie = null
-                // Idempotent (§11.1): don't re-queue an existing download — nudge to the Downloads menu.
+                // Idempotent (ï¿½11.1): don't re-queue an existing download ï¿½ nudge to the Downloads menu.
                 if (alreadyDownloaded) {
                     toast.show(context.getString(R.string.movies_already_downloaded))
                 } else vm.download(m)
@@ -418,7 +428,7 @@ fun MoviesScreen(
         }
     }
 
-    // Windowed TMDB details popup (§11.1) — read-only, Back exits.
+    // Windowed TMDB details popup (ï¿½11.1) ï¿½ read-only, Back exits.
     detailsMovie?.let { m ->
         val cache = selectedMovieMeta?.takeIf { it.movieId == m.id }?.cache
         MediaDetailsScreen(
@@ -427,7 +437,7 @@ fun MoviesScreen(
         )
     }
 
-    // "Set TMDB name" override dialog (§11.2 U5b). Prefill once per target (saved override, else cleaned title).
+    // "Set TMDB name" override dialog (ï¿½11.2 U5b). Prefill once per target (saved override, else cleaned title).
     LaunchedEffect(setTmdbNameMovie) {
         if (setTmdbNameMovie == null && contextMovieId != null) {
             withFrameNanos { }
@@ -457,7 +467,7 @@ fun MoviesScreen(
         }
     }
 
-    // In-app trailer player (§7.3 U4) — fullscreen over everything; Back/Exit closes and refocuses the movie.
+    // In-app trailer player (ï¿½7.3 U4) ï¿½ fullscreen over everything; Back/Exit closes and refocuses the movie.
     LaunchedEffect(trailerVideoKey) {
         if (trailerVideoKey == null && contextMovieId != null) {
             withFrameNanos { }
@@ -567,7 +577,7 @@ private fun MovieDetailsPane(
         PreviewPane(hint = stringResource(R.string.movies_focus_hint))
         return
     }
-    // Merge (§7.1 / §4.1). Provider+TMDB ? provider wins (provider ?: tmdb); TMDB-only ? tmdb wins
+    // Merge (ï¿½7.1 / ï¿½4.1). Provider+TMDB ? provider wins (provider ?: tmdb); TMDB-only ? tmdb wins
     // (tmdb ?: provider). TMDB fields are never written back to the content row.
     val providerPoster = movie.posterUrl?.takeIf { it.isNotBlank() }
     val tmdbPoster = com.lunaiptv.core.metadata.MetadataImages.poster(meta?.posterPath)
@@ -583,7 +593,7 @@ private fun MovieDetailsPane(
             .verticalScroll(rememberScrollState())
             .padding(Dimens.GapLarge),
     ) {
-        // Non-focusable download status strip — only present while this movie is actually downloading.
+        // Non-focusable download status strip ï¿½ only present while this movie is actually downloading.
         if (downloadStrip != null) {
             com.lunaiptv.ui.components.DownloadStatusStrip(downloadStrip)
             Spacer(Modifier.height(12.dp))
@@ -620,11 +630,11 @@ private fun MovieDetailsPane(
         Text(movie.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
         Spacer(Modifier.height(6.dp))
         Text(metaLine(movie, meta, tmdbWins), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-        // Genres & cast are TMDB-only (§7.1) — a whole layer the provider never had.
+        // Genres & cast are TMDB-only (ï¿½7.1) ï¿½ a whole layer the provider never had.
         val genres = remember(meta?.genresJson) { jsonList(meta?.genresJson) }
         if (genres.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
+            Text(genres.joinToString(" ï¿½ "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
         }
         if (!plot.isNullOrBlank()) {
             Spacer(Modifier.height(12.dp))
@@ -638,7 +648,7 @@ private fun MovieDetailsPane(
             Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 2)
         }
         Spacer(Modifier.height(20.dp))
-        // Display-only pane (§11.1): actions live on the poster — OK plays, long-press opens the menu
+        // Display-only pane (ï¿½11.1): actions live on the poster ï¿½ OK plays, long-press opens the menu
         // (Favorite / Download / TMDB Details). Keeping the pane non-focusable fixes grid?pane navigation.
         Text(
             stringResource(R.string.movies_instruction),
@@ -650,7 +660,7 @@ private fun MovieDetailsPane(
 
 private fun metaLine(movie: MovieEntity, meta: com.lunaiptv.core.database.entity.MetadataCacheEntity? = null, tmdbWins: Boolean = false): String {
     val parts = mutableListOf<String>()
-    // §7.1 / §4.1: precedence flips with the source mode.
+    // ï¿½7.1 / ï¿½4.1: precedence flips with the source mode.
     val year = if (tmdbWins) meta?.year ?: movie.year else movie.year ?: meta?.year
     val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: movie.rating?.takeIf { it > 0 }
         else movie.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
@@ -661,10 +671,10 @@ private fun metaLine(movie: MovieEntity, meta: com.lunaiptv.core.database.entity
         val m = (secs % 3600) / 60
         parts.add(if (h > 0) "${h}h ${m}m" else "${m}m")
     }
-    return parts.joinToString("  •  ")
+    return parts.joinToString("  ï¿½  ")
 }
 
-/** Build the fullscreen TMDB-details payload for a movie, applying the §7.1/§4.1 merge precedence. */
+/** Build the fullscreen TMDB-details payload for a movie, applying the ï¿½7.1/ï¿½4.1 merge precedence. */
 private fun buildMovieDetails(
     movie: MovieEntity,
     meta: com.lunaiptv.core.database.entity.MetadataCacheEntity?,
@@ -697,7 +707,7 @@ private fun jsonList(json: String?): List<String> {
     }.getOrDefault(emptyList())
 }
 
-/** Compact one-line row used by the List view mode — fits many titles on screen at once (#10). */
+/** Compact one-line row used by the List view mode ï¿½ fits many titles on screen at once (#10). */
 @Composable
 private fun MovieListRow(
     movie: MovieEntity,

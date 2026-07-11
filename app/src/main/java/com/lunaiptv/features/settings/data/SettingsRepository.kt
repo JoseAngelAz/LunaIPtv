@@ -57,7 +57,7 @@ enum class EpgAutoRefresh(val label: String, val thresholdMs: Long? = null) {
     val isInterval: Boolean get() = thresholdMs != null && this != STARTUP
 }
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_settings")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_settings")
 
 /**
  * Persists app-level preferences. Phase 1 only needs the theme selection; this will grow to hold

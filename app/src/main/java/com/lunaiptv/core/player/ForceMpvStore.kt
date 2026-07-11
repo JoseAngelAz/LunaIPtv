@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-private val Context.forceMpvStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_force_mpv")
+private val Context.forceMpvStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_force_mpv")
 
 /**
  * Channels the user has pinned to the **mpv** engine ("compatibility mode") because ExoPlayer can't play

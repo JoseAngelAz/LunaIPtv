@@ -13,7 +13,7 @@ Android TV IPTV player forked from OwnTV by Jose Angel Azucena Mendez for person
 ## Tech Stack
 - **UI**: Jetpack Compose for TV (tv-material3)
 - **Video**: Dual engine — libmpv (default) + ExoPlayer/Media3
-- **Database**: Room (schema version 13, class `OwnTVDatabase` — DO NOT rename, breaks schema chain)
+- **Database**: Room (schema version 13, class `LunaIPtvDatabase`)
 - **DI**: Koin
 - **Networking**: OkHttp
 - **Images**: Coil (50MB disk cache, 15% memory cache)
@@ -24,19 +24,25 @@ Android TV IPTV player forked from OwnTV by Jose Angel Azucena Mendez for person
 $env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"; .\gradlew.bat compileDebugKotlin
 ```
 
-## Critical: Persistent Identifiers (DO NOT CHANGE)
-These store user data. Changing them loses all user settings/data:
-- **Database name**: `owntv.db` (in `OwnTVDatabase.kt`)
-- **DataStore names**: `owntv_settings`, `owntv_epg_sources`, `owntv_vod_engine`, `owntv_force_mpv`, `owntv_tmdb_overrides`, `owntv_customizations`, `owntv_pending_userdata`
-- **Storage folder**: `OwnTV` (in `StorageAccess.kt`)
-- **URI scheme**: `owntv://` (in `LauncherDeepLink.kt` + `AndroidManifest.xml`)
-- **Backup file**: `owntv-backup.json`
-- **TV provider key prefix**: `owntv:` (in `TvHomeRepository.kt`)
-- **Room schema export class**: `OwnTVDatabase` (schemas under `app/schemas/com.lunaiptv.core.database.OwnTVDatabase/`)
-- **TMDB Worker URL**: `owntv-tmdb-meta.xiannero.workers.dev`
+## Build Configuration
+- **R8/ProGuard**: Enabled for release builds (`isMinifyEnabled = true`, `isShrinkResources = true`)
+- **ProGuard rules**: `app/proguard-rules.pro` (Room, Koin, libmpv, Media3, OkHttp, Coil, YouTube Player)
+- **Network security**: `network_security_config.xml` — cleartext (HTTP) allowed only in debug builds
+- **Signing**: Release signing via env vars (`KEYSTORE_FILE`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`)
+
+## Critical: Persistent Identifiers
+These are the canonical identifiers for the LunaIPtv fork:
+- **Database name**: `lunaiptv.db` (in `LunaIPtvDatabase.kt`)
+- **DataStore names**: `lunaiptv_settings`, `lunaiptv_epg_sources`, `lunaiptv_vod_engine`, `lunaiptv_force_mpv`, `lunaiptv_tmdb_overrides`, `lunaiptv_customizations`, `lunaiptv_pending_userdata`
+- **Storage folder**: `LunaIPtv` (in `StorageAccess.kt`)
+- **URI scheme**: `lunaiptv://` (in `LauncherDeepLink.kt` + `AndroidManifest.xml`)
+- **Backup file**: `lunaiptv-backup.json`
+- **TV provider key prefix**: `lunaiptv:` (in `TvHomeRepository.kt`)
+- **Room schema export class**: `LunaIPtvDatabase` (schemas under `app/schemas/com.lunaiptv.core.database.LunaIPtvDatabase/`)
+- **TMDB Worker URL**: `lunaiptv-tmdb-meta.xiannero.workers.dev`
 
 ## Critical: Room Schema Chain
-The database class is `OwnTVDatabase` (NOT `LunaIPtvDatabase`). Renaming it breaks the Room schema export directory structure (schemas 1-13 live under `OwnTVDatabase/`). Never rename this class.
+The database class is `LunaIPtvDatabase`. The schema export directory must match: `app/schemas/com.lunaiptv.core.database.LunaIPtvDatabase/`. If you rename this class, also rename the schema directory to match.
 
 ## Project Structure
 ```
@@ -44,15 +50,15 @@ app/src/main/java/com/lunaiptv/
 ├── core/
 │   ├── backup/        — BackupManager, BackupCrypto, UserDataResolver
 │   ├── customize/     — CustomizationStore (home row order)
-│   ├── database/      — OwnTVDatabase, DAOs, entities, migrations
+│   ├── database/      — LunaIPtvDatabase, DAOs, entities, migrations
 │   ├── epg/           — EpgSourceStore, EPG parsing
-│   ├── launcher/      — Deep link handling (owntv:// scheme)
+│   ├── launcher/      — Deep link handling (lunaiptv:// scheme)
 │   ├── metadata/      — TMDB integration (TmdbProvider, MetadataRepository)
 │   ├── model/         — Domain models (Channel, Movie, Series, etc.)
 │   ├── network/       — HttpClient wrapper
 │   ├── player/        — VodEngineStore, ForceMpvStore
 │   ├── repository/    — EpgRepository
-│   ├── storage/       — StorageAccess (OwnTV folder)
+│   ├── storage/       — StorageAccess (LunaIPtv folder)
 │   ├── sync/          — M3U/Xtream import, SyncManager, ImportFinalizer
 │   ├── tv/            — TvHomeRepository (Android TV Watch Next)
 │   ├── update/        — UpdateManager (checks disabled for fork)
@@ -71,11 +77,11 @@ app/src/main/java/com/lunaiptv/
 │   ├── setup/         — First-run wizard
 │   ├── shell/         — Main shell (sidebar, top bar, navigation)
 │   └── update/        — Update dialog (disabled, shows LunaIPtv branding)
-├── player/            — OwnTVPlayer (mpv), LivePreviewEngine (Exo), PlayerHud
+├── player/            — LunaIPtvPlayer (mpv), LivePreviewEngine (Exo), PlayerHud
 ├── ui/
 │   ├── components/    — Reusable UI (LunaIPtvButton, LunaIPtvIcon, etc.)
 │   └── theme/         — Theme system (AccentColor, LunaIPtvColors, Animations)
-└── OwnTVApp.kt        — Application class (Koin, Coil, WorkManager)
+└── LunaIPtvApp.kt    — Application class (Koin, Coil, WorkManager)
 ```
 
 ## Theme/Accent System
@@ -105,4 +111,4 @@ app/src/main/java/com/lunaiptv/
 
 ## Known Issues
 - PiP/channel-switch visual bug: old channel frame can linger in corner (investigated, `clearVideoSurface()` approach — needs device testing)
-- `OwnTVDatabase` class name kept as-is to preserve Room schema chain (cosmetic only, never user-visible)
+- `LunaIPtvDatabase` class name and schema directory must stay in sync (renaming the class requires renaming the schema export directory)

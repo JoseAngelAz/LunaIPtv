@@ -23,7 +23,7 @@ data class EpgSource(
     val lastError: String? = null,
 )
 
-private val Context.epgStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_epg_sources")
+private val Context.epgStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_epg_sources")
 
 /**
  * Stores the user's EPG (XMLTV) sources as a JSON list in DataStore — NOT a Room table, because the

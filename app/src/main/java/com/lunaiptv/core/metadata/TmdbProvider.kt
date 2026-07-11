@@ -253,7 +253,7 @@ class TmdbProvider(
 
         /** Tier 0 default caching Worker (plan §0.5) — maintainer's key lives in the Worker secret,
          *  never in the APK. The app never sends api_key on this tier; the Worker injects it. */
-        const val DEFAULT_WORKER_BASE = "https://owntv-tmdb-meta.xiannero.workers.dev"
+        const val DEFAULT_WORKER_BASE = "https://lunaiptv-tmdb-meta.xiannero.workers.dev"
 
         /** TMDB image CDN — poster/backdrop paths render straight from here, no key. */
         const val IMAGE_BASE = "https://image.tmdb.org/t/p"

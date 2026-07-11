@@ -79,7 +79,7 @@ import com.lunaiptv.core.database.entity.TvProviderProgramEntity
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
-abstract class OwnTVDatabase : RoomDatabase() {
+abstract class LunaIPtvDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
     abstract fun sourceDao(): SourceDao
     abstract fun categoryDao(): CategoryDao
@@ -96,7 +96,7 @@ abstract class OwnTVDatabase : RoomDatabase() {
     abstract fun metadataDao(): com.lunaiptv.core.database.dao.MetadataDao
 
     companion object {
-        const val NAME = "owntv.db"
+        const val NAME = "lunaiptv.db"
 
         /**
          * v1 → v2: drop the foreign key on the EPG tables (standalone EPG sources use ids that

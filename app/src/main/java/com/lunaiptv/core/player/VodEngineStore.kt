@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-private val Context.vodEngineStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_vod_engine")
+private val Context.vodEngineStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_vod_engine")
 
 /** A movie/episode the user manually pinned to an engine via the player's gear toggle. */
 enum class VodEnginePin { MPV, EXO }

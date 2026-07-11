@@ -25,7 +25,7 @@ import com.lunaiptv.core.database.entity.PlaybackProgressEntity
 import com.lunaiptv.core.database.entity.WatchHistoryEntity
 import com.lunaiptv.core.model.MediaType
 
-private val Context.pendingStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_pending_userdata")
+private val Context.pendingStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_pending_userdata")
 private val PENDING_KEY = stringPreferencesKey("entries")
 
 /**

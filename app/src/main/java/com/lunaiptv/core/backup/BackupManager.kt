@@ -107,7 +107,7 @@ class BackupManager(
                 }
             }
             if (!folder.exists()) folder.mkdirs()
-            val out = File(folder, "owntv-backup.json")
+            val out = File(folder, "lunaiptv-backup.json")
             out.writeText(root.toString(2))
             out.absolutePath
         }

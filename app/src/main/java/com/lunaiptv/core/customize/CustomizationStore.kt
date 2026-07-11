@@ -18,7 +18,7 @@ import com.lunaiptv.core.database.entity.MovieEntity
 import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.model.MediaType
 
-private val Context.customizeStore: DataStore<Preferences> by preferencesDataStore(name = "owntv_customizations")
+private val Context.customizeStore: DataStore<Preferences> by preferencesDataStore(name = "lunaiptv_customizations")
 
 /**
  * Stable identity for a category/channel that survives re-sync (content rows are clear-then-insert,

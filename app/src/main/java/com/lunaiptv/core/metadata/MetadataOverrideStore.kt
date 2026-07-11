@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 
 private val Context.metadataOverrideStore: DataStore<Preferences> by
-    preferencesDataStore(name = "owntv_tmdb_overrides")
+    preferencesDataStore(name = "lunaiptv_tmdb_overrides")
 
 /** A user-set TMDB search override: a custom title (and optional year) used instead of the auto-normalized one. */
 data class TmdbOverride(val title: String, val year: Int?)

@@ -230,7 +230,7 @@ class MovieViewModel(
     val movies: Flow<PagingData<MovieEntity>> = combine(
         _selected, ctx, _search.map { it.trim() }.debounce(300).distinctUntilChanged(), sortMode, _listRefresh,
     ) { key, c, query, sort, _ -> Args(key, c, query, sort) }
-        .combine(custResolved) { args, cs -> args to cs }
+        .combine(custResolved.debounce(50)) { args, cs -> args to cs }
         .flatMapLatest { (args, cs) ->
             // Hidden items/categories are filtered on each fresh PagingData inside the pager chain —
             // a customization change re-creates the pager (same pattern as Live TV).
@@ -270,7 +270,10 @@ class MovieViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    fun select(key: LiveKey) { _selected.value = key }
+    fun select(key: LiveKey) {
+        _selected.value = key
+        _selectedMovie.value = null
+    }
     fun setSearchQuery(query: String) { _search.value = query }
     fun onMovieFocused(movie: MovieEntity) { _selectedMovie.value = movie }
 

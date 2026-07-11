@@ -603,7 +603,7 @@ class TvHomeRepository(
 
     private fun channelDaoName(channel: com.lunaiptv.core.database.entity.ChannelEntity): String = channel.name
     private fun platformInternalId(surface: TvProviderSurface, profileId: Long, mediaType: MediaType, stableKey: String): String =
-        "owntv:${surface.name.lowercase()}:${sha256Hex("$profileId|${mediaType.name}|$stableKey")}"
+        "lunaiptv:${surface.name.lowercase()}:${sha256Hex("$profileId|${mediaType.name}|$stableKey")}"
 
     private fun sha256Hex(value: String): String = sha256Bytes(value).joinToString("") { "%02x".format(it) }
 
