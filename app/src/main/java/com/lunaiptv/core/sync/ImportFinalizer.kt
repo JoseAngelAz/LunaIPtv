@@ -5,7 +5,7 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.lunaiptv.core.database.BulkInsertHelper
-import com.lunaiptv.core.database.LunaIPtvDatabase
+import com.lunaiptv.core.database.OwnTVDatabase
 import com.lunaiptv.core.database.dao.ChannelDao
 import com.lunaiptv.core.database.dao.MovieDao
 import com.lunaiptv.core.database.dao.SeriesDao
@@ -49,7 +49,7 @@ class ImportFinalizer(
     private val channelDao: ChannelDao,
     private val movieDao: MovieDao,
     private val seriesDao: SeriesDao,
-    private val db: LunaIPtvDatabase,
+    private val db: OwnTVDatabase,
     private val bulkInsertHelper: BulkInsertHelper,
 ) {
     suspend fun finalize(source: SourceEntity, deferIndexes: Boolean = false): SyncCounts {

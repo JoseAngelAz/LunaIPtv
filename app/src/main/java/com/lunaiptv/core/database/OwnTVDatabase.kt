@@ -79,7 +79,7 @@ import com.lunaiptv.core.database.entity.TvProviderProgramEntity
     exportSchema = true,
 )
 @TypeConverters(Converters::class)
-abstract class LunaIPtvDatabase : RoomDatabase() {
+abstract class OwnTVDatabase : RoomDatabase() {
     abstract fun profileDao(): ProfileDao
     abstract fun sourceDao(): SourceDao
     abstract fun categoryDao(): CategoryDao

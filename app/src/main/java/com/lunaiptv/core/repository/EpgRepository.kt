@@ -36,7 +36,7 @@ class EpgRepository(
     private val customize: CustomizationStore,
     private val settings: SettingsRepository,
     private val context: android.content.Context,
-    private val db: com.lunaiptv.core.database.LunaIPtvDatabase,
+    private val db: com.lunaiptv.core.database.OwnTVDatabase,
     private val bulkInsertHelper: BulkInsertHelper,
 ) {
 
