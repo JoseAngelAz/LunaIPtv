@@ -79,7 +79,7 @@ private fun sectionLabel(section: MainSection): String = when (section) {
 }
 
 /**
- * Layer 1 — the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
+ * Layer 1 â€” the MD3 navigation panel. A FIXED icon rail: brand logo at the top (Phase 2), the nav items
  * (browse + Settings) vertically centered in the middle (Phase 3), and the profile avatar pinned at the
  * bottom (Phase 1). The logo is display-only (not focusable); everything else is a focusable nav item.
  */
@@ -163,7 +163,7 @@ fun Sidebar(
             }
         }
 
-        // Floating tooltip with golden glow — appears when a nav item is focused
+        // Floating tooltip with golden glow â€” appears when a nav item is focused
         AnimatedVisibility(
             visible = focusedSection != null,
             enter = fadeIn() + slideInHorizontally(initialOffsetX = { -it / 3 }),
@@ -213,7 +213,7 @@ fun Sidebar(
 }
 
 /**
- * Brand mark at the top of the rail — the LunaIPtv moon logo. Decorative only: not focusable.
+ * Brand mark at the top of the rail â€” the LunaIPtv moon logo. Decorative only: not focusable.
  */
 @Composable
 private fun AppLogo(modifier: Modifier = Modifier) {
@@ -245,7 +245,7 @@ private fun ProfileCard(
     val colors = LunaIPtvTheme.colors
 
     if (!expanded) {
-        // Fixed nav: just the avatar — click opens the profile switcher ("who's watching"), long-press
+        // Fixed nav: just the avatar â€” click opens the profile switcher ("who's watching"), long-press
         // changes the avatar picture. Pinned top-left, always in the same spot.
         AvatarButton(avatarId = avatarId, sizeDp = 56, onClick = onSwitchProfile, onLongClick = onPickAvatar)
         return

@@ -52,7 +52,7 @@ import com.lunaiptv.ui.components.trapVerticalFocusExit
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Phase 12 — the Downloads section: offline movies & episodes with progress and playback. */
+/** Phase 12 â€” the Downloads section: offline movies & episodes with progress and playback. */
 @Composable
 fun DownloadsScreen(
     onFullscreen: () -> Unit,
@@ -103,7 +103,7 @@ fun DownloadsScreen(
             // directional entry from outside (internal moves don't re-trigger it).
             .focusProperties { onEnter = { runCatching { firstFocus.requestFocus() } } }
             // Held Up/Down can outrun the lazy list's composition and escape this pane
-            // (landing on the top bar) — trap vertical exits; Left/Right/Back leave normally.
+            // (landing on the top bar) â€” trap vertical exits; Left/Right/Back leave normally.
             .trapVerticalFocusExit()
             .focusGroup()
             .onFocusChanged { if (it.hasFocus) onChildFocused() }
@@ -203,7 +203,7 @@ private fun StorageBar(info: com.lunaiptv.core.download.DownloadStorageInfo) {
     }
 }
 
-private fun gb(bytes: Long): String = if (bytes <= 0) "—" else "%.1f GB".format(bytes / 1_073_741_824.0)
+private fun gb(bytes: Long): String = if (bytes <= 0) "â€”" else "%.1f GB".format(bytes / 1_073_741_824.0)
 
 @Composable
 private fun DownloadRow(
@@ -245,12 +245,12 @@ private fun DownloadRow(
     }
 }
 
-/** Shows the folder path of a download, e.g. "Series › Game of Thrones › Season 6". */
+/** Shows the folder path of a download, e.g. "Series â€º Game of Thrones â€º Season 6". */
 private fun folderCrumb(filePath: String?): String? {
     val parts = filePath?.substringBeforeLast('/')?.split('/')?.filter { it.isNotBlank() } ?: return null
     val idx = parts.indexOfLast { it == "Movies" || it == "Series" }
     val rel = if (idx >= 0) parts.subList(idx, parts.size) else parts.takeLast(3)
-    return rel.joinToString(" › ").ifBlank { null }
+    return rel.joinToString(" â€º ").ifBlank { null }
 }
 
 @Composable
@@ -268,7 +268,7 @@ private fun StatusLine(d: DownloadEntity) {
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% · ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else stringResource(R.string.downloads_downloading, mb(d.downloadedBytes)),
+                    if (d.totalBytes > 0) "${(frac * 100).toInt()}% Â· ${mb(d.downloadedBytes)} / ${mb(d.totalBytes)}" else stringResource(R.string.downloads_downloading, mb(d.downloadedBytes)),
                     style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant,
                 )
             }
@@ -276,4 +276,4 @@ private fun StatusLine(d: DownloadEntity) {
     }
 }
 
-private fun mb(bytes: Long): String = if (bytes <= 0) "—" else "%.1f MB".format(bytes / 1_048_576.0)
+private fun mb(bytes: Long): String = if (bytes <= 0) "â€”" else "%.1f MB".format(bytes / 1_048_576.0)

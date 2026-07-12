@@ -41,7 +41,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * A channel list that slides in over the playing video (opened with Left while the player controls are
- * hidden). Browse with the D-pad, OK switches channel, Back / Left again closes it — all without leaving
+ * hidden). Browse with the D-pad, OK switches channel, Back / Left again closes it â€” all without leaving
  * full-screen. The currently-playing channel is highlighted and focused first.
  */
 @Composable

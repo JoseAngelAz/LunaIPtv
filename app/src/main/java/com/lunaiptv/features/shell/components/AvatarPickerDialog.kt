@@ -49,7 +49,7 @@ fun AvatarPickerDialog(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.65f))
-            // Opened by a long-press of OK — without this guard the still-held release would instantly
+            // Opened by a long-press of OK â€” without this guard the still-held release would instantly
             // confirm the focused avatar (the "auto-selects first, no pause" bug). longPressMenuGuard
             // swallows OK/Enter until the key is released once, so the user navigates + OK to pick.
             .longPressMenuGuard()
@@ -73,7 +73,7 @@ fun AvatarPickerDialog(
             )
             Spacer(Modifier.height(20.dp))
 
-            // Phase 7 — "no avatar" option showing the Rank 1 ProfileIcon (ID -1)
+            // Phase 7 â€” "no avatar" option showing the Rank 1 ProfileIcon (ID -1)
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 val noneSelected = selectedId == -1
                 FocusableSurface(

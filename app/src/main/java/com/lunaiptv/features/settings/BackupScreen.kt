@@ -50,7 +50,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 import java.io.File
 
 /**
- * Phase 12 — Backup & Restore (Settings ? Backup), with selective sections: the user picks what to
+ * Phase 12 â€” Backup & Restore (Settings ? Backup), with selective sections: the user picks what to
  * back up (profiles & sources / customizations / favorites / history / resume) and, on restore,
  * which of the file's sections to apply. Uses an in-app file picker (no SAF).
  */
@@ -64,7 +64,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     var showBrowser by remember { mutableStateOf(false) }
     var showExportPicker by remember { mutableStateOf(false) }
     // Opening the folder browser in the SAME frame the section picker closes makes the browser's
-    // initial focus grab race the picker's teardown — focus ends up trapped on the screen behind
+    // initial focus grab race the picker's teardown â€” focus ends up trapped on the screen behind
     // the overlay. Defer the open by a beat instead.
     var pendingFolderBrowser by remember { mutableStateOf(false) }
     LaunchedEffect(pendingFolderBrowser) {
@@ -86,7 +86,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     // Dialog-close focus return: closing the section picker / file browser refocuses the button
     // that opened it. The restore crosses INTO this group from the dialog, so onEnter intercepts
-    // it — it consults dialogReturn first (and clears it) instead of hijacking.
+    // it â€” it consults dialogReturn first (and clears it) instead of hijacking.
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     val anyDialogOpen = showBrowser || showExportPicker || pendingFolderBrowser || exportFolder != null ||
         state is BackupViewModel.State.ChooseRestore || state is BackupViewModel.State.NeedPassword
@@ -103,8 +103,8 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // onEnter fires for any entry from outside the group — including our own dialog-close
-            // restores (the dialogs live outside it) — so it must prefer the pending return button.
+            // onEnter fires for any entry from outside the group â€” including our own dialog-close
+            // restores (the dialogs live outside it) â€” so it must prefer the pending return button.
             .focusProperties {
                 onEnter = {
                     val target = dialogReturn ?: firstFocus
@@ -161,7 +161,7 @@ fun BackupScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
     }
 
-    // Restore step 2: the picked file was inspected — choose which of its sections to apply.
+    // Restore step 2: the picked file was inspected â€” choose which of its sections to apply.
     (state as? BackupViewModel.State.ChooseRestore)?.let { choose ->
         val whatRestoreTitle = stringResource(R.string.backup_what_restore)
         val restoreBtnLabel = stringResource(R.string.backup_restore_btn)

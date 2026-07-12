@@ -127,7 +127,7 @@ fun LunaIPtvShell(
     val homeVm = org.koin.androidx.compose.koinViewModel<HomeViewModel>()
     val movieVm = org.koin.androidx.compose.koinViewModel<MovieViewModel>()
     val seriesVm = org.koin.androidx.compose.koinViewModel<SeriesViewModel>()
-    // Same activity-scoped instances the Live/Guide screens use — lets the fullscreen HUD zap channels
+    // Same activity-scoped instances the Live/Guide screens use â€” lets the fullscreen HUD zap channels
     // up/down (CH+/CH-) through whichever section's list opened the stream.
     val liveVm = org.koin.androidx.compose.koinViewModel<LiveViewModel>()
     val epgVm = org.koin.androidx.compose.koinViewModel<com.lunaiptv.features.epg.EpgViewModel>()
@@ -139,13 +139,13 @@ fun LunaIPtvShell(
     // Live rewind / timeshift: whether the live channel supports catch-up, and how far behind live we are.
     val canRewindLive by liveVm.canRewindLive.collectAsStateWithLifecycle()
     val timeshiftOffset by liveVm.timeshiftOffsetSec.collectAsStateWithLifecycle()
-    // Which section armed the current fullscreen stream — picks whose channel list CH+/CH- step through.
+    // Which section armed the current fullscreen stream â€” picks whose channel list CH+/CH- step through.
     var zapSource by remember { mutableStateOf<MainSection?>(null) }
     // In-player channel-list overlay (Left while controls hidden, live only).
     var showChannelList by remember { mutableStateOf(false) }
     val zapChannels by liveVm.zapChannels.collectAsStateWithLifecycle()
     val previewChannel by liveVm.previewChannel.collectAsStateWithLifecycle()
-    // Batch 7 — the single most-recent resumable item, surfaced as a shared top-bar "Continue" chip.
+    // Batch 7 â€” the single most-recent resumable item, surfaced as a shared top-bar "Continue" chip.
     val continueTarget by homeVm.continueTarget.collectAsStateWithLifecycle()
 
     // "Resume last channel on startup" (opt-in, default off): once when the shell first appears, if enabled
@@ -175,10 +175,10 @@ fun LunaIPtvShell(
         }
     }
 
-    // Movies/Series/Live load on first open via their reactive Paging flows — their indexed first page is
+    // Movies/Series/Live load on first open via their reactive Paging flows â€” their indexed first page is
     // cheap, so they need NO preloading (a Live-TV-only user pays nothing for them). The TV Guide is the ONE
     // exception: load() pulls every guide channel + a programme window, which is heavy enough that doing it on
-    // open felt slow. So warm EPG in the background shortly after the shell renders — opening the Guide is then
+    // open felt slow. So warm EPG in the background shortly after the shell renders â€” opening the Guide is then
     // instant, matching how it behaved before. (EpgScreen also calls load() on mount, so this is a pure pre-warm
     // and is skipped if the user is already on EPG.)
     LaunchedEffect(Unit) {
@@ -186,7 +186,7 @@ fun LunaIPtvShell(
         if (selectedSection != MainSection.EPG) { com.lunaiptv.Perf.stamp("epg-preload"); epgVm.load() }
     }
 
-    // Opening content from a browse screen goes fullscreen — UNLESS the player is already docked as a
+    // Opening content from a browse screen goes fullscreen â€” UNLESS the player is already docked as a
     // mini-player, in which case it stays docked and just swaps to the newly-selected stream (the VM
     // already started it), so picking a channel updates the PiP window in place (#6).
     fun openFullscreen(source: MainSection = selectedSection) {
@@ -194,7 +194,7 @@ fun LunaIPtvShell(
         zapSource = source
         homeVm.stopPreview()
         // Only Live TV promotes a channel to the ExoPlayer engine. Movies/Series/Search/EPG/Downloads all
-        // play on mpv — clear any stale live-on-ExoPlayer flag so the shell renders mpv, not the old channel.
+        // play on mpv â€” clear any stale live-on-ExoPlayer flag so the shell renders mpv, not the old channel.
         if (source != MainSection.LIVE_TV) liveVm.clearLiveOnExo()
         if (playerMode != PlayerMode.MINI) playerMode = PlayerMode.FULLSCREEN
     }
@@ -285,7 +285,7 @@ fun LunaIPtvShell(
     }
 
     Box(modifier = modifier.fillMaxSize().background(colors.background)) {
-      // Browse UI — hidden while the player is fullscreen (stays visible behind the docked mini-player).
+      // Browse UI â€” hidden while the player is fullscreen (stays visible behind the docked mini-player).
       if (playerMode != PlayerMode.FULLSCREEN) {
         Column(modifier = Modifier.fillMaxSize()) {
           if (isOffline) OfflineBanner()
@@ -306,11 +306,11 @@ fun LunaIPtvShell(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    // Phase 6 — unified panel surface: panels and content area share #102520 so the
+                    // Phase 6 â€” unified panel surface: panels and content area share #102520 so the
                     // rounded borders define regions on one continuous dark-green surface.
                     .background(colors.background),
             ) {
-                // Phase 5 — top bar above the content (active section + Search pill + clock + playlist).
+                // Phase 5 â€” top bar above the content (active section + Search pill + clock + playlist).
                 // Shown on EVERY section now, including Settings ("top bar same for all").
                 TopBar(
                     sectionLabel = selectedSection.label,
@@ -325,14 +325,14 @@ fun LunaIPtvShell(
                     },
                     weatherInfo = weatherInfo,
                     weatherFahrenheit = weatherFahrenheit,
-                    // The Search pill only exists while focus sits on the nav panel — inside a
+                    // The Search pill only exists while focus sits on the nav panel â€” inside a
                     // section it fades out and turns unfocusable, so focus can never jump to it.
                     searchVisible = focusedLayer == ShellLayer.SIDEBAR,
                     // The playlist chip becomes a quick-switcher only when there's more than one to pick.
                     playlistInteractive = playlists.size > 1,
                     onPlaylistClick = { showPlaylistPicker = true },
-                    // Batch 7 — shared "Continue" chip: one-press resume of the most-recent item.
-                    continueLabel = continueTarget?.let { "${it.actionLabel} · ${it.name}" },
+                    // Batch 7 â€” shared "Continue" chip: one-press resume of the most-recent item.
+                    continueLabel = continueTarget?.let { "${it.actionLabel} Â· ${it.name}" },
                     continueIcon = when (continueTarget?.kind) {
                         com.lunaiptv.features.home.ContinueKind.LIVE -> LunaIPtvIcon.LIVE_TV
                         com.lunaiptv.features.home.ContinueKind.MOVIE -> LunaIPtvIcon.MOVIES
@@ -388,7 +388,7 @@ fun LunaIPtvShell(
 
                         selectedSection == MainSection.SEARCH -> SearchScreen(
                             onFullscreen = { openFullscreen() },
-                            // Open the actual series (its episode list), then switch to the Series section —
+                            // Open the actual series (its episode list), then switch to the Series section â€”
                             // the screen shares this SeriesViewModel, so it shows the opened show.
                             onOpenSeries = { series -> seriesVm.openSeries(series); onSelectSection(MainSection.SERIES) },
                             onChildFocused = { focusedLayer = ShellLayer.CONTENT },
@@ -485,7 +485,7 @@ fun LunaIPtvShell(
         }
       }
 
-      // Player surface — hoisted so it persists across fullscreen <-> mini (same call site = the
+      // Player surface â€” hoisted so it persists across fullscreen <-> mini (same call site = the
       // SurfaceView isn't recreated when docking/expanding, so playback never blips).
       if (playerMode != PlayerMode.NONE) {
         val isFull = playerMode == PlayerMode.FULLSCREEN
@@ -497,7 +497,7 @@ fun LunaIPtvShell(
                     .clip(RoundedCornerShape(14.dp)).background(Color.Black)
             },
         ) {
-            // "Promote Preview": a Live channel playing on ExoPlayer renders the ExoPlayer surface — in BOTH
+            // "Promote Preview": a Live channel playing on ExoPlayer renders the ExoPlayer surface â€” in BOTH
             // full-screen AND the docked mini-player (same call site = the surface persists across dock/
             // expand, so playback never blips). Everything else (mpv) renders mpv's surface.
             if (liveOnExo) {
@@ -505,12 +505,12 @@ fun LunaIPtvShell(
             } else {
                 MpvVideoSurface(player = player, modifier = Modifier.fillMaxSize())
             }
-            // Direct render mode: mpv can't draw subtitles on the decoder-owned surface — the app does.
+            // Direct render mode: mpv can't draw subtitles on the decoder-owned surface â€” the app does.
             if (isFull && !liveOnExo) com.lunaiptv.player.SubtitleOverlay(player = player, modifier = Modifier.fillMaxSize())
             if (isFull) {
                 // CH+/CH- zap through the channel list of whichever section opened the current stream
                 // (Live TV or the Guide); never for VOD. When live plays on ExoPlayer (liveOnExo=true) the
-                // mpv `player` is stopped so player.isLiveContent is false — the ExoPlayer engine is the one
+                // mpv `player` is stopped so player.isLiveContent is false â€” the ExoPlayer engine is the one
                 // playing live, so we must check liveOnExo too (otherwise zap breaks for the common case).
                 val isLiveStream = liveOnExo || player.isLiveContent
                 val zap: ((Int) -> Unit)? = when {
@@ -536,11 +536,11 @@ fun LunaIPtvShell(
                     onGoToLive = if (isLiveChannel) liveVm::goToLive else null,
                     onScrubLive = if (isLiveChannel && canRewindLive) liveVm::scrubLive else null,
                     timeshiftOffsetSec = if (isLiveChannel) timeshiftOffset else null,
-                    // Show the ACTUAL running engine (mpv when pinned OR auto-fallen-back), not just the pin —
+                    // Show the ACTUAL running engine (mpv when pinned OR auto-fallen-back), not just the pin â€”
                     // otherwise an auto-fallback to mpv still read "EXO". true = on mpv (pill shows MPV, teal).
                     compatMode = if (isLiveChannel) !liveOnExo else null,
                     onToggleCompatMode = if (isLiveChannel) liveVm::toggleForceMpv else null,
-                    // VOD engine toggle (movies/series only — live and catch-up channels keep their own
+                    // VOD engine toggle (movies/series only â€” live and catch-up channels keep their own
                     // engine handling above): flip the current item between mpv and ExoPlayer.
                     vodOnExo = if (!isLiveStream && !isLiveChannel) vodExoActive else null,
                     onToggleVodEngine = if (!isLiveStream && !isLiveChannel) player::toggleVodEngine else null,
@@ -581,7 +581,7 @@ fun LunaIPtvShell(
         }
 
         // Automatic update check (GitHub Releases) shortly after launch, once per session: a small
-        // top-right status card shows "Checking… / up to date" (auto-hides) or stays with
+        // top-right status card shows "Checkingâ€¦ / up to date" (auto-hides) or stays with
         // Update now / Later when a release is newer. Hidden while in Settings (its manual
         // "Check for updates" dialog drives the same state machine) and during playback.
         val updateManager = koinInject<UpdateManager>()
@@ -598,7 +598,7 @@ fun LunaIPtvShell(
         }
         if (showChangelog) {
             // Full "What's New" changelog (same dialog the manual Settings check uses), shown when
-            // the startup card's "What's New" is pressed. No re-check — the release is already loaded.
+            // the startup card's "What's New" is pressed. No re-check â€” the release is already loaded.
             UpdateDialog(onDismiss = { showChangelog = false; showStartupToast = false; updateManager.reset() }, checkOnOpen = false)
         } else if (showStartupToast && selectedSection != MainSection.SETTINGS && playerMode == PlayerMode.NONE) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
@@ -624,7 +624,7 @@ private fun OfflineBanner() {
         horizontalArrangement = Arrangement.Center,
     ) {
         Text(
-            "You're offline — playback and updates won't work until you reconnect.",
+            "You're offline â€” playback and updates won't work until you reconnect.",
             style = MaterialTheme.typography.labelLarge,
             color = colors.onTertiaryContainer,
         )

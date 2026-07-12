@@ -28,11 +28,11 @@ import com.lunaiptv.ui.theme.lunaIptvTween
  * impossible to tell "the section I'm actually in" from "the item my cursor is hovering". This ladder
  * keeps them distinct, strongest ? weakest:
  *
- *  1. **selected + focused** — full [primaryContainer] fill, [onPrimaryContainer] content: the peak.
- *  2. **focused, unselected** — surface fill + teal focus outline, bright [onSurface] content: the cursor.
- *  3. **selected, unfocused** — soft [secondaryContainer] tonal fill + accent content + a left accent
+ *  1. **selected + focused** â€” full [primaryContainer] fill, [onPrimaryContainer] content: the peak.
+ *  2. **focused, unselected** â€” surface fill + teal focus outline, bright [onSurface] content: the cursor.
+ *  3. **selected, unfocused** â€” soft [secondaryContainer] tonal fill + accent content + a left accent
  *     bar: a persistent, colour-independent marker of the active section while focus is elsewhere.
- *  4. **idle** — transparent, muted [onSurfaceVariant] content.
+ *  4. **idle** â€” transparent, muted [onSurfaceVariant] content.
  *
  * Colours animate on the shared [lunaIptvTween]. [showAccentBar] and [focusBorder] are booleans/nullable
  * the call site draws itself (bar via [NavAccentBar], outline via `Modifier.border`).
@@ -92,7 +92,7 @@ fun rememberNavLadderColors(selected: Boolean, focused: Boolean): NavLadderColor
 }
 
 /**
- * The persistent left accent bar drawn on a [selected][NavLadderColors.showAccentBar] nav surface —
+ * The persistent left accent bar drawn on a [selected][NavLadderColors.showAccentBar] nav surface â€”
  * a thin vertical accent-coloured pill on the left edge that marks the active section regardless of
  * colour contrast (a spatial/shape cue for low-contrast panels and colour-blind users). Animates its
  * width so it slides in/out instead of popping. Must be called inside a [Box].

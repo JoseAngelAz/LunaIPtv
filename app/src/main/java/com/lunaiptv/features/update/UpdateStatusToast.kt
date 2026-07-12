@@ -37,7 +37,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Small semi-transparent status card (top-right corner) for the automatic startup update check:
- * "Checking…" ? "You're up to date" (auto-hides after ~2s) — or, when an update exists, it stays
+ * "Checkingâ€¦" ? "You're up to date" (auto-hides after ~2s) â€” or, when an update exists, it stays
  * with Update now / Later. Update now downloads with progress and hands off to the system installer.
  * Only the Available state takes D-pad focus; the transient states never interrupt browsing.
  */

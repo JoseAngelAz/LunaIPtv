@@ -23,10 +23,10 @@ import kotlinx.coroutines.delay
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * A small in-app toast: a transient, themed message pinned to the bottom-center of the screen — nicer than a
+ * A small in-app toast: a transient, themed message pinned to the bottom-center of the screen â€” nicer than a
  * system [android.widget.Toast] on a TV (legible app font, LunaIPtv colors). Auto-dismisses after ~2.2s.
  *
- * Usage: `val toast = rememberInAppToast()` near the top of a screen; call `toast.show("…")` from a click
+ * Usage: `val toast = rememberInAppToast()` near the top of a screen; call `toast.show("â€¦")` from a click
  * lambda; render [InAppToast] once as a sibling overlay (it stacks like the long-press menus). Emits nothing
  * while idle, so it costs nothing and never intercepts D-pad focus when there's no message.
  */

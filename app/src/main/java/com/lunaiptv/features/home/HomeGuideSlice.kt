@@ -260,7 +260,7 @@ private fun OnNowRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "${title.uppercase()} · ON NOW",
+                    text = "${title.uppercase()} Â· ON NOW",
                     style = MaterialTheme.typography.titleSmall,
                     color = colors.primary,
                     fontWeight = FontWeight.Bold,
@@ -391,7 +391,7 @@ private fun OnNowChannelItem(
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = info.upcoming.joinToString("  ·  "),
+                        text = info.upcoming.joinToString("  Â·  "),
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.onSurfaceVariant.copy(alpha = 0.44f),
                         maxLines = 1,
@@ -556,9 +556,9 @@ private fun programmeTimeLabel(
 ): String {
     val time = "${formatTime(programme.startMs)}-${formatTime(programme.stopMs)}"
     return if (now in programme.startMs until programme.stopMs) {
-        "NOW · $time"
+        "NOW Â· $time"
     } else {
-        "UP NEXT · $time"
+        "UP NEXT Â· $time"
     }
 }
 

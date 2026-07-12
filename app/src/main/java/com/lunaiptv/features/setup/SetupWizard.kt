@@ -82,7 +82,7 @@ fun Onboarding(firstRun: Boolean, onDone: () -> Unit, onCancel: () -> Unit, modi
         when (step) {
             Step.WELCOME -> WelcomeScreen(onNext = { step = Step.DISCLAIMER })
             Step.DISCLAIMER -> DisclaimerScreen(onAgree = { step = Step.SETUP_CHOICE }, onBack = { step = Step.WELCOME })
-            // First decision: start fresh or bring everything back from a backup (profiles included —
+            // First decision: start fresh or bring everything back from a backup (profiles included â€”
             // no point creating a profile first that the restore would replace).
             Step.SETUP_CHOICE -> SetupChoiceScreen(
                 onCreate = { step = Step.CREATE_PROFILE },
@@ -145,7 +145,7 @@ private fun WelcomeScreen(onNext: () -> Unit) {
             painter = painterResource(id = R.drawable.ic_launcher),
             contentDescription = "LunaIPtv",
             modifier = Modifier.size(100.dp),
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
         )
         Spacer(Modifier.height(16.dp))
         Text(stringResource(R.string.setup_welcome_desc), style = MaterialTheme.typography.titleMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)

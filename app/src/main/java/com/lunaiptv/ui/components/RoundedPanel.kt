@@ -15,10 +15,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-// Phase 6 — per-region panel fill colours (owner-specified, 2026-06-27).
+// Phase 6 â€” per-region panel fill colours (owner-specified, 2026-06-27).
 // Each returns a dark-green tint in dark mode, and a light-grey-green tint in light mode,
 // so the theme toggle actually changes the panels.
-// Option A — Clean + Premium (LunaIPtv_panel_color_concepts_vertical.html)
+// Option A â€” Clean + Premium (LunaIPtv_panel_color_concepts_vertical.html)
 val RailPanelFill: Color
     @Composable @ReadOnlyComposable get() =
         if (LunaIPtvTheme.colors.isDark) Color(0xFF141B19) else Color(0xFFE4ECE8)
@@ -32,14 +32,14 @@ val PreviewPanelFill: Color
         if (LunaIPtvTheme.colors.isDark) Color(0xFF1B2320) else Color(0xFFDDE7E2)
 
 /**
- * Phase 6 — a rounded visual container matching the new-shell mockup's "panel 2/3/4" look: large rounded
+ * Phase 6 â€” a rounded visual container matching the new-shell mockup's "panel 2/3/4" look: large rounded
  * corners, a subtle surface fill, and a hairline [outlineVariant] border. Content is clipped to the
  * rounded shape.
  *
- * This is a VISUAL wrapper only — a plain [Box], no `clickable`/`selectable`/focus of its own.
+ * This is a VISUAL wrapper only â€” a plain [Box], no `clickable`/`selectable`/focus of its own.
  *
  * @param fillColor the panel surface colour, or null for the theme default.
- * @param radius corner radius (˜24px on the mockup; 22dp reads well at TV distance).
+ * @param radius corner radius (Ëœ24px on the mockup; 22dp reads well at TV distance).
  * @param innerPadding inset between the rounded edge and the content.
  */
 @Composable
@@ -65,7 +65,7 @@ fun RoundedPanel(
 }
 
 /**
- * Phase 6 — the rounded-panel look as a [Modifier], for applying to an EXISTING container.
+ * Phase 6 â€” the rounded-panel look as a [Modifier], for applying to an EXISTING container.
  * Same spec as [RoundedPanel].
  */
 @Composable

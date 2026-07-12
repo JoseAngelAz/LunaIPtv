@@ -57,7 +57,7 @@ fun LunaIPtvSpinner(
     }
 }
 
-/** Centered loading state: spinner + message (e.g. "Importing channels…"). */
+/** Centered loading state: spinner + message (e.g. "Importing channelsâ€¦"). */
 @Composable
 fun LoadingState(
     message: String,

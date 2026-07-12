@@ -69,7 +69,7 @@ internal fun ProgrammeStripCanvas(
     val density = androidx.compose.ui.platform.LocalDensity.current
     val measurer = rememberTextMeasurer(cacheSize = 64)
 
-    // Pre-computed once — nothing here is allocated inside the draw loop.
+    // Pre-computed once â€” nothing here is allocated inside the draw loop.
     val pxPerMin = with(density) { GuideGridDefaults.PxPerMin.toPx() }
     val gapPx = with(density) { 4.dp.toPx() }
     val padPx = with(density) { 10.dp.toPx() }
@@ -83,11 +83,11 @@ internal fun ProgrammeStripCanvas(
     // Time labels built once (string formatting kept out of the per-frame draw loop).
     val labels = remember(programmes, now, formatTime) {
         programmes.map { p ->
-            val t = "${formatTime(p.startMs)} – ${formatTime(p.stopMs)}"
-            if (now in p.startMs until p.stopMs) "NOW · $t" else t
+            val t = "${formatTime(p.startMs)} â€“ ${formatTime(p.stopMs)}"
+            if (now in p.startMs until p.stopMs) "NOW Â· $t" else t
         }
     }
-    // Vertical "now" marker + catch-up glyph — measured once, reused each frame.
+    // Vertical "now" marker + catch-up glyph â€” measured once, reused each frame.
     val nowColor = Color(0xFFFF5C5C)
     val nowLinePx = with(density) { 2.dp.toPx() }
     val catchupStyle = MaterialTheme.typography.labelSmall.copy(color = colors.primary)
@@ -119,12 +119,12 @@ internal fun ProgrammeStripCanvas(
                 drawText(title, topLeft = Offset(x + padPx, top))
                 drawText(time, topLeft = Offset(x + padPx, top + title.size.height + 2))
             }
-            // Catch-up badge (?) at the cell's top-right — only on programmes this channel can rewind from.
+            // Catch-up badge (?) at the cell's top-right â€” only on programmes this channel can rewind from.
             if (p.id in catchupIds && w > 50f) {
                 drawText(catchupGlyph, topLeft = Offset(x + w - catchupGlyph.size.width - 4f, 3f))
             }
         }
-        // Vertical "now" marker — drawn on every row so it reads as one continuous line down the grid.
+        // Vertical "now" marker â€” drawn on every row so it reads as one continuous line down the grid.
         if (now in windowStart..windowEnd) {
             val nowX = ((now - windowStart) / 60_000f) * pxPerMin - scrollPx
             if (nowX in 0f..viewW) {
@@ -161,7 +161,7 @@ internal fun ProgrammeDetailDialog(
                 Spacer(Modifier.height(6.dp))
                 Text(programme.title, style = MaterialTheme.typography.headlineSmall, color = colors.onSurface)
                 Spacer(Modifier.height(8.dp))
-                Text("${formatTime(programme.startMs)} – ${formatTime(programme.stopMs)}", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
+                Text("${formatTime(programme.startMs)} â€“ ${formatTime(programme.stopMs)}", style = MaterialTheme.typography.titleMedium, color = colors.onSurfaceVariant)
                 if (!description.isNullOrBlank()) {
                     Spacer(Modifier.height(14.dp))
                     Text(description.orEmpty(), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)

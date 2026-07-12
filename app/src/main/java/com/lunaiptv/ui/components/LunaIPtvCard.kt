@@ -12,7 +12,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 /**
  * Generic focusable content card (poster, channel tile, etc.) built on [FocusableSurface].
  * Scales up a touch on focus for the classic "10-foot" pop. Real poster/channel cards in phases
- * 7–9 wrap this and add their own inner layout.
+ * 7â€“9 wrap this and add their own inner layout.
  */
 @Composable
 fun LunaIPtvCard(

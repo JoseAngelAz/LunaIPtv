@@ -46,7 +46,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Inline search field for a section, TV-style: the pill itself takes D-pad focus like any other
- * control — the keyboard only opens when the user presses OK on it (the inner text field is not
+ * control â€” the keyboard only opens when the user presses OK on it (the inner text field is not
  * focusable until then), so focus can pass through / land on search without an IME popup.
  */
 @Composable
@@ -54,7 +54,7 @@ fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Search…",
+    placeholder: String = "Searchâ€¦",
 ) {
     val colors = LunaIPtvTheme.colors
     val interaction = remember { MutableInteractionSource() }

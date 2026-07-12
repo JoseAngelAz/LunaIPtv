@@ -34,9 +34,9 @@ import com.lunaiptv.R
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * "Set TMDB name" dialog (plan §11.2 U5b): the user types the exact title (+ optional year) to search TMDB
+ * "Set TMDB name" dialog (plan Â§11.2 U5b): the user types the exact title (+ optional year) to search TMDB
  * under, overriding the auto-normalized provider title. This is the escape hatch when a match is wrong or
- * was negative-cached for 7 days — saving forces a fresh re-resolve. Mirrors [TextInputDialog]'s TV-friendly
+ * was negative-cached for 7 days â€” saving forces a fresh re-resolve. Mirrors [TextInputDialog]'s TV-friendly
  * layout (two-stage fields, Back exits, focus trapped inside).
  *
  * - **Save**: writes the override (caller re-resolves). Disabled while the title is blank.

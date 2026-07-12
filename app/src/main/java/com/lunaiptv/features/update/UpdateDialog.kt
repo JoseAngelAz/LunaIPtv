@@ -121,7 +121,7 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         LunaIPtvSpinner(sizeDp = 28)
                         Spacer(Modifier.width(12.dp))
-                        Text("Downloading update… ${s.percent}%", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+                        Text("Downloading updateâ€¦ ${s.percent}%", style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -145,8 +145,8 @@ fun UpdateDialog(onDismiss: () -> Unit, checkOnOpen: Boolean = false) {
 
 /**
  * Renders the minimal release notes (from CHANGELOG_APP.md, via the GitHub release body) for the update
- * dialog. Lightweight Markdown only — enough for our bullet-only format: `### ` section headers become
- * bold heading lines, `- ` bullets become "• ", and inline `**bold**` spans render bold. Everything else
+ * dialog. Lightweight Markdown only â€” enough for our bullet-only format: `### ` section headers become
+ * bold heading lines, `- ` bullets become "â€¢ ", and inline `**bold**` spans render bold. Everything else
  * is shown as-is. Not a full Markdown parser.
  */
 private fun renderReleaseNotes(notes: String, headingColor: Color): AnnotatedString = buildAnnotatedString {
@@ -163,8 +163,8 @@ private fun renderReleaseNotes(notes: String, headingColor: Color): AnnotatedStr
                 withStyle(SpanStyle(color = headingColor, fontWeight = FontWeight.Bold)) {
                     appendInline(line.removePrefix("## ").trim())
                 }
-            line.startsWith("- ") -> { append("•  "); appendInline(line.removePrefix("- ")) }
-            line.startsWith("* ") -> { append("•  "); appendInline(line.removePrefix("* ")) }
+            line.startsWith("- ") -> { append("â€¢  "); appendInline(line.removePrefix("- ")) }
+            line.startsWith("* ") -> { append("â€¢  "); appendInline(line.removePrefix("* ")) }
             else -> appendInline(line)
         }
     }

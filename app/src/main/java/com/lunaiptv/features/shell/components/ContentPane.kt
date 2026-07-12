@@ -18,11 +18,11 @@ import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Layer 3 — content list/grid area. Phase 1/2 render the header plus a reusable [EmptyState]; the
- * real Paging list/grid arrives in the media-section phases (7–9).
+ * Layer 3 â€” content list/grid area. Phase 1/2 render the header plus a reusable [EmptyState]; the
+ * real Paging list/grid arrives in the media-section phases (7â€“9).
  *
  * Per the plan's "Total Count Requirements", the count sits on the subtitle line beneath the title
- * as `ABBR (N unit)` — e.g. `UK (50 channels)` — rather than a separate top-right number.
+ * as `ABBR (N unit)` â€” e.g. `UK (50 channels)` â€” rather than a separate top-right number.
  */
 @Composable
 fun ContentPane(

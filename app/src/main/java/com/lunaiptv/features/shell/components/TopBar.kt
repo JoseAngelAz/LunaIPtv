@@ -54,7 +54,7 @@ fun TopBar(
     searchVisible: Boolean = true,
     playlistInteractive: Boolean = false,
     onPlaylistClick: () -> Unit = {},
-    // Batch 7 — shared "Continue" chip (resume last movie/episode/channel). Null label = nothing to resume.
+    // Batch 7 â€” shared "Continue" chip (resume last movie/episode/channel). Null label = nothing to resume.
     continueLabel: String? = null,
     continueIcon: LunaIPtvIcon = LunaIPtvIcon.PLAY,
     onContinueClick: () -> Unit = {},
@@ -186,8 +186,8 @@ private fun PlaylistChip(label: String, interactive: Boolean = false, onClick: (
 @Composable
 private fun WeatherChip(info: WeatherInfo, fahrenheit: Boolean) {
     val colors = LunaIPtvTheme.colors
-    val temp = if (fahrenheit) "${(info.temperatureC * 9 / 5 + 32).toInt()}°F" else "${info.temperatureC.toInt()}°C"
-    val location = if (info.city.isNotBlank()) " · ${info.city}" else ""
+    val temp = if (fahrenheit) "${(info.temperatureC * 9 / 5 + 32).toInt()}Â°F" else "${info.temperatureC.toInt()}Â°C"
+    val location = if (info.city.isNotBlank()) " Â· ${info.city}" else ""
     Box(Modifier.clip(RoundedCornerShape(999.dp)).background(colors.primaryContainer.copy(alpha = 0.4f)).padding(horizontal = 14.dp, vertical = 7.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             WeatherConditionIcon(info = info, Modifier.size(16.dp))

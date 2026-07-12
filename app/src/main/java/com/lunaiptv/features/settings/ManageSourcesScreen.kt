@@ -54,7 +54,7 @@ import com.lunaiptv.ui.components.LunaIPtvSpinner
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Phase 13 — list / add / re-sync / delete the active profile's IPTV sources. */
+/** Phase 13 â€” list / add / re-sync / delete the active profile's IPTV sources. */
 @Composable
 fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val vm: SettingsViewModel = koinViewModel()
@@ -78,7 +78,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
             kotlinx.coroutines.delay(120); runCatching { addFocus.requestFocus() }
         }
     }
-    // A failed import/re-sync swaps the form for an error screen — move focus onto its action button.
+    // A failed import/re-sync swaps the form for an error screen â€” move focus onto its action button.
     LaunchedEffect(importState) {
         if (importState is SettingsViewModel.ImportState.Failed) {
             kotlinx.coroutines.delay(50); runCatching { errorFocus.requestFocus() }
@@ -120,14 +120,14 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 showDefaultToggle = sources.isNotEmpty(),
                 onBack = { showAdd = false },
                 modifier = modifier,
-                initial = vm.lastFailedSource, // pre-fill on retry — no re-typing after a typo
+                initial = vm.lastFailedSource, // pre-fill on retry â€” no re-typing after a typo
             )
             SettingsViewModel.ImportState.Running -> CenterStatus {
                 val display = progress?.importProgressDisplay(context)
                 LunaIPtvSpinner(sizeDp = 56)
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    display?.title ?: "Importing catalog…",
+                    display?.title ?: "Importing catalogâ€¦",
                     style = MaterialTheme.typography.titleMedium,
                     color = colors.onSurface,
                 )
@@ -172,7 +172,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // Spatial D-pad entry from the sidebar would land mid-list — route it to "Add Source".
+            // Spatial D-pad entry from the sidebar would land mid-list â€” route it to "Add Source".
             // onEnter fires only for directional entry from outside; internal focus moves and
             // programmatic restores never re-trigger it (an onFocusChanged redirect did, freezing focus).
             .focusProperties { onEnter = { runCatching { addFocus.requestFocus() } } }
@@ -218,7 +218,7 @@ fun ManageSourcesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
     confirmDelete?.let { src ->
         ConfirmDialog(
-            title = "Delete “${src.name}”?",
+            title = "Delete â€œ${src.name}â€?",
             message = "This removes the source and all its channels, movies and series from every profile.",
             onConfirm = { vm.delete(src); confirmDelete = null },
             onDismiss = { confirmDelete = null },
@@ -270,13 +270,13 @@ private fun SourceRow(
             }
             Text(
                 buildString {
-                    append(when (source.type) { SourceType.XTREAM -> "Xtream • ${source.url}"; SourceType.M3U -> "M3U • ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
-                    if (autoRefresh != PlaylistAutoRefresh.OFF) append("  •  ? ${autoRefresh.label}")
+                    append(when (source.type) { SourceType.XTREAM -> "Xtream â€¢ ${source.url}"; SourceType.M3U -> "M3U â€¢ ${source.url}"; SourceType.LOCAL_BACKUP -> "Backup" })
+                    if (autoRefresh != PlaylistAutoRefresh.OFF) append("  â€¢  ? ${autoRefresh.label}")
                     val visibleCounts = if (activeSync == null) counts?.breakdown else activeCountsLabel
                     if (!visibleCounts.isNullOrBlank()) {
-                        append("  •  $visibleCounts")
+                        append("  â€¢  $visibleCounts")
                     } else if (activeSync != null) {
-                        append("  •  Preparing catalog")
+                        append("  â€¢  Preparing catalog")
                     }
                 },
                 style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1,

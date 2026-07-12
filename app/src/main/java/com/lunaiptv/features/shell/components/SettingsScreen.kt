@@ -108,8 +108,8 @@ fun SettingsScreen(
     var showStartup by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
 
-    // Batch 4 · Settings search + quick toggles. Empty query = normal grouped list; a non-blank
-    // query swaps the list for flat results that carry their group context ("Playback › HDR").
+    // Batch 4 Â· Settings search + quick toggles. Empty query = normal grouped list; a non-blank
+    // query swaps the list for flat results that carry their group context ("Playback â€º HDR").
     var searchQuery by remember { mutableStateOf("") }
     val searchFieldFocus = remember { FocusRequester() }
     // While searching, Back clears the query (and returns focus to the field) instead of leaving Settings.
@@ -132,7 +132,7 @@ fun SettingsScreen(
     val startupRowFocus = remember { FocusRequester() }
     val languageRowFocus = remember { FocusRequester() }
     // NOTE: this restore request crosses INTO the root focus group from outside (the dialog), so
-    // the group's onEnter intercepts it — onEnter must consult dialogReturn first (it does, below)
+    // the group's onEnter intercepts it â€” onEnter must consult dialogReturn first (it does, below)
     // or it would hijack the restore to its own default target. dialogReturn is cleared by onEnter.
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     LaunchedEffect(showZoom, showTheme, showAccent, showFolderPicker, showUpdate, showAbout, showCatchupTime, showClearHistory, showAnimations, showStartup, showLanguage) {
@@ -229,7 +229,7 @@ fun SettingsScreen(
 
         // --- Batch 4: quick toggles (most-used settings, one-press) ---
         // NOTE: the four here are the current "most-used" set; making this list user-configurable
-        // is deferred (see DESIGN_PLAN_v4.0.3 Batch 4 · B).
+        // is deferred (see DESIGN_PLAN_v4.0.3 Batch 4 Â· B).
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -353,7 +353,7 @@ fun SettingsScreen(
         SettingsRow(
             tone = TileTone.SECONDARY, icon = LunaIPtvIcon.THEME,
             title = stringResource(R.string.settings_language), desc = stringResource(R.string.settings_language_desc),
-            chip = if (language == "es") "Español" else "English", chipTone = TileTone.SECONDARY,
+            chip = if (language == "es") "EspaÃ±ol" else "English", chipTone = TileTone.SECONDARY,
             onClick = { dialogReturn = languageRowFocus; showLanguage = true }, showChevron = true,
             modifier = Modifier.focusRequester(languageRowFocus),
         )
@@ -467,17 +467,17 @@ fun SettingsScreen(
             modifier = Modifier.focusRequester(aboutRowFocus),
         )
         } else {
-            // Batch 4 · search results — flat, group-context-prefixed rows ("Playback › HDR").
+            // Batch 4 Â· search results â€” flat, group-context-prefixed rows ("Playback â€º HDR").
             // Dialog-opening entries return focus to the search field on close (their normal row
             // isn't composed while searching). Toggle entries keep the results visible so the chip
             // updates live.
             val entries = listOf(
-                SettingsSearchEntry(stringResource(R.string.settings_group_profile), stringResource(R.string.settings_profiles), "viewers kids mode pin lock account espectadores niños modo pin", LunaIPtvIcon.PERSON, TileTone.SECONDARY) { open(SettingsTab.PROFILES) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_profile), stringResource(R.string.settings_profiles), "viewers kids mode pin lock account espectadores niÃ±os modo pin", LunaIPtvIcon.PERSON, TileTone.SECONDARY) { open(SettingsTab.PROFILES) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_playlists), "m3u xtream source sync add remove listas fuentes", LunaIPtvIcon.PLAYLIST, TileTone.PRIMARY) { open(SettingsTab.SOURCES) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_epg_sources), "xmltv guide feed program guía", LunaIPtvIcon.EPG, TileTone.PRIMARY) { open(SettingsTab.EPG) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_customize), "hide unhide rename reorder categories ocultar mostrar renombrar categorías", LunaIPtvIcon.SORT, TileTone.PRIMARY) { open(SettingsTab.CUSTOMIZE) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_epg_sources), "xmltv guide feed program guÃ­a", LunaIPtvIcon.EPG, TileTone.PRIMARY) { open(SettingsTab.EPG) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_customize), "hide unhide rename reorder categories ocultar mostrar renombrar categorÃ­as", LunaIPtvIcon.SORT, TileTone.PRIMARY) { open(SettingsTab.CUSTOMIZE) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_home_screen), "rows hero reorder filter filas inicio", LunaIPtvIcon.HOME, TileTone.SECONDARY) { open(SettingsTab.HOME) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_metadata), "posters plots cast ratings pósters sinopsis reparto", LunaIPtvIcon.VIDEO, TileTone.PRIMARY) { open(SettingsTab.METADATA) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_metadata), "posters plots cast ratings pÃ³sters sinopsis reparto", LunaIPtvIcon.VIDEO, TileTone.PRIMARY) { open(SettingsTab.METADATA) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_download_folder), "storage path directory almacenamiento ruta", LunaIPtvIcon.DOWNLOADS, TileTone.TERTIARY,
                     chip = downloadRoot.ifBlank { stringResource(R.string.settings_download_folder_default) }.let { java.io.File(it).name.ifBlank { it } }, chipTone = TileTone.TERTIARY) { dialogReturn = searchFieldFocus; showFolderPicker = true },
                 SettingsSearchEntry(stringResource(R.string.settings_group_content), stringResource(R.string.settings_backup), "export import profiles sources exportar importar", LunaIPtvIcon.DOWNLOADS, TileTone.TERTIARY) { open(SettingsTab.BACKUP) },
@@ -490,32 +490,32 @@ fun SettingsScreen(
                     chip = UiZoom.label(uiZoomPercent), chipTone = TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showZoom = true },
                 SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_animations), "motion snappier performance movimiento animaciones", LunaIPtvIcon.THEME, TileTone.SECONDARY,
                     chip = animationLevel.label, chipTone = TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAnimations = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_weather), "top bar chip location celsius fahrenheit clima ubicación", LunaIPtvIcon.EPG, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_appearance), stringResource(R.string.settings_weather), "top bar chip location celsius fahrenheit clima ubicaciÃ³n", LunaIPtvIcon.EPG, TileTone.SECONDARY,
                     chip = if (weatherEnabled) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (weatherEnabled) TileTone.PRIMARY else TileTone.SECONDARY) { open(SettingsTab.WEATHER) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_live_preview), "auto play focus channel reproducción enfocar canal", LunaIPtvIcon.LIVE_TV, TileTone.TERTIARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_live_preview), "auto play focus channel reproducciÃ³n enfocar canal", LunaIPtvIcon.LIVE_TV, TileTone.TERTIARY,
                     chip = if (livePreview) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (livePreview) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setLivePreviewEnabled(!livePreview) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_preview_audio), "sound live preview sonido vista previa", LunaIPtvIcon.AUDIO, TileTone.SECONDARY,
                     chip = if (previewAudio) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (previewAudio) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setLivePreviewAudio(!previewAudio) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_hdr), "high dynamic range output rango dinámico", LunaIPtvIcon.VIDEO, TileTone.PRIMARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_hdr), "high dynamic range output rango dinÃ¡mico", LunaIPtvIcon.VIDEO, TileTone.PRIMARY,
                     chip = if (hdr) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (hdr) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setHdrEnabled(!hdr) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_surround), "dolby dts 5.1 7.1 receiver audio envolvente", LunaIPtvIcon.AUDIO, TileTone.SECONDARY,
                     chip = if (surroundSound) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (surroundSound) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setSurroundSound(!surroundSound) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_auto_next), "autoplay series season episodio siguiente", LunaIPtvIcon.SKIP_NEXT, TileTone.SECONDARY,
                     chip = if (autoPlayNext) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (autoPlayNext) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setAutoPlayNext(!autoPlayNext) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_catchup_time), "archive timezone offset repetición zona horaria", LunaIPtvIcon.EPG, TileTone.SECONDARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_catchup_time), "archive timezone offset repeticiÃ³n zona horaria", LunaIPtvIcon.EPG, TileTone.SECONDARY,
                     chip = when (catchupTz) {
                         SettingsRepository.CatchupTimezone.DEVICE -> stringResource(R.string.settings_catchup_device)
                         SettingsRepository.CatchupTimezone.MANUAL -> utcOffsetLabel(catchupOffset)
                     }) { dialogReturn = searchFieldFocus; showCatchupTime = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_video_player), "decoder subtitles sync decodificador subtítulos", LunaIPtvIcon.VIDEO, TileTone.TERTIARY) { open(SettingsTab.VIDEO) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_network), stringResource(R.string.settings_proxy), "http traffic route tráfico", LunaIPtvIcon.SHARE, TileTone.SECONDARY) { open(SettingsTab.NETWORK) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_video_player), "decoder subtitles sync decodificador subtÃ­tulos", LunaIPtvIcon.VIDEO, TileTone.TERTIARY) { open(SettingsTab.VIDEO) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_network), stringResource(R.string.settings_proxy), "http traffic route trÃ¡fico", LunaIPtvIcon.SHARE, TileTone.SECONDARY) { open(SettingsTab.NETWORK) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_app_startup), "launch open landing iniciar abrir", LunaIPtvIcon.HOME, TileTone.SECONDARY,
                     chip = startupMode.label) { dialogReturn = searchFieldFocus; showStartup = true },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_updates), "github release version actualización", LunaIPtvIcon.DOWNLOADS, TileTone.PRIMARY,
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_updates), "github release version actualizaciÃ³n", LunaIPtvIcon.DOWNLOADS, TileTone.PRIMARY,
                     chip = "v${com.lunaiptv.BuildConfig.VERSION_NAME}") { dialogReturn = searchFieldFocus; showUpdate = true },
                 SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_auto_update), "auto update new version actualizar iniciar", LunaIPtvIcon.HISTORY, TileTone.SECONDARY,
                     chip = if (updateCheckOnStart) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (updateCheckOnStart) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setUpdateCheckOnStart(!updateCheckOnStart) },
-                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_about), "version license project info versión licencia", LunaIPtvIcon.MENU, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAbout = true },
+                SettingsSearchEntry(stringResource(R.string.settings_group_app), stringResource(R.string.settings_about), "version license project info versiÃ³n licencia", LunaIPtvIcon.MENU, TileTone.SECONDARY) { dialogReturn = searchFieldFocus; showAbout = true },
             )
             val tokens = searchQuery.trim().lowercase().split(" ").filter { it.isNotBlank() }
             val results = entries.filter { e -> tokens.all { t -> e.haystack.contains(t) } }
@@ -530,7 +530,7 @@ fun SettingsScreen(
                 results.forEach { e ->
                     SettingsRow(
                         tone = e.tone, icon = e.icon,
-                        title = "${e.group} › ${e.title}",
+                        title = "${e.group} â€º ${e.title}",
                         chip = e.chip, chipTone = e.chipTone,
                         showChevron = e.showChevron,
                         onClick = e.onClick,
@@ -780,7 +780,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
                 painter = painterResource(id = R.drawable.ic_launcher),
                 contentDescription = "LunaIPtv",
                 modifier = Modifier.size(64.dp),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
             )
             Spacer(Modifier.height(6.dp))
             Text(stringResource(R.string.settings_version, com.lunaiptv.BuildConfig.VERSION_NAME), style = MaterialTheme.typography.titleMedium, color = colors.primary)
@@ -861,7 +861,7 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
     val firstFocus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { firstFocus.requestFocus() } }
     // Zoom below LOW_RAM_WARN doubles the on-screen item count, which can OOM-crash 2 GB devices
-    // (#51) — the first step under it is gated behind an accept-the-risk warning. Accepting once
+    // (#51) â€” the first step under it is gated behind an accept-the-risk warning. Accepting once
     // arms the rest of this dialog session; if it was opened already below the line, don't nag.
     var lowZoomAccepted by remember { mutableStateOf(current < UiZoom.LOW_RAM_WARN) }
     var pendingLowZoom by remember { mutableStateOf<Int?>(null) }
@@ -883,11 +883,11 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
                 // Initial focus lands on the DECREASE button: the dialog is most often opened to escape an
-                // over-zoomed screen (where everything's too big to navigate), so "–" must be first under
+                // over-zoomed screen (where everything's too big to navigate), so "â€“" must be first under
                 // the cursor. The buttons stay focusable at the limits (clamped + dimmed, never disabled)
-                // so focus always lands inside the dialog — a disabled "+" at MAX zoom was leaving focus
+                // so focus always lands inside the dialog â€” a disabled "+" at MAX zoom was leaving focus
                 // stranded outside, trapping the user at high zoom.
-                StepButton("–", dimmed = current <= UiZoom.MIN, modifier = Modifier.focusRequester(firstFocus)) {
+                StepButton("â€“", dimmed = current <= UiZoom.MIN, modifier = Modifier.focusRequester(firstFocus)) {
                     val next = UiZoom.clamp(current - UiZoom.STEP)
                     if (next < UiZoom.LOW_RAM_WARN && !lowZoomAccepted) pendingLowZoom = next else onSet(next)
                 }
@@ -911,7 +911,7 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
         }
 
         // Accept-the-risk gate for zoom below LOW_RAM_WARN (#51). One button, focus locked (all
-        // D-pad directions cancelled) — OK accepts and applies the pending step, Back cancels.
+        // D-pad directions cancelled) â€” OK accepts and applies the pending step, Back cancels.
         pendingLowZoom?.let { target ->
             val acceptFocus = remember { FocusRequester() }
             LaunchedEffect(Unit) { runCatching { acceptFocus.requestFocus() } }
@@ -958,7 +958,7 @@ private fun ZoomDialog(current: Int, onSet: (Int) -> Unit, onDismiss: () -> Unit
     }
 }
 
-/** "UTC", "UTC+05:00", "UTC-03:30" — labels a UTC offset (in minutes) for catch-up. */
+/** "UTC", "UTC+05:00", "UTC-03:30" â€” labels a UTC offset (in minutes) for catch-up. */
 private fun utcOffsetLabel(minutes: Int): String {
     if (minutes == 0) return "UTC"
     val sign = if (minutes < 0) "-" else "+"
@@ -1013,7 +1013,7 @@ private fun CatchupTimeDialog(
             if (manual) {
                 Spacer(Modifier.height(22.dp))
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    StepButton("–", enabled = offsetMinutes > offsetRange.first) { onAdjustOffset(-60) }
+                    StepButton("â€“", enabled = offsetMinutes > offsetRange.first) { onAdjustOffset(-60) }
                     Text(
                         utcOffsetLabel(offsetMinutes),
                         style = MaterialTheme.typography.headlineMedium,
@@ -1149,7 +1149,7 @@ private fun SoonChip() {
     )
 }
 
-/** Batch 4 · one searchable settings row: its group breadcrumb, title, extra keywords, and action. */
+/** Batch 4 Â· one searchable settings row: its group breadcrumb, title, extra keywords, and action. */
 private class SettingsSearchEntry(
     val group: String,
     val title: String,
@@ -1165,7 +1165,7 @@ private class SettingsSearchEntry(
     val haystack: String = "$group $title $keywords".lowercase()
 }
 
-/** Batch 4 · a focusable most-used toggle chip shown pinned above the settings list. */
+/** Batch 4 Â· a focusable most-used toggle chip shown pinned above the settings list. */
 @Composable
 private fun QuickToggleChip(
     label: String,

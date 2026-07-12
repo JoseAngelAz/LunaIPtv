@@ -118,7 +118,7 @@ fun AddSourceScreen(
             )
             Spacer(Modifier.height(24.dp))
 
-            // Source type selector (locked while editing — the type can't change, so initial focus
+            // Source type selector (locked while editing â€” the type can't change, so initial focus
             // goes to the Name field instead of a dead chip).
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 KindChip(stringResource(R.string.source_kind_xtream), kind == SourceKind.XTREAM, Modifier.weight(1f).then(if (!editing) Modifier.focusRequester(firstFocus) else Modifier)) { if (!editing) kind = SourceKind.XTREAM }
@@ -142,7 +142,7 @@ fun AddSourceScreen(
                     val pickedName = remember(m3uUrl) {
                         if (m3uUrl.startsWith("/")) java.io.File(m3uUrl).name else null
                     }
-                    LunaIPtvTextField(m3uUrl, { m3uUrl = it }, label = stringResource(R.string.source_playlist_url), placeholder = "http://…/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
+                    LunaIPtvTextField(m3uUrl, { m3uUrl = it }, label = stringResource(R.string.source_playlist_url), placeholder = "http://â€¦/playlist.m3u", keyboardType = KeyboardType.Uri, modifier = Modifier.fillMaxWidth())
                     Spacer(Modifier.height(10.dp))
                     val fileLabel = if (pickedName != null) stringResource(R.string.source_local_file, pickedName) else stringResource(R.string.source_playlist_file)
                     LunaIPtvButton(

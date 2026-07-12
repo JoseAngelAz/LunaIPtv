@@ -41,7 +41,7 @@ import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Phase 6.5 — the "Who's watching?" launch gate. Shown when more than one profile exists. Picking a
+ * Phase 6.5 â€” the "Who's watching?" launch gate. Shown when more than one profile exists. Picking a
  * profile makes it active (and prompts for a PIN if it's locked); [onEnter] proceeds into the shell.
  */
 @Composable
@@ -87,7 +87,7 @@ fun ProfileGate(onEnter: () -> Unit, onAddProfile: () -> Unit, modifier: Modifie
 
     pinFor?.let { p ->
         PinDialog(
-            title = if (pinError) "Wrong PIN — try again" else "Enter PIN for ${p.name}",
+            title = if (pinError) "Wrong PIN â€” try again" else "Enter PIN for ${p.name}",
             onSubmit = { pin ->
                 if (vm.verifyPin(p, pin)) { vm.switchTo(p, onEnter) } else pinError = true
             },

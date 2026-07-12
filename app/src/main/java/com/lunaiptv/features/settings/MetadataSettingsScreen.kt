@@ -39,7 +39,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
  * access tiers (own TMDB key / self-host URL), plus a manual "look up title" test that proves the
  * configured tier reaches TMDB end-to-end. Enrichment of actual detail screens arrives in later phases.
  *
- * Precedence (plan §4): self-host URL > own key > the default caching Worker (zero setup).
+ * Precedence (plan Â§4): self-host URL > own key > the default caching Worker (zero setup).
  */
 @Composable
 fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -167,7 +167,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Spacer(Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             LunaIPtvButton(
-                label = if (testState is SettingsViewModel.MetadataTestState.Testing) "Looking up…" else "Test lookup",
+                label = if (testState is SettingsViewModel.MetadataTestState.Testing) "Looking upâ€¦" else "Test lookup",
                 onClick = { vm.testMetadataLookup(testTitle) },
                 style = LunaIPtvButtonStyle.SECONDARY,
             )
@@ -176,7 +176,7 @@ fun MetadataSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         } // end if (mode.enrich)
 
         Spacer(Modifier.height(24.dp))
-        // TMDB attribution (plan §8) — logo + line, required by TMDB's API terms.
+        // TMDB attribution (plan Â§8) â€” logo + line, required by TMDB's API terms.
         androidx.compose.foundation.Image(
             painter = androidx.compose.ui.res.painterResource(com.lunaiptv.R.drawable.ic_tmdb_logo),
             contentDescription = "TMDB",

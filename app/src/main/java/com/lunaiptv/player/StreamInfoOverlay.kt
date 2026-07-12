@@ -28,8 +28,8 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Non-interactive technical readout for the current stream (codec, resolution, HDR, bitrate, decoder, audio,
- * buffer, source). Reads [PlaybackEngine.streamInfo] live — re-polled once a second so bitrate/buffer update
- * — and works on whichever engine is playing (mpv or ExoPlayer). Toggled from the player's info button.
+ * buffer, source). Reads [PlaybackEngine.streamInfo] live â€” re-polled once a second so bitrate/buffer update
+ * â€” and works on whichever engine is playing (mpv or ExoPlayer). Toggled from the player's info button.
  */
 @Composable
 fun StreamInfoOverlay(player: PlaybackEngine, modifier: Modifier = Modifier) {

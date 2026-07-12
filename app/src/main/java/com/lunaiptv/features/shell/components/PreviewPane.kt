@@ -25,8 +25,8 @@ import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Layer 4 — preview / detail / player pane. Idle state shows LunaIPtv branding and a hint, per the plan.
- * Live preview playback, movie/series detail, and the fullscreen handoff land in phases 7–10.
+ * Layer 4 â€” preview / detail / player pane. Idle state shows LunaIPtv branding and a hint, per the plan.
+ * Live preview playback, movie/series detail, and the fullscreen handoff land in phases 7â€“10.
  */
 @Composable
 fun PreviewPane(
@@ -47,7 +47,7 @@ fun PreviewPane(
             painter = painterResource(id = R.drawable.ic_launcher),
             contentDescription = "LunaIPtv",
             modifier = Modifier.size(80.dp),
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
         )
         Spacer(Modifier.height(Dimens.GapMedium))
         Text(

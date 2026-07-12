@@ -107,6 +107,10 @@ app/src/main/java/com/lunaiptv/
 - **CategoryRail**: Vertical `LazyColumn` (despite name). `onSelect` → `vm.select(key)`. `defaultRail`: Favorites, History, All. Folders appended dynamically.
 - **LiveKey hierarchy**: `LiveKey.All` (object), `LiveKey.Favorites` (object), `LiveKey.History` (object), `LiveKey.Folder(id: Long)` (data class).
 - **Paging**: `PagingConfig(pageSize=60, prefetchDistance=30, initialLoadSize=90, maxSize=300)`. `movies`/`series` Flow rebuilt via `flatMapLatest` when category/sort/search/customization changes.
+- **File encoding**: All .kt files MUST be UTF-8. Original OwnTV used CP1252 (Windows-1252) — converted 50+ files. Characters like `°` `·` `—` `–` `§` `★` `•` were stored as single-byte CP1252, which became U+FFFD when read as UTF-8. Fix: re-encode all files as proper UTF-8.
+- **Detail panel layout (Movies/Series)**: Poster height 260.dp, padding `horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge`. Plot has no maxLines (scrollable). The `roundedPanel()` carries background; inner Column only carries scroll + padding.
+- **LiveScreen detail panel**: Buttons use default sizing (no `weight(1f)`, no `fillMaxWidth()`). Horizontal padding = `Dimens.GapMedium` (16.dp) to fit button text fully.
+- **LunaIPtvButton**: No `maxLines`/`softWrap`/`overflow` — text wraps naturally to show fully on TV.
 
 ## Git Info
 - **Remote**: `origin https://github.com/ahXN00/OwnTV.git` (your fork)
@@ -118,4 +122,4 @@ app/src/main/java/com/lunaiptv/
 ## Known Issues
 - PiP/channel-switch visual bug: old channel frame can linger in corner (investigated, `clearVideoSurface()` approach — needs device testing)
 - `LunaIPtvDatabase` class name and schema directory must stay in sync (renaming the class requires renaming the schema export directory)
-- Auto-scroll bug: Cards scroll up/down on section load (6 fix attempts, latest mirrors LiveScreen pattern with separate FocusRequesters — needs device testing)
+- Auto-scroll bug: FIXED (fix 7: replaced LazyVerticalGrid with LazyColumn+Row pattern matching LiveScreen's 1D approach). Fix 6 (split FocusRequesters) also applied but insufficient alone.

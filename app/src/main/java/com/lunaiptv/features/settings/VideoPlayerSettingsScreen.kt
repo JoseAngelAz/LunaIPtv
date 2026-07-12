@@ -79,7 +79,7 @@ private fun langName(code: String) = LANGUAGES.firstOrNull { it.first == code }?
 private fun subSizeName(scale: Float) = SUB_SIZES.minByOrNull { kotlin.math.abs(it.first - scale) }?.second ?: "Normal"
 
 /**
- * Video Player settings — decoder, default aspect/zoom, subtitle size & language, audio sync. Each
+ * Video Player settings â€” decoder, default aspect/zoom, subtitle size & language, audio sync. Each
  * value is persisted and applied to the shared mpv player (live where possible, otherwise next load).
  */
 @Composable
@@ -103,7 +103,7 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
 
     // Dialog-close focus return: closing a picker refocuses the row that opened it. The restore
     // request crosses INTO this screen's focus group from the dialog, so the group's onEnter
-    // intercepts it — it consults dialogReturn first (and clears it) instead of hijacking.
+    // intercepts it â€” it consults dialogReturn first (and clears it) instead of hijacking.
     val dialogRowFocus = remember { Dialog.entries.associateWith { FocusRequester() } }
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
     LaunchedEffect(dialog) {
@@ -123,8 +123,8 @@ fun VideoPlayerSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier)
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // onEnter fires for any entry from outside the group — including our own dialog-close
-            // restores (the dialogs live outside it) — so it must prefer the pending return row.
+            // onEnter fires for any entry from outside the group â€” including our own dialog-close
+            // restores (the dialogs live outside it) â€” so it must prefer the pending return row.
             .focusProperties {
                 onEnter = {
                     val target = dialogReturn ?: firstFocus
@@ -431,7 +431,7 @@ internal fun StepperDialog(
             Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                StepBtn("–", enabled = value > min) { onSet((value - step).coerceAtLeast(min)) }
+                StepBtn("â€“", enabled = value > min) { onSet((value - step).coerceAtLeast(min)) }
                 Text(format(value), style = MaterialTheme.typography.headlineMedium, color = colors.primary, modifier = Modifier.width(140.dp), textAlign = TextAlign.Center)
                 StepBtn("+", enabled = value < max, modifier = Modifier.focusRequester(fr)) { onSet((value + step).coerceAtMost(max)) }
             }

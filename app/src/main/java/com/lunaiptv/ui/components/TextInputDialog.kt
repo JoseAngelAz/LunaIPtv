@@ -34,7 +34,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * A simple TV dialog with one text field (e.g. renaming a channel/category). [onConfirm] receives the
- * trimmed text — possibly empty, which callers treat as "reset to original".
+ * trimmed text â€” possibly empty, which callers treat as "reset to original".
  */
 @Composable
 fun TextInputDialog(

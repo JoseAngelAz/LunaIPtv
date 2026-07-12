@@ -205,15 +205,15 @@ private fun EpgRow(
             }
             Text(source.url, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 1)
             Spacer(Modifier.height(4.dp))
-            val catchupNote = count?.third?.takeIf { it > 0 }?.let { " · $it with catch-up" } ?: ""
+            val catchupNote = count?.third?.takeIf { it > 0 }?.let { " Â· $it with catch-up" } ?: ""
             val status = when {
                 activeSync != null -> when {
-                    activeSync.programmes > 0 -> "${activeSync.channels} channels · ${activeSync.programmes} programmes"
+                    activeSync.programmes > 0 -> "${activeSync.channels} channels Â· ${activeSync.programmes} programmes"
                     activeSync.channels > 0 -> "${activeSync.channels} channels"
-                    else -> "Connecting…"
+                    else -> "Connectingâ€¦"
                 }
                 source.lastError != null -> "? ${source.lastError}"
-                count != null && count!!.second > 0 -> "? ${count!!.first} channels · ${count!!.second} programmes$catchupNote"
+                count != null && count!!.second > 0 -> "? ${count!!.first} channels Â· ${count!!.second} programmes$catchupNote"
                 source.lastSyncAt != null -> "Synced, no programmes in window$catchupNote"
                 else -> "Not synced yet"
             }
@@ -260,14 +260,14 @@ internal fun EpgSourceForm(
         LunaIPtvTextField(name, { name = it }, label = stringResource(R.string.epg_name), placeholder = "e.g. UK Guide", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusRequester(firstFocus))
         Spacer(Modifier.height(14.dp))
         val fillButtonFocus = remember { FocusRequester() }
-        LunaIPtvTextField(url, { url = it }, label = stringResource(R.string.epg_url), placeholder = "https://…/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
+        LunaIPtvTextField(url, { url = it }, label = stringResource(R.string.epg_url), placeholder = "https://â€¦/epg.xml(.gz)", modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp).focusProperties { down = fillButtonFocus })
         Spacer(Modifier.height(8.dp))
         LunaIPtvButton(stringResource(R.string.epg_fill_from_playlist), onClick = { showPlaylistPicker = true }, style = LunaIPtvButtonStyle.SECONDARY, icon = LunaIPtvIcon.PLAYLIST, modifier = Modifier.focusRequester(fillButtonFocus))
         Spacer(Modifier.height(14.dp))
         LunaIPtvTextField(ua, { ua = it }, label = stringResource(R.string.epg_user_agent), placeholder = stringResource(R.string.epg_user_agent_placeholder), modifier = Modifier.fillMaxWidth().widthIn(max = 680.dp))
 
         Spacer(Modifier.height(14.dp))
-        // Auto-refresh dropdown — same Off/Startup/staleness-threshold semantics as playlist sources.
+        // Auto-refresh dropdown â€” same Off/Startup/staleness-threshold semantics as playlist sources.
         EpgAutoRefreshRow(selected = autoRefresh) { showAutoRefreshPicker = true }
 
         Spacer(Modifier.height(24.dp))

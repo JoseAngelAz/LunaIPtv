@@ -76,10 +76,10 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
         // Backgrounded (Home / another app), exited, or logged out: stop playback and free the demuxer
-        // cache + decoder buffers — holding them while invisible got the process LMK-killed on real TVs.
+        // cache + decoder buffers â€” holding them while invisible got the process LMK-killed on real TVs.
         if (!isChangingConfigurations) {
             player.onAppBackgrounded()
-            // Live runs on ExoPlayer — remember the channel and free the stream (its audio must stop too).
+            // Live runs on ExoPlayer â€” remember the channel and free the stream (its audio must stop too).
             previewEngine.onAppBackgrounded()
             heroPreviewEngine.stop()
         }
@@ -89,11 +89,11 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         // Paired with onStop: bring back what was freed while backgrounded (notably the TV screensaver, which
-        // kicks in during a long pause) — a VOD restored paused at its position, and a live channel re-tuned
-        // to the live edge — so Play resumes instead of sitting on a dead/empty stream. No-op on fresh launch.
+        // kicks in during a long pause) â€” a VOD restored paused at its position, and a live channel re-tuned
+        // to the live edge â€” so Play resumes instead of sitting on a dead/empty stream. No-op on fresh launch.
         player.onAppForegrounded()
         previewEngine.onAppForegrounded()
-        // Staleness-based auto refresh on resume (interval modes only — STARTUP is cold-start only). The
+        // Staleness-based auto refresh on resume (interval modes only â€” STARTUP is cold-start only). The
         // ViewModel throttles this internally so a quick toggle doesn't re-run the check.
         shellViewModel.checkAutoRefresh(includeStartup = false)
     }
@@ -157,13 +157,13 @@ class MainActivity : ComponentActivity() {
             var gatePassed by remember { mutableStateOf(false) }
             var addingProfile by remember { mutableStateOf(false) }
             // A backup restore deletes-then-reinserts profiles, so the list is briefly EMPTY while
-            // the shell is showing — without this, the shell unmounts and remounts, dumping the user
+            // the shell is showing â€” without this, the shell unmounts and remounts, dumping the user
             // out of Settings ? Backup & Restore mid-restore. Only the cold start waits for the load.
             var everHadProfiles by remember { mutableStateOf(false) }
             LaunchedEffect(profiles) { if (profiles.isNotEmpty()) everHadProfiles = true }
             val shouldShowProfileGate = profiles.size > 1 || profiles.singleOrNull()?.pinHash != null
             // Set by the sidebar's profile-avatar single-click so the "Who's watching?" gate opens even for
-            // a single unpinned profile — otherwise switch-profile is a silent no-op with just one profile.
+            // a single unpinned profile â€” otherwise switch-profile is a silent no-op with just one profile.
             var switchProfileRequested by remember { mutableStateOf(false) }
             // Back from a user-requested switch returns to the shell (the cold-start gate exits the app).
             BackHandler(enabled = switchProfileRequested && !gatePassed && !addingProfile) {
@@ -171,7 +171,7 @@ class MainActivity : ComponentActivity() {
                 gatePassed = true
             }
 
-            // "Refresh on startup" — re-sync sources once the active profile is known.
+            // "Refresh on startup" â€” re-sync sources once the active profile is known.
             LaunchedEffect(activeProfileId) {
                 if ((activeProfileId ?: -1L) >= 0L) viewModel.checkAutoRefresh(includeStartup = true)
             }
@@ -199,9 +199,9 @@ class MainActivity : ComponentActivity() {
                                 onCancel = {},
                                 modifier = Modifier.fillMaxSize(),
                             )
-                            // Profiles still loading (=0 means at least one exists) — avoid a gate/shell flicker.
+                            // Profiles still loading (=0 means at least one exists) â€” avoid a gate/shell flicker.
                             profiles.isEmpty() && !everHadProfiles -> Unit
-                            // Run 2+ (or a single locked profile): "Who's watching?" — choose a profile or add one.
+                            // Run 2+ (or a single locked profile): "Who's watching?" â€” choose a profile or add one.
                             // Also opens when the sidebar avatar is single-clicked (switchProfileRequested),
                             // which is the only way to switch when there's a single unpinned profile.
                             (shouldShowProfileGate || switchProfileRequested) && !gatePassed -> ProfileGate(
@@ -230,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                 isOffline = !isOnline,
                                 onExitApp = { finish() },
                                 onSwitchProfile = {
-                                    // Stop playback and return to the "Who's watching?" gate — no app restart.
+                                    // Stop playback and return to the "Who's watching?" gate â€” no app restart.
                                     player.onAppBackgrounded(); player.discardBackgroundRestore(); previewEngine.stop(); previewEngine.discardBackgroundRestore(); heroPreviewEngine.stop(); gatePassed = false
                                     // Force the gate open even with a single unpinned profile (cold-start gate would
                                     // skip it). Clearing gatePassed above alone is a silent no-op in that case.
@@ -267,7 +267,7 @@ private fun LunaSplashScreen(alpha: Float) {
             strokeWidth = 2.dp,
         )
 
-        // Main splash image — splash_luna.png fills most of the screen
+        // Main splash image â€” splash_luna.png fills most of the screen
         Image(
             painter = painterResource(id = R.drawable.splash_luna),
             contentDescription = "LunaIPtv",

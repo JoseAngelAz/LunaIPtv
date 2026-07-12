@@ -49,8 +49,8 @@ sealed interface EpgSyncUi {
 
 /**
  * After a playlist imports, ask whether to sync its TV guide now (the old behaviour synced it automatically,
- * which was slow). "Sync now" runs in the foreground and shows a **live programme count** — exactly like the
- * playlist import — then a brief "Done", and closes itself.
+ * which was slow). "Sync now" runs in the foreground and shows a **live programme count** â€” exactly like the
+ * playlist import â€” then a brief "Done", and closes itself.
  */
 @Composable
 fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
@@ -94,7 +94,7 @@ fun EpgSyncDialog(state: EpgSyncUi, onSync: () -> Unit, onDismiss: () -> Unit) {
                     Text(stringResource(R.string.epg_syncing), style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        if (state.count > 0) formatCount(state.count) else "Connecting…",
+                        if (state.count > 0) formatCount(state.count) else "Connectingâ€¦",
                         style = MaterialTheme.typography.headlineLarge, color = colors.primary,
                     )
                 }

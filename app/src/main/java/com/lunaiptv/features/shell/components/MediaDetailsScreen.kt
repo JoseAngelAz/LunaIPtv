@@ -50,23 +50,23 @@ import com.lunaiptv.ui.components.trapAllFocusExit
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
- * Read-only, already-merged data for the [MediaDetailsScreen] window. The caller applies the §7.1/§4.1
+ * Read-only, already-merged data for the [MediaDetailsScreen] window. The caller applies the Â§7.1/Â§4.1
  * provider/TMDB merge and builds image.tmdb.org URLs, so this window is source-agnostic and reused for
  * movie / series / episode.
  */
 data class MediaDetailsUi(
     val title: String,
-    val subtitle: String? = null,       // e.g. "S2 · E5 · aired 2019-04-14"
+    val subtitle: String? = null,       // e.g. "S2 Â· E5 Â· aired 2019-04-14"
     val backdropUrl: String? = null,    // 16:9 hero
     val posterUrl: String? = null,      // 2:3 poster (or 16:9 still for episodes)
-    val metaLine: String = "",          // "2026 · ? 7.6 · 2h 10m"
+    val metaLine: String = "",          // "2026 Â· ? 7.6 Â· 2h 10m"
     val genres: List<String> = emptyList(),
     val plot: String? = null,
     val cast: List<String> = emptyList(),
 )
 
 /**
- * Windowed TMDB details popup (plan §11.1) — a centred ~60%-of-screen card over a dimmed scrim, like the
+ * Windowed TMDB details popup (plan Â§11.1) â€” a centred ~60%-of-screen card over a dimmed scrim, like the
  * subtitle/track pickers. A 16:9 backdrop hero, then poster + complete info. Purely for reading:
  * **D-pad scrolls, Back exits, nothing is selectable.** The scrolling card owns focus (focusable) and
  * traps it, so D-pad drives the scroll and can't leak to the screen behind.
@@ -163,7 +163,7 @@ fun MediaDetailsScreen(details: MediaDetailsUi, onExit: () -> Unit, modifier: Mo
                     }
                     if (details.genres.isNotEmpty()) {
                         Spacer(Modifier.height(6.dp))
-                        Text(details.genres.joinToString(" · "), style = MaterialTheme.typography.labelLarge, color = colors.primary)
+                        Text(details.genres.joinToString(" Â· "), style = MaterialTheme.typography.labelLarge, color = colors.primary)
                     }
                 }
             }

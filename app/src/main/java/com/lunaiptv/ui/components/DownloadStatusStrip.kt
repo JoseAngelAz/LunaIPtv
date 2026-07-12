@@ -24,7 +24,7 @@ import com.lunaiptv.core.database.entity.DownloadEntity
 import com.lunaiptv.core.model.DownloadStatus
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Display-only download state for the poster-panel strip (no actions — mirrors the Downloads screen). */
+/** Display-only download state for the poster-panel strip (no actions â€” mirrors the Downloads screen). */
 data class DownloadStripState(
     val label: String,
     /** 0f..1f when a size is known; null = indeterminate (queued / unknown total). */
@@ -34,8 +34,8 @@ data class DownloadStripState(
 
 /**
  * Builds a strip state from the download rows that belong to one item (a single movie/episode, or all
- * of a series' episodes). Returns null when nothing is in flight — i.e. no rows, or every row already
- * COMPLETED — so the caller can hide the strip. FAILED rows still surface so the user isn't left guessing.
+ * of a series' episodes). Returns null when nothing is in flight â€” i.e. no rows, or every row already
+ * COMPLETED â€” so the caller can hide the strip. FAILED rows still surface so the user isn't left guessing.
  */
 fun downloadStripFor(rows: List<DownloadEntity>): DownloadStripState? {
     val active = rows.filter { it.status != DownloadStatus.COMPLETED }

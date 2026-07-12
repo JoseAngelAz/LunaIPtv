@@ -49,7 +49,7 @@ fun FocusableSurface(
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
 
-    // Skip scale animation when focusedScale is 1f (default for list rows) — halves animation objects per item.
+    // Skip scale animation when focusedScale is 1f (default for list rows) â€” halves animation objects per item.
     val animateScale = focusedScale > 1f
     val scale by animateFloatAsState(
         if (!animateScale) 1f else if (focused) focusedScale else 1f,

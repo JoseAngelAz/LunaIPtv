@@ -121,7 +121,7 @@ fun HomeScreen(
         HomeRow.entries.associateWith { FocusRequester() }
     }
     // Nothing starts expanded: a hero card earns its wide (16:9) state only after 3s of continuous focus
-    // (see the dwell effect below). Moving focus — to another card or out of the row — collapses it again.
+    // (see the dwell effect below). Moving focus â€” to another card or out of the row â€” collapses it again.
     var expandedHeroIndex by remember { mutableStateOf(-1) }
     var focusedHeroIndex by remember { mutableStateOf(-1) }
     val orderedRows = state.config.visibleOrder
@@ -215,7 +215,7 @@ fun HomeScreen(
     }
 
     // Cold-start "structure first": Home's queries are indexed and profile-scoped, but their first reads
-    // still come off cold eMMC before the OS page cache warms — so there's a brief gap between the shell
+    // still come off cold eMMC before the OS page cache warms â€” so there's a brief gap between the shell
     // painting and `home-data` arriving. During it we render the skeleton (instant) rather than flashing the
     // empty state, which would look wrong (and momentarily disappear) for a user who actually has history.
     // isLoading is true only for the initial state; it flips false on the first load and never goes back.
@@ -625,7 +625,7 @@ private fun HeroRowSection(
                         ) { focused ->
                             if (isExpanded) {
                                 // No blurred backdrop here: the preview overlay covers this card as soon
-                                // as previewRectInRowPx is known and renders the blur itself — doubling the
+                                // as previewRectInRowPx is known and renders the blur itself â€” doubling the
                                 // blur underneath just costs frames on TV hardware.
                                 Box(Modifier.fillMaxSize().background(Color.Black)) {
                                     val cardImageUrl = expandedImageUrl ?: imageUrl
@@ -1226,7 +1226,7 @@ private fun HeroFallbackPane(
                 painter = painterResource(id = R.drawable.ic_launcher),
                 contentDescription = "LunaIPtv",
                 modifier = Modifier.size(100.dp),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
             )
             Spacer(Modifier.height(14.dp))
             Text(
@@ -1264,7 +1264,7 @@ private fun EmptyHomeState(
                 painter = painterResource(id = R.drawable.ic_launcher),
                 contentDescription = "LunaIPtv",
                 modifier = Modifier.size(100.dp),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
             )
             Spacer(Modifier.height(16.dp))
             Text(
@@ -1301,7 +1301,7 @@ private fun AllRowsHiddenState(
                 painter = painterResource(id = R.drawable.ic_launcher),
                 contentDescription = "LunaIPtv",
                 modifier = Modifier.size(100.dp),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
             )
             Spacer(Modifier.height(16.dp))
             Text(
@@ -1324,7 +1324,7 @@ private fun AllRowsHiddenState(
 
 /**
  * Instant structure painted while Home's data loads on a cold start (see [HomeViewModel.HomeUiState.isLoading]).
- * Static placeholders only — no shimmer/animation, on purpose: this is a low-end-TV first paint, where an
+ * Static placeholders only â€” no shimmer/animation, on purpose: this is a low-end-TV first paint, where an
  * animating skeleton would just compete with the cold DB reads for the same weak CPU/GPU we're trying to
  * unblock. Spacing/shape reuse the real rows' Dimens so the skeleton?content hand-off doesn't visibly jump.
  */

@@ -50,7 +50,7 @@ import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.Dimens
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** One row in the flattened results list — drives both the list rows and the detail pane. */
+/** One row in the flattened results list â€” drives both the list rows and the detail pane. */
 private sealed interface SearchItem {
     data class ChannelItem(val row: ChannelSearchResult) : SearchItem
     data class MovieItem(val movie: MovieEntity) : SearchItem
@@ -58,7 +58,7 @@ private sealed interface SearchItem {
 }
 
 /**
- * Phase 11 + Batch 5 — global search across channels, movies and series with a remote-first launcher
+ * Phase 11 + Batch 5 â€” global search across channels, movies and series with a remote-first launcher
  * empty state (recent terms + Continue / Unwatched / Channels intents) and a list + detail layout so a
  * focused result shows its poster/plot/rating and a primary action without opening it. Back clears the
  * query/intent first, then leaves the screen.
@@ -480,10 +480,10 @@ private fun CenterHint(text: String) {
     }
 }
 
-/** "category · #number" so near-identical feeds stay distinguishable. */
+/** "category Â· #number" so near-identical feeds stay distinguishable. */
 private fun channelDetail(row: ChannelSearchResult): String? =
     listOfNotNull(row.categoryName?.takeIf { it.isNotBlank() }, row.channel.number?.let { "#$it" })
-        .joinToString(" · ").takeIf { it.isNotBlank() }
+        .joinToString(" Â· ").takeIf { it.isNotBlank() }
 
 private fun metaLine(year: Int?, rating: Double?, type: String): String =
-    listOfNotNull(type, year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString(" · ")
+    listOfNotNull(type, year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString(" Â· ")

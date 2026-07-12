@@ -38,5 +38,5 @@ fun CountBadge(
     )
 }
 
-/** 12,430 — grouped with thousands separators for readability at 10 feet. */
+/** 12,430 â€” grouped with thousands separators for readability at 10 feet. */
 fun formatCount(count: Int): String = "%,d".format(count)

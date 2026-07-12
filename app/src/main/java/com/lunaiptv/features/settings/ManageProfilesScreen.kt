@@ -49,7 +49,7 @@ import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.components.roundedPanel
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Phase 13 — create / edit / delete viewer profiles. */
+/** Phase 13 â€” create / edit / delete viewer profiles. */
 @Composable
 fun ManageProfilesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val vm: ProfilesViewModel = koinViewModel()
@@ -73,7 +73,7 @@ fun ManageProfilesScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // Spatial D-pad entry from the sidebar would land mid-list — route it to "Add Profile".
+            // Spatial D-pad entry from the sidebar would land mid-list â€” route it to "Add Profile".
             // onEnter fires only for directional entry from outside (internal moves don't re-trigger it).
             .focusProperties { onEnter = { runCatching { addFocus.requestFocus() } } }
             .focusGroup()
@@ -138,7 +138,7 @@ private fun ProfileRow(profile: ProfileEntity, canDelete: Boolean, onEdit: () ->
                 if (profile.pinHash != null) add(stringResource(R.string.profiles_pin_locked))
             }
             if (tags.isNotEmpty()) {
-                Text(tags.joinToString(" • "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                Text(tags.joinToString(" â€¢ "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
             }
         }
         Spacer(Modifier.width(12.dp))

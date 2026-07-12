@@ -19,7 +19,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
 
 /**
  * Compact sort toggle shown next to a section's search bar. Click flips between the playlist's own
- * order and A–Z; the label names the *current* mode.
+ * order and Aâ€“Z; the label names the *current* mode.
  */
 @Composable
 fun SortChip(
@@ -52,7 +52,7 @@ fun SortChip(
             Text(
                 text = when (mode) {
                     SortMode.PLAYLIST -> playlistLabel
-                    SortMode.ALPHA -> "A–Z"
+                    SortMode.ALPHA -> "Aâ€“Z"
                     SortMode.RATING -> "Rating"
                 },
                 style = MaterialTheme.typography.labelLarge,

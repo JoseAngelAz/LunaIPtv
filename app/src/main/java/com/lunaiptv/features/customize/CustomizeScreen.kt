@@ -55,7 +55,7 @@ import com.lunaiptv.ui.theme.LunaIPtvTheme
  * Settings ? Customize & Hidden Items: hide / rename / reorder categories per section, and unhide
  * hidden channels, movies and series. Everything is per-profile and survives source re-syncs.
  * Optionally locked behind a PIN (set from this screen's top-right) so hidden items can't be
- * unhidden by someone else — the PIN is asked on every entry.
+ * unhidden by someone else â€” the PIN is asked on every entry.
  */
 @Composable
 fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
@@ -67,7 +67,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
     val pinLock by vm.pinLock.collectAsStateWithLifecycle()
     val colors = LunaIPtvTheme.colors
     var renaming by remember { mutableStateOf<CustomizeCatRow?>(null) }
-    // The category whose Hide button was clicked to close a range — opens the Show/Hide/Cancel prompt.
+    // The category whose Hide button was clicked to close a range â€” opens the Show/Hide/Cancel prompt.
     var rangeEnd by remember { mutableStateOf<CustomizeCatRow?>(null) }
     // PIN gate: asked on every entry (state is per-composition, so leaving the screen re-locks it).
     var unlocked by remember { mutableStateOf(false) }
@@ -120,7 +120,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .roundedPanel()
-            // Spatial D-pad entry from the sidebar would land mid-list — route it to the first chip.
+            // Spatial D-pad entry from the sidebar would land mid-list â€” route it to the first chip.
             // onEnter fires only for directional entry from outside (internal moves don't re-trigger it).
             .focusProperties { onEnter = { runCatching { firstFocus.requestFocus() } } }
             .focusGroup()
@@ -134,7 +134,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
             )
             // Optional PIN lock on this screen, controlled from here. Per-profile and NOT exported in
-            // backups. Only reachable once unlocked — to be here with a PIN set the user already
+            // backups. Only reachable once unlocked â€” to be here with a PIN set the user already
             // entered it, so changing or removing it needs no further verification.
             if (pinLock.pin == null) {
                 LunaIPtvButton(
@@ -193,7 +193,7 @@ fun CustomizeScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
-            // Hidden items of this section first (hidden via each section's long-press menu) — kept on
+            // Hidden items of this section first (hidden via each section's long-press menu) â€” kept on
             // top so they're findable even when a provider has hundreds of categories below.
             if (hiddenChannels.isNotEmpty()) {
                 item {
@@ -428,7 +428,7 @@ private fun CategoryRow(
                     buildString {
                         if (row.hidden) append("Hidden")
                         if (row.renamed) {
-                            if (row.hidden) append("  ·  ")
+                            if (row.hidden) append("  Â·  ")
                             append(wasLabel)
                             append(" \u201c${row.originalName}\u201d")
                         }

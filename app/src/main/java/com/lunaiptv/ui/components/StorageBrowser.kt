@@ -70,7 +70,7 @@ fun StorageBrowser(
 
     // Re-grab focus whenever the listing changes (open / navigate / refresh). Deferred a beat: the
     // clicked row is removed in the same recompose, and its focus teardown lands AFTER an immediate
-    // request — which would leave focus on whatever sits behind the overlay.
+    // request â€” which would leave focus on whatever sits behind the overlay.
     LaunchedEffect(current, hasAccess, refresh) {
         kotlinx.coroutines.delay(120)
         runCatching { firstFocus.requestFocus() }

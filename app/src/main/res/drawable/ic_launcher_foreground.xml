@@ -1,19 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Luna crescent with metallic silver finish, within adaptive icon safe zone. -->
+
+    <!-- Definición de gradiente metálico -->
+    <defs>
+        <linearGradient
+            android:name="metalGradient"
+            android:startX="0"
+            android:startY="0"
+            android:endX="108"
+            android:endY="108"
+            android:type="linear">
+            <item android:color="#E8E8E8" android:offset="0"/>
+            <item android:color="#C0C0C0" android:offset="0.3"/>
+            <item android:color="#A8A8A8" android:offset="0.5"/>
+            <item android:color="#D0D0D0" android:offset="0.7"/>
+            <item android:color="#F0F0F0" android:offset="1"/>
+        </linearGradient>
+    </defs>
+
+    <!-- Luna creciente con efecto metálico -->
     <path
         android:fillColor="#C0C0C0"
-        android:pathData="M54,20 C35,20 20,35 20,54 C20,73 35,88 54,88 C56,88 58,87.8 60,87.5
-                         C52,85 46,78 46,70 C46,61 53,54 62,54 C64,54 66,54.5 68,55
-                         C68,53 68,51 67.5,49 C63,43 56,40 48,40 C32,40 20,52 20,68
-                         C20,86 34,100 52,100 C72,100 88,84 88,64 C88,62 87.8,60 87.5,58
-                         C82,68 71,74 59,74 C46,74 36,64 36,51 C36,38 46,28 59,28
-                         C62,28 65,28.5 68,29.5 C64,23 57,20 54,20Z" />
-    <!-- Play triangle integrated into the crescent. -->
+        android:pathData="M54,12
+                         C32,12 14,30 14,52
+                         C14,74 32,92 54,92
+                         C56,92 58,91.8 60,91.5
+                         C52,89 46,82 46,73
+                         C46,63 54,55 64,55
+                         C66,55 68,55.2 70,55.8
+                         C70,53 69.5,50 68.5,47
+                         C64,40 56,36 47,36
+                         C30,36 18,48 18,65
+                         C18,83 32,97 50,97
+                         C70,97 86,81 86,61
+                         C86,59 85.8,57 85.5,55
+                         C80,65 69,71 57,71
+                         C44,71 34,61 34,48
+                         C34,35 44,25 57,25
+                         C60,25 63,25.5 66,26.5
+                         C62,18 56,12 54,12Z"/>
+
+    <!-- Brillo metálico superior -->
+    <path
+        android:fillColor="#E8E8E8"
+        android:pathData="M54,12
+                         C32,12 14,30 14,52
+                         C14,54 14.2,56 14.5,58
+                         C15,38 32,22 52,22
+                         C54,22 56,22.2 58,22.5
+                         C56,16 54,12 54,12Z"
+        android:fillAlpha="0.6"/>
+
+    <!-- Sombra metálica inferior -->
+    <path
+        android:fillColor="#808080"
+        android:pathData="M54,92
+                         C76,92 94,74 94,52
+                         C94,50 93.8,48 93.5,46
+                         C93,66 76,82 56,82
+                         C54,82 52,81.8 50,81.5
+                         C52,88 54,92 54,92Z"
+        android:fillAlpha="0.4"/>
+
+    <!-- Botón de Play (triángulo blanco) -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M58,48 L58,68 L74,58 Z" />
+        android:pathData="M58,44
+                         L58,64
+                         L76,54
+                         Z"/>
+
+    <!-- Brillo sutil en el triángulo -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M58,44
+                         L58,50
+                         L68,50
+                         Z"
+        android:fillAlpha="0.3"/>
+
 </vector>

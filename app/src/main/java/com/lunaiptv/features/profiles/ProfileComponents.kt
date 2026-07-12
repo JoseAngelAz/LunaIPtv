@@ -46,7 +46,7 @@ import com.lunaiptv.ui.components.LunaIPtvButtonStyle
 import com.lunaiptv.ui.components.LunaIPtvTextField
 import com.lunaiptv.ui.theme.LunaIPtvTheme
 
-/** Modal scrim wrapper for the profile dialogs. Phase 7 — Popup(focusable=true) creates
+/** Modal scrim wrapper for the profile dialogs. Phase 7 â€” Popup(focusable=true) creates
  *  a hard focus boundary on Android TV so D-pad stays inside the dialog. */
 @Composable
 internal fun ProfileScrim(onDismiss: () -> Unit, content: @Composable () -> Unit) {
@@ -86,7 +86,7 @@ internal fun PinDialog(title: String, onSubmit: (String) -> Unit, onDismiss: () 
             value = pin,
             onValueChange = { if (it.length <= 6 && it.all(Char::isDigit)) pin = it },
             label = "PIN",
-            placeholder = "····",
+            placeholder = "Â·Â·Â·Â·",
             keyboardType = KeyboardType.NumberPassword,
             isPassword = true,
             modifier = Modifier.fillMaxWidth().focusRequester(focus),
@@ -123,7 +123,7 @@ internal fun ProfileEditorDialog(
 ) {
     val colors = LunaIPtvTheme.colors
     var name by remember { mutableStateOf(initial?.name ?: "") }
-    var avatarId by remember { mutableIntStateOf(initial?.avatarId ?: -1) } // Phase 7 — new profiles default to no-avatar
+    var avatarId by remember { mutableIntStateOf(initial?.avatarId ?: -1) } // Phase 7 â€” new profiles default to no-avatar
     var isKids by remember { mutableStateOf(initial?.isKids ?: false) }
     var pin by remember { mutableStateOf("") }
     var removePin by remember { mutableStateOf(false) }
@@ -139,7 +139,7 @@ internal fun ProfileEditorDialog(
         Text("AVATAR", style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
         Spacer(Modifier.height(8.dp))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            items((-1 until LunaIPtvAvatars.COUNT).toList()) { id -> // Phase 7 — includes "no avatar" (-1)
+            items((-1 until LunaIPtvAvatars.COUNT).toList()) { id -> // Phase 7 â€” includes "no avatar" (-1)
                 FocusableSurface(
                     onClick = { avatarId = id },
                     modifier = Modifier.size(60.dp),
@@ -165,7 +165,7 @@ internal fun ProfileEditorDialog(
                 value = pin,
                 onValueChange = { if (it.length <= 6 && it.all(Char::isDigit)) pin = it },
                 label = if (initial?.pinHash != null) "Change PIN (blank = keep)" else "PIN (optional)",
-                placeholder = "4–6 digits",
+                placeholder = "4â€“6 digits",
                 keyboardType = KeyboardType.NumberPassword,
                 isPassword = true,
                 modifier = Modifier.fillMaxWidth(),

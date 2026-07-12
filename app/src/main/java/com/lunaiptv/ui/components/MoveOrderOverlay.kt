@@ -69,7 +69,7 @@ fun MoveOrderOverlay(
     androidx.activity.compose.BackHandler { onCancel() }
 
     // Outer Box intercepts D-pad via onKeyEvent when any child has focus.
-    // NOT focusable() itself — focus lives on the Save button so TV focus finds it.
+    // NOT focusable() itself â€” focus lives on the Save button so TV focus finds it.
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -95,7 +95,7 @@ fun MoveOrderOverlay(
         ) {
             Text(title, style = MaterialTheme.typography.titleMedium, color = colors.onSurface)
             Text(
-                "?/? to move  ·  OK to save  ·  Back to cancel",
+                "?/? to move  Â·  OK to save  Â·  Back to cancel",
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant,
             )

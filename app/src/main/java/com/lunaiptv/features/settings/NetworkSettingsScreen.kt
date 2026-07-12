@@ -138,7 +138,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             LunaIPtvButton("Save", onClick = { save() })
             LunaIPtvButton(
-                label = if (testState is SettingsViewModel.ProxyTestState.Testing) "Testing…" else "Test proxy",
+                label = if (testState is SettingsViewModel.ProxyTestState.Testing) "Testingâ€¦" else "Test proxy",
                 onClick = { vm.testProxy(host, portInt, user, pass) },
                 style = LunaIPtvButtonStyle.SECONDARY,
             )
@@ -153,7 +153,7 @@ fun NetworkSettingsScreen(onBack: () -> Unit, modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "HTTP proxy only for now — SOCKS and per-playlist proxies aren't supported yet.",
+            "HTTP proxy only for now â€” SOCKS and per-playlist proxies aren't supported yet.",
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
         )
