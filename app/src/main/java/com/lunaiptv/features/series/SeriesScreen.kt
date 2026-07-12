@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -435,7 +437,7 @@ private fun SeriesGrid(
             }
         }
 
-        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).padding(Dimens.GapLarge)) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill)) {
             val s = selectedSeries
             if (s == null) {
                 PreviewPane(hint = stringResource(R.string.series_focus_hint))
@@ -464,9 +466,9 @@ private fun SeriesGrid(
                         Spacer(Modifier.height(12.dp))
                     }
                     // Tall portrait poster (like the list / a phone screen), centred in the pane.
-                    Box(modifier = Modifier.fillMaxWidth().height(260.dp), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp), contentAlignment = Alignment.Center) {
                         Box(
-                            modifier = Modifier.fillMaxHeight().aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(LunaIPtvTheme.colors.surfaceContainerLowest),
+                            modifier = Modifier.width(200.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(LunaIPtvTheme.colors.surfaceContainerLowest),
                             contentAlignment = Alignment.Center,
                         ) {
                             if (!art.isNullOrBlank()) {
@@ -476,28 +478,28 @@ private fun SeriesGrid(
                             }
                         }
                     }
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(10.dp))
                     Text(s.name, style = MaterialTheme.typography.titleLarge, color = LunaIPtvTheme.colors.onSurface)
-                    val metaBits = listOfNotNull(year?.toString(), rating?.let { "? %.1f".format(it) })
+                    val metaBits = listOfNotNull(year?.toString(), rating?.let { "\u2605 %.1f".format(it) })
                     if (metaBits.isNotEmpty()) {
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(2.dp))
                         Text(metaBits.joinToString("  ·  "), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
                     }
                     if (genres.isNotEmpty()) {
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(4.dp))
                         Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.primary)
                     }
                     if (!plot.isNullOrBlank()) {
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(plot, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
                     }
                     if (cast.isNotEmpty()) {
-                        Spacer(Modifier.height(12.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.onSurface)
                         Spacer(Modifier.height(2.dp))
                         Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = LunaIPtvTheme.colors.onSurfaceVariant, maxLines = 2)
                     }
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(12.dp))
                     Text(stringResource(R.string.series_press_ok), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.primary)
                 }
             }
@@ -628,7 +630,7 @@ private fun buildSeriesDetails(
     val year = if (tmdbWins) meta?.year ?: s.year else s.year ?: meta?.year
     val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: s.rating?.takeIf { it > 0 }
         else s.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
-    val metaLine = listOfNotNull(year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString("  ·  ")
+    val metaLine = listOfNotNull(year?.toString(), rating?.let { "\u2605 %.1f".format(it) }).joinToString("  ·  ")
     return com.lunaiptv.features.shell.components.MediaDetailsUi(
         title = s.name,
         backdropUrl = backdrop,
@@ -663,32 +665,32 @@ private fun EpisodeDetailPane(
     val bits = listOfNotNull(
         "S${episode.seasonNumber} · E${episode.episodeNumber}",
         meta?.year?.toString(),
-        meta?.rating?.takeIf { it > 0 }?.let { "? %.1f".format(it) },
+        meta?.rating?.takeIf { it > 0 }?.let { "\u2605 %.1f".format(it) },
     )
     Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge)) {
         // Non-focusable status strip · the focused episode's own download, else the series' aggregate.
         if (downloadStrip != null) {
             com.lunaiptv.ui.components.DownloadStatusStrip(downloadStrip)
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
         }
         // "Next up" Play card · the series' resume/continue target. Hidden when there's no next-up (all
         // caught up) or when it's the same episode already focused (OK plays it anyway).
         nextUpEpisode?.takeIf { it.id != episode.id }?.let { nup ->
             Column(
                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
-                    .background(colors.primaryContainer.copy(alpha = 0.22f)).padding(12.dp),
+                    .background(colors.primaryContainer.copy(alpha = 0.22f)).padding(10.dp),
             ) {
                 Text(stringResource(R.string.series_next_up), style = MaterialTheme.typography.labelSmall, color = colors.primary)
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(2.dp))
                 Text("S${nup.seasonNumber} · E${nup.episodeNumber}  ${nup.name}", style = MaterialTheme.typography.titleMedium, color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (nextUpPositionMs > 0) {
                     Spacer(Modifier.height(2.dp))
                     Text(stringResource(R.string.series_resume_ms, formatTimestamp(nextUpPositionMs)), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
                 }
-                Spacer(Modifier.height(10.dp))
+                Spacer(Modifier.height(8.dp))
                 LunaIPtvButton(label = stringResource(R.string.play), onClick = onPlayNextUp, icon = LunaIPtvIcon.PLAY, modifier = Modifier.fillMaxWidth())
             }
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(10.dp))
         }
         Box(
             modifier = Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
@@ -700,15 +702,15 @@ private fun EpisodeDetailPane(
                 LunaIPtvIcon(LunaIPtvIcon.SERIES, tint = colors.onSurfaceVariant, modifier = Modifier.height(40.dp))
             }
         }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(10.dp))
         Text(title, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(2.dp))
         Text(bits.joinToString("  ·  "), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         if (!plot.isNullOrBlank()) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
             Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(10.dp))
         Text(stringResource(R.string.movies_instruction), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
     }
 }
@@ -770,7 +772,7 @@ private fun buildEpisodeDetails(
     val still = com.lunaiptv.core.metadata.MetadataImages.backdrop(meta?.backdropPath ?: meta?.posterPath)
     val title = if (tmdbWins) meta?.title?.takeIf { it.isNotBlank() } ?: ep.name else ep.name
     val plot = if (tmdbWins) meta?.overview ?: ep.plot else ep.plot?.takeIf { it.isNotBlank() } ?: meta?.overview
-    val metaLine = listOfNotNull(meta?.year?.toString(), meta?.rating?.takeIf { it > 0 }?.let { "? %.1f".format(it) }).joinToString("  ·  ")
+    val metaLine = listOfNotNull(meta?.year?.toString(), meta?.rating?.takeIf { it > 0 }?.let { "\u2605 %.1f".format(it) }).joinToString("  ·  ")
     return com.lunaiptv.features.shell.components.MediaDetailsUi(
         title = title,
         subtitle = "S${ep.seasonNumber} · E${ep.episodeNumber}",
@@ -1203,7 +1205,7 @@ private fun SeriesListRow(
                 )
                 val meta = buildList {
                     series.year?.let { add(it.toString()) }
-                    series.rating?.takeIf { it > 0 }?.let { add("? %.1f".format(it)) }
+                    series.rating?.takeIf { it > 0 }?.let { add("\u2605 %.1f".format(it)) }
                 }.joinToString("  ·  ")
                 if (meta.isNotBlank()) {
                     Text(meta, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant, maxLines = 1)

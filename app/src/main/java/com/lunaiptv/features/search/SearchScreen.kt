@@ -486,4 +486,4 @@ private fun channelDetail(row: ChannelSearchResult): String? =
         .joinToString(" · ").takeIf { it.isNotBlank() }
 
 private fun metaLine(year: Int?, rating: Double?, type: String): String =
-    listOfNotNull(type, year?.toString(), rating?.let { "? %.1f".format(it) }).joinToString(" · ")
+    listOfNotNull(type, year?.toString(), rating?.let { "\u2605 %.1f".format(it) }).joinToString(" · ")

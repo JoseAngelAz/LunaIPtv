@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -368,7 +370,7 @@ fun MoviesScreen(
             }
         }
 
-        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).padding(Dimens.GapLarge)) {
+        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill)) {
             MovieDetailsPane(
                 movie = selectedMovie,
                 meta = selectedMovieMeta?.takeIf { it.movieId == selectedMovie?.id }?.cache,
@@ -611,9 +613,9 @@ private fun MovieDetailsPane(
             Spacer(Modifier.height(12.dp))
         }
         // Tall portrait poster (like the list / a phone screen), centred in the pane.
-        Box(modifier = Modifier.fillMaxWidth().height(260.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp), contentAlignment = Alignment.Center) {
             Box(
-                modifier = Modifier.fillMaxHeight().aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
+                modifier = Modifier.width(200.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
                 contentAlignment = Alignment.Center,
             ) {
                 if (!posterArt.isNullOrBlank()) {
@@ -628,7 +630,7 @@ private fun MovieDetailsPane(
                 }
             }
         }
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(10.dp))
         // Always-visible, non-focusable resume label (kept above the title, not further down in the
         // pane, since movie metadata below can push a lower placement out of view once it scrolls long).
         if (resumePositionMs != null) {
@@ -637,29 +639,29 @@ private fun MovieDetailsPane(
                 style = MaterialTheme.typography.labelMedium,
                 color = colors.primary,
             )
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
         }
         Text(movie.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(4.dp))
         Text(metaLine(movie, meta, tmdbWins), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         // Genres & cast are TMDB-only (§7.1) · a whole layer the provider never had.
         val genres = remember(meta?.genresJson) { jsonList(meta?.genresJson) }
         if (genres.isNotEmpty()) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
             Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
         }
         if (!plot.isNullOrBlank()) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
             Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         }
         val cast = remember(meta?.castJson) { jsonList(meta?.castJson) }
         if (cast.isNotEmpty()) {
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
             Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = colors.onSurface)
             Spacer(Modifier.height(2.dp))
             Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 2)
         }
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(12.dp))
         // Display-only pane (§11.1): actions live on the poster · OK plays, long-press opens the menu
         // (Favorite / Download / TMDB Details). Keeping the pane non-focusable fixes grid?pane navigation.
         Text(
@@ -677,7 +679,7 @@ private fun metaLine(movie: MovieEntity, meta: com.lunaiptv.core.database.entity
     val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: movie.rating?.takeIf { it > 0 }
         else movie.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
     year?.let { parts.add(it.toString()) }
-    rating?.let { parts.add("? %.1f".format(it)) }
+    rating?.let { parts.add("\u2605 %.1f".format(it)) }
     movie.durationSecs?.takeIf { it > 0 }?.let { secs ->
         val h = secs / 3600
         val m = (secs % 3600) / 60
