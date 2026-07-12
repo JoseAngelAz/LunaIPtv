@@ -57,11 +57,11 @@ See the [LICENSE](LICENSE) file for the full GPLv3 text.
 
 Questions, ideas, bug reports — or just want to follow along? **Join the LunaIPtv Telegram group:**
 
-### [t.me/LunaIPtvplayer](https://t.me/LunaIPtvplayer)
+### [t.me/LunaIPtvSv](https://t.me/LunaIPtvSv)
 
 Scan to join from your phone:
 
-<a href="https://t.me/LunaIPtvplayer"><img src="extras/telegram_qr_code.jpg" alt="Scan to join the LunaIPtv Telegram group" width="170"></a>
+<a href="https://t.me/LunaIPtvSv"><img src="extras/LunaIPtvQR.jpeg" alt="Scan to join the LunaIPtv Telegram group" width="170"></a>
 
 ---
 
