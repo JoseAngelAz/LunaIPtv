@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="extras/logo.png" alt="LunaIPtv" width="360">
+  <img src="app/src/main/res/drawable/splash_luna.png" alt="LunaIPtv" width="360">
 </p>
 
 <p align="center">
