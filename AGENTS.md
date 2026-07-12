@@ -113,9 +113,9 @@ app/src/main/java/com/lunaiptv/
 - **LunaIPtvButton**: No `maxLines`/`softWrap`/`overflow` — text wraps naturally to show fully on TV.
 
 ## Git Info
-- **Remote**: `origin https://github.com/ahXN00/OwnTV.git` (your fork)
-- **Branch**: `main` (24+ commits ahead of origin/main, NOT pushed)
-- **Isolation**: All changes are LOCAL. `git push` goes to your fork only, never the original OwnTV repo
+- **Remote**: `origin https://github.com/JoseAngelAz/LunaIPtv.git` (your personal repo)
+- **Branch**: `main` (25+ commits ahead of origin/main, NOT pushed yet)
+- **Isolation**: All changes are LOCAL. `git push` goes to your personal repo
 - **User**: Jose Angel Azucena Mendez
 - **Email**: lunaipTV@users.noreply.github.com
 
