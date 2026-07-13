@@ -118,6 +118,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 # KSP 2.3.6+ supports AGP 9's built-in Kotlin.
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

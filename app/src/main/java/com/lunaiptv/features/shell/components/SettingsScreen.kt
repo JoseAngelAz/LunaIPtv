@@ -667,7 +667,7 @@ private fun AccentPaletteDialog(
                 com.lunaiptv.ui.theme.AccentColor.entries.forEachIndexed { i, ac ->
                     val isSel = customAccent.isBlank() && ac == accent
                     Swatch(
-                        color = ac.primary(isDark),
+                        color = Color(ac.primary(isDark)),
                         selected = isSel,
                         onClick = { onPickPreset(ac); onDismiss() },
                         modifier = if (i == 0) Modifier.focusRequester(firstFocus) else Modifier,

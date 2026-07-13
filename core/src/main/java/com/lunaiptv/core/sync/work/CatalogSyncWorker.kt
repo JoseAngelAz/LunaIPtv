@@ -8,7 +8,7 @@ import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.lunaiptv.core.database.dao.SourceDao
-import com.lunaiptv.core.launcher.LauncherIntegrationRepository
+import com.lunaiptv.core.launcher.LauncherProfilePublisher
 import com.lunaiptv.core.model.SourceType
 import com.lunaiptv.core.repository.SourceRepository
 import com.lunaiptv.core.sync.ImportFinalizer
@@ -23,7 +23,7 @@ class CatalogSyncWorker(
     private val sourceDao: SourceDao,
     private val importFinalizer: ImportFinalizer,
     private val catalogSyncScheduler: CatalogSyncScheduler,
-    private val launcherIntegrationRepository: LauncherIntegrationRepository,
+    private val launcherProfilePublisher: LauncherProfilePublisher,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -81,7 +81,7 @@ class CatalogSyncWorker(
                 }
                 sourceDao.profileIdsForSource(source.id).forEach { profileId ->
                     val launcherStartedAt = SystemClock.elapsedRealtime()
-                    runCatching { launcherIntegrationRepository.refreshProfile(profileId) }
+                    runCatching { launcherProfilePublisher.refreshProfile(profileId) }
                         .onSuccess { Log.i(TAG, "Launcher refresh profileId=$profileId sourceId=${source.id} ms=${SystemClock.elapsedRealtime() - launcherStartedAt}") }
                         .onFailure { Log.w(TAG, "Launcher refresh failed profileId=$profileId sourceId=${source.id} ms=${SystemClock.elapsedRealtime() - launcherStartedAt}", it) }
                 }

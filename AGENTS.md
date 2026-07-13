@@ -44,45 +44,61 @@ These are the canonical identifiers for the LunaIPtv fork:
 ## Critical: Room Schema Chain
 The database class is `LunaIPtvDatabase`. The schema export directory must match: `app/schemas/com.lunaiptv.core.database.LunaIPtvDatabase/`. If you rename this class, also rename the schema directory to match.
 
-## Project Structure
+## Project Structure (Multi-Module)
 ```
-app/src/main/java/com/lunaiptv/
-├── core/
-│   ├── backup/        — BackupManager, BackupCrypto, UserDataResolver
-│   ├── customize/     — CustomizationStore (home row order)
-│   ├── database/      — LunaIPtvDatabase, DAOs, entities, migrations
-│   ├── epg/           — EpgSourceStore, EPG parsing
-│   ├── launcher/      — Deep link handling (lunaiptv:// scheme)
-│   ├── metadata/      — TMDB integration (TmdbProvider, MetadataRepository)
-│   ├── model/         — Domain models (Channel, Movie, Series, etc.)
-│   ├── network/       — HttpClient wrapper
-│   ├── player/        — VodEngineStore, ForceMpvStore
-│   ├── repository/    — EpgRepository
-│   ├── storage/       — StorageAccess (LunaIPtv folder)
-│   ├── sync/          — M3U/Xtream import, SyncManager, ImportFinalizer
-│   ├── tv/            — TvHomeRepository (Android TV Watch Next)
-│   ├── update/        — UpdateManager (checks disabled for fork)
-│   └── weather/       — WeatherRepository
-├── di/                — Koin modules (AppModule, DatabaseModule, PlayerModule)
-├── features/
-│   ├── customize/     — Home row customization screen
-│   ├── downloads/     — Download manager UI
-│   ├── epg/           — EPG guide UI + EpgViewModel
-│   ├── home/          — HomeScreen, HomeViewModel (parallelized loading)
-│   ├── live/          — Live TV channel list + LiveViewModel
-│   ├── movies/        — Movies list/grid + MovieViewModel
-│   ├── search/        — Search UI + SearchViewModel
-│   ├── series/        — Series browser (4-level) + SeriesViewModel
-│   ├── settings/      — SettingsScreen (50+ options), all sub-screens
-│   ├── setup/         — First-run wizard
-│   ├── shell/         — Main shell (sidebar, top bar, navigation)
-│   └── update/        — Update dialog (disabled, shows LunaIPtv branding)
-├── player/            — LunaIPtvPlayer (mpv), LivePreviewEngine (Exo), PlayerHud
-├── ui/
-│   ├── components/    — Reusable UI (LunaIPtvButton, LunaIPtvIcon, etc.)
-│   └── theme/         — Theme system (AccentColor, LunaIPtvColors, Animations)
-└── LunaIPtvApp.kt    — Application class (Koin, Coil, WorkManager)
+LunaIPtv/
+├── core/                           ← Android Library module (shared logic)
+│   ├── src/main/java/com/lunaiptv/
+│   │   ├── core/
+│   │   │   ├── backup/             BackupManager, BackupCrypto, UserDataResolver
+│   │   │   ├── customize/          CustomizationStore (home row order)
+│   │   │   ├── database/           LunaIPtvDatabase, DAOs, entities, migrations
+│   │   │   ├── epg/                EpgSourceStore, EPG parsing
+│   │   │   ├── launcher/           LauncherProfilePublisher (interface), Planner, Resolver
+│   │   │   ├── metadata/           TMDB integration (TmdbProvider, MetadataRepository)
+│   │   │   ├── model/              Enums (MediaType, SourceType, DownloadStatus)
+│   │   │   ├── network/            HttpClient, ConnectivityObserver, ProxyConfig
+│   │   │   ├── parser/             M3uParser, XtreamClient, XmltvParser
+│   │   │   ├── player/             VodEngineStore, ForceMpvStore, ExternalPlayerLauncher
+│   │   │   ├── repository/         SourceRepository, SeriesRepository, EpgRepository, ActiveSources
+│   │   │   ├── storage/            StorageAccess (LunaIPtv folder)
+│   │   │   ├── sync/               SyncManager, ImportFinalizer, CatalogSyncWorker
+│   │   │   ├── util/               ErrorMessages, LocaleHelper, Pin
+│   │   │   └── weather/            WeatherRepository
+│   │   ├── di/                     DataModule.kt, DatabaseModule.kt (shared Koin)
+│   │   ├── features/
+│   │   │   ├── home/               HomeRow, HomeConfig, HeroKind
+│   │   │   ├── live/               LiveKey
+│   │   │   └── settings/data/      SettingsRepository
+│   │   └── ui/theme/               AccentColor (Int ARGB), ThemeMode, AnimationLevel, UiZoom
+│   ├── build.gradle.kts            (android-library, NO tv-material, NO Compose)
+│   └── consumer-rules.pro
+│
+├── app/                            ← Android TV app module (depends on :core)
+│   ├── src/main/java/com/lunaiptv/
+│   │   ├── core/
+│   │   │   ├── launcher/           LauncherIntegrationRepository (implements LauncherProfilePublisher)
+│   │   │   ├── sync/               SyncProgressText (TV-only, uses R.string)
+│   │   │   ├── tv/                 TvHomeRepository (Android TV Watch Next)
+│   │   │   └── update/             UpdateManager (disabled in fork)
+│   │   ├── di/                     AppModule, PlayerModule, TvDataModule (TV Koin)
+│   │   ├── features/               All UI screens + ViewModels
+│   │   ├── player/                 LunaIPtvPlayer (mpv), LivePreviewEngine (Exo), PlayerHud
+│   │   ├── ui/                     Components + Theme (LunaIPtvColors, etc.)
+│   │   └── LunaIPtvApp.kt          Application class (loads all 5 Koin modules)
+│   └── build.gradle.kts            (implementation project(":core"))
+│
+└── app-phone/                      ← FUTURE: Android phone app (Material3, touch UI)
 ```
+
+### Module Architecture Rules
+- **`:core`** must NOT depend on `:app` or `app-phone`. No TV-specific APIs (tvprovider, TvContractCompat).
+- **`:app`** depends on `:core` via `implementation(project(":core"))`.
+- **Shared types** live in `:core` with **original package names** (zero import changes in `:app`).
+- **`AccentColor`** is Int ARGB in `:core` (no Compose dep). `LunaIPtvColors.kt` in `:app` wraps with `Color()`.
+- **`LauncherProfilePublisher`** interface in `:core` breaks TvHomeRepository dependency. Core uses `NoOpLauncherProfilePublisher`; `:app` provides real implementation via `TvDataModule`.
+- **`BackupManager`** and **`CatalogSyncWorker`** depend on `LauncherProfilePublisher` interface (not concrete TvHomeRepository).
+- Koin modules loaded: `appModule`, `databaseModule`, `dataModule`, `playerModule`, `tvDataModule`.
 
 ## Theme/Accent System
 - **10 accent presets** + custom hex: TEAL, BLUE, VIOLET, GREEN, AMBER, ROSE, CRIMSON, INDIGO, LIME, ORANGE

@@ -19,6 +19,7 @@ import com.lunaiptv.di.appModule
 import com.lunaiptv.di.databaseModule
 import com.lunaiptv.di.dataModule
 import com.lunaiptv.di.playerModule
+import com.lunaiptv.di.tvDataModule
 
 class LunaIPtvApp : Application(), SingletonImageLoader.Factory, androidx.work.Configuration.Provider {
 
@@ -33,7 +34,7 @@ class LunaIPtvApp : Application(), SingletonImageLoader.Factory, androidx.work.C
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@LunaIPtvApp)
-            modules(appModule, databaseModule, dataModule, playerModule)
+            modules(appModule, databaseModule, dataModule, playerModule, tvDataModule)
         }
         Perf.stamp("koin-started")
         // NOTE: cold start does ZERO heavy DB work. Index + ANALYZE maintenance is piggy-backed onto the

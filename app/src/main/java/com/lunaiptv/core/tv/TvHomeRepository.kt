@@ -435,25 +435,26 @@ class TvHomeRepository(
         val existing = tvProviderProgramDao.find(profileId, TvProviderSurface.RECENT_LIVE, MediaType.LIVE, RECENT_LIVE_CHANNEL_GROUP_ID)
         val now = System.currentTimeMillis()
         if (existing?.providerProgramId != null) {
-            val current = runCatching { channelHelper.getPreviewChannel(existing.providerProgramId) }
+            val programId = existing.providerProgramId!!
+            val current = runCatching { channelHelper.getPreviewChannel(programId) }
                 .getOrElse { t ->
-                    logW("ensureRecentLiveChannel read failed profile=$profileId channelId=${existing.providerProgramId}", t)
+                    logW("ensureRecentLiveChannel read failed profile=$profileId channelId=$programId", t)
                     null
                 }
             if (current != null) {
                 val desired = buildRecentLiveChannel(profileId)
                 if (current.hasAnyUpdatedValues(desired)) {
-                    logD("ensureRecentLiveChannel update profile=$profileId channelId=${existing.providerProgramId} allowBrowsable=$allowBrowsableRequest")
-                    runCatching { channelHelper.updatePreviewChannel(existing.providerProgramId, desired) }
+                    logD("ensureRecentLiveChannel update profile=$profileId channelId=$programId allowBrowsable=$allowBrowsableRequest")
+                    runCatching { channelHelper.updatePreviewChannel(programId, desired) }
                 }
                 if (allowBrowsableRequest && !current.isBrowsable()) {
-                    logD("ensureRecentLiveChannel requestBrowsable profile=$profileId channelId=${existing.providerProgramId}")
-                    runCatching { TvContractCompat.requestChannelBrowsable(context, existing.providerProgramId) }
+                    logD("ensureRecentLiveChannel requestBrowsable profile=$profileId channelId=$programId")
+                    runCatching { TvContractCompat.requestChannelBrowsable(context, programId) }
                 }
-                logD("ensureRecentLiveChannel reuse profile=$profileId channelId=${existing.providerProgramId}")
+                logD("ensureRecentLiveChannel reuse profile=$profileId channelId=$programId")
                 return existing
             }
-            logW("ensureRecentLiveChannel existing row missing from platform profile=$profileId providerId=${existing.providerProgramId}")
+            logW("ensureRecentLiveChannel existing row missing from platform profile=$profileId providerId=$programId")
         }
 
         val channel = buildRecentLiveChannel(profileId)

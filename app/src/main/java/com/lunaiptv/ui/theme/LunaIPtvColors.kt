@@ -107,10 +107,10 @@ private fun rolesFrom(seed: Color, isDark: Boolean): AccentRoles = if (isDark) {
  */
 fun LunaIPtvColors(isDark: Boolean, accent: AccentColor, customAccent: String = ""): LunaIPtvColors {
     val roles = parseAccentHex(customAccent)?.let { rolesFrom(it, isDark) } ?: AccentRoles(
-        primary = accent.primary(isDark),
-        onPrimary = accent.onPrimary(isDark),
-        primaryContainer = accent.primaryContainer(isDark),
-        onPrimaryContainer = accent.onPrimaryContainer(isDark),
+        primary = Color(accent.primary(isDark)),
+        onPrimary = Color(accent.onPrimary(isDark)),
+        primaryContainer = Color(accent.primaryContainer(isDark)),
+        onPrimaryContainer = Color(accent.onPrimaryContainer(isDark)),
     )
     val primary = roles.primary
     return if (isDark) {

@@ -65,14 +65,6 @@ import com.lunaiptv.player.LunaIPtvPlayer
 import com.lunaiptv.ui.components.LunaIPtvIcon
 import com.lunaiptv.ui.format.formatSystemTime
 
-/** Layer-2 rail selection for Live TV. */
-sealed interface LiveKey {
-    data object Favorites : LiveKey
-    data object History : LiveKey
-    data object All : LiveKey
-    data class Folder(val id: Long) : LiveKey
-}
-
 /** A rail entry. Favorites/History carry an [icon] (rendered instead of the abbreviation). */
 data class LiveRailItem(val key: LiveKey, val abbr: String, val title: String, val icon: LunaIPtvIcon? = null)
 

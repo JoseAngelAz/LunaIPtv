@@ -76,6 +76,9 @@ ksp {
 }
 
 dependencies {
+    // Core shared module
+    implementation(project(":core"))
+
     // Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -105,11 +108,10 @@ dependencies {
     // WorkManager (durable background sync)
     implementation(libs.androidx.work.runtime)
 
-    // Database (Room, via KSP) + Paging
+    // Database (Room, via KSP) + Paging — Room is provided by core module
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
-    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 

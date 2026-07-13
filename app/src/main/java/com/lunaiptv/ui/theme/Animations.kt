@@ -8,23 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
-/**
- * How much UI motion to render. A performance/comfort control: lower-end Android TV boxes can feel
- * laggy when moving quickly between menus, so the user can tone the animations down (or off).
- */
-enum class AnimationLevel(val label: String) {
-    // On = normal motion; Off = instant (no transitions). The fixed grid (v4.0.0) removed the old reason for
-    // a middle "Reduced" tier, so this is now a simple On/Off reduce-motion toggle. (Legacy "REDUCED" values
-    // fall back to On via the settings store's safe parse.)
-    FULL("On"), OFF("Off");
-
-    /** Scale an animation duration to this level (OFF collapses to 0 → an instant snap). */
-    fun scale(durationMs: Int): Int = when (this) {
-        FULL -> durationMs
-        OFF -> 0
-    }
-}
-
 /** Current animation level, provided at the theme root from the user's setting. */
 val LocalAnimationLevel = staticCompositionLocalOf { AnimationLevel.FULL }
 

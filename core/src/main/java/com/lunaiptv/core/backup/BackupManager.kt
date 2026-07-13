@@ -11,7 +11,7 @@ import com.lunaiptv.core.database.dao.SourceDao
 import com.lunaiptv.core.database.entity.ProfileEntity
 import com.lunaiptv.core.database.entity.ProfileSourceCrossRef
 import com.lunaiptv.core.database.entity.SourceEntity
-import com.lunaiptv.core.launcher.LauncherIntegrationRepository
+import com.lunaiptv.core.launcher.LauncherProfilePublisher
 import com.lunaiptv.core.model.SourceType
 import com.lunaiptv.features.settings.data.SettingsRepository
 
@@ -32,7 +32,7 @@ class BackupManager(
     private val customize: CustomizationStore,
     private val userData: UserDataResolver,
     private val epgSources: com.lunaiptv.core.epg.EpgSourceStore,
-    private val launcherIntegrationRepository: LauncherIntegrationRepository,
+    private val launcherProfilePublisher: LauncherProfilePublisher,
     private val forceMpvStore: com.lunaiptv.core.player.ForceMpvStore,
     private val vodEngineStore: com.lunaiptv.core.player.VodEngineStore,
 ) {
@@ -186,7 +186,7 @@ class BackupManager(
                 val sources = root.optJSONArray("sources") ?: JSONArray()
                 val links = root.optJSONArray("links") ?: JSONArray()
 
-                profileDao.getAllOnce().forEach { profile -> runCatching { launcherIntegrationRepository.clearProfile(profile.id) } }
+                profileDao.getAllOnce().forEach { profile -> runCatching { launcherProfilePublisher.clearProfile(profile.id) } }
                 profileDao.deleteAll()       // cascades favorites/history/progress/profile_source
                 sourceDao.deleteAllSources() // cascades content + profile_source
 

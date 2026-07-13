@@ -8,12 +8,7 @@ import androidx.tv.material3.ColorScheme
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 import androidx.tv.material3.lightColorScheme
-
-/**
- * Available LunaIPtv themes. Persisted via DataStore and selectable from Settings → Theme.
- * SYSTEM follows the platform dark/light setting.
- */
-enum class ThemeMode { SYSTEM, DARK, LIGHT }
+import androidx.compose.ui.graphics.Color
 
 val LocalThemeMode = staticCompositionLocalOf { ThemeMode.DARK }
 

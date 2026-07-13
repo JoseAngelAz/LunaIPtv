@@ -1,0 +1,3 @@
+-keep class com.lunaiptv.core.database.entity.** { *; }
+-keep class com.lunaiptv.core.database.LunaIPtvDatabase { *; }
+-keep class com.lunaiptv.core.database.dao.** { *; }

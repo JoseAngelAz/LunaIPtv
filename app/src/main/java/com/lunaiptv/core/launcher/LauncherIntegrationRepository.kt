@@ -8,21 +8,21 @@ class LauncherIntegrationRepository(
     private val planner: LauncherRecommendationPlanner,
     private val resolver: LauncherLaunchResolver,
     private val tvHomeRepository: com.lunaiptv.core.tv.TvHomeRepository,
-) {
+) : LauncherProfilePublisher {
     suspend fun buildSnapshot(profileId: Long): LauncherSnapshot = planner.buildSnapshot(profileId)
 
-    suspend fun refreshProfile(profileId: Long, allowBrowsableRequest: Boolean = false) =
+    override suspend fun refreshProfile(profileId: Long, allowBrowsableRequest: Boolean) =
         tvHomeRepository.refreshProfile(profileId, allowBrowsableRequest)
 
-    suspend fun clearProfile(profileId: Long) = tvHomeRepository.clearProfile(profileId)
+    override suspend fun clearProfile(profileId: Long) = tvHomeRepository.clearProfile(profileId)
 
-    suspend fun publishMovieProgress(profileId: Long, movieId: Long, positionMs: Long, durationMs: Long) =
+    override suspend fun publishMovieProgress(profileId: Long, movieId: Long, positionMs: Long, durationMs: Long) =
         tvHomeRepository.publishMovieProgress(profileId, movieId, positionMs, durationMs)
 
-    suspend fun publishEpisodeProgress(profileId: Long, episodeId: Long, positionMs: Long, durationMs: Long) =
+    override suspend fun publishEpisodeProgress(profileId: Long, episodeId: Long, positionMs: Long, durationMs: Long) =
         tvHomeRepository.publishEpisodeProgress(profileId, episodeId, positionMs, durationMs)
 
-    suspend fun refreshRecentLive(profileId: Long, allowBrowsableRequest: Boolean = false) =
+    override suspend fun refreshRecentLive(profileId: Long, allowBrowsableRequest: Boolean) =
         tvHomeRepository.refreshRecentLive(profileId, allowBrowsableRequest)
 
     suspend fun resolveLaunch(profileId: Long, deepLink: LauncherDeepLink): LauncherLaunch? =

@@ -13,14 +13,12 @@ import com.lunaiptv.core.network.ConnectivityObserver
 import com.lunaiptv.core.network.HttpClient
 import com.lunaiptv.core.parser.M3uParser
 import com.lunaiptv.core.parser.XtreamClient
-import com.lunaiptv.core.launcher.LauncherIntegrationRepository
 import com.lunaiptv.core.launcher.LauncherLaunchResolver
 import com.lunaiptv.core.launcher.LauncherRecommendationPlanner
+import com.lunaiptv.core.launcher.LauncherProfilePublisher
 import com.lunaiptv.core.repository.EpgRepository
 import com.lunaiptv.core.repository.SeriesRepository
 import com.lunaiptv.core.repository.SourceRepository
-import com.lunaiptv.core.tv.TvHomeRepository
-import com.lunaiptv.core.update.UpdateManager
 import com.lunaiptv.core.sync.SyncManager
 import com.lunaiptv.core.sync.work.CatalogSyncScheduler
 import com.lunaiptv.core.sync.work.EpgSyncScheduler
@@ -35,22 +33,13 @@ val dataModule = module {
     single {
         val proxyHolder = get<com.lunaiptv.core.network.ProxyConfigHolder>()
         OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)  // fast fail on dead host
-            .readTimeout(20, TimeUnit.SECONDS)    // detect mid-sync disconnect quickly
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
             .writeTimeout(20, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(false)       // let SyncManager handle retries, not OkHttp
-            // Global proxy (Approach 1): a ProxySelector/Authenticator that read the live snapshot, so
-            // enabling/disabling the proxy takes effect immediately. Proxy off = DIRECT = exact prior
-            // behavior. Credentials are never logged.
+            .retryOnConnectionFailure(false)
             .proxySelector(proxyHolder.proxySelector)
             .proxyAuthenticator(proxyHolder.proxyAuthenticator)
-            // Force HTTP/1.1. Several IPTV panels / EPG hosts (and their CDNs) have flaky HTTP/2 stacks
-            // that send RST_STREAM(PROTOCOL_ERROR) on large/slow responses — e.g. big EPG XML downloads
-            // (#17) — which OkHttp surfaces as "stream was reset: PROTOCOL_ERROR". HTTP/1.1 sidesteps it
-            // with no real downside for our mostly-single-stream downloads.
             .protocols(listOf(Protocol.HTTP_1_1))
-            // Default a player-style UA for any request that didn't set one (e.g. Coil image loads),
-            // since some IPTV panels reject the stock OkHttp UA. Per-source UAs still override this.
             .addInterceptor { chain ->
                 val req = chain.request()
                 val out = if (req.header("User-Agent").isNullOrBlank()) {
@@ -68,17 +57,13 @@ val dataModule = module {
     single { com.lunaiptv.core.epg.EpgSourceStore(androidContext()) }
     single { com.lunaiptv.core.player.ForceMpvStore(androidContext()) }
     single { com.lunaiptv.core.player.ExternalPlayerLauncher(androidContext()) }
-    // store, sourceDao, epgRepository
     single { com.lunaiptv.core.epg.EpgMigration(get(), get(), get()) }
     single { M3uParser() }
     single { XtreamClient(get()) }
-    // TMDB metadata enrichment (plan §4): one provider, three tiers resolved from SettingsRepository.
     single<com.lunaiptv.core.metadata.MetadataProvider> {
         com.lunaiptv.core.metadata.TmdbProvider(get(), get())
     }
-    // provider, metadataDao, settings, overrideStore — the on-demand resolve + cache orchestrator (plan §7, §11.2 U5b).
     single { com.lunaiptv.core.metadata.MetadataRepository(get(), get(), get(), get()) }
-    // Per-content TMDB name overrides (plan §11.2 U5b): DataStore side-store, no Room schema change.
     single { com.lunaiptv.core.metadata.MetadataOverrideStore(androidContext()) }
     single { WeatherRepository(get(), get()) }
     single { BulkInsertHelper(get()) }
@@ -91,9 +76,7 @@ val dataModule = module {
             bulkInsertHelper = get(),
         )
     }
-    // context, channelDao, movieDao, seriesDao, profileDao, favoriteDao, historyDao, progressDao, contentOrderDao
     single { UserDataResolver(androidContext(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    // sourceDao, syncManager, userDataResolver
     single { SourceRepository(get(), get(), get()) }
     single {
         SyncManager(
@@ -109,7 +92,6 @@ val dataModule = module {
             bulkInsertHelper = get(),
         )
     }
-    // epgDao, httpClient, xtreamClient, channelDao, customize, settings, context, db, bulkInsertHelper
     single {
         EpgRepository(
             epgDao = get(),
@@ -123,23 +105,12 @@ val dataModule = module {
             bulkInsertHelper = get(),
         )
     }
-    // seriesDao, sourceDao, xtreamClient, userDataResolver
     single { SeriesRepository(get(), get(), get(), get()) }
-    // sourceDao, movieDao, seriesDao, progressDao
     single { LauncherRecommendationPlanner(get(), get(), get(), get()) }
-    // sourceDao, channelDao, movieDao, seriesDao, progressDao
     single { LauncherLaunchResolver(get(), get(), get(), get(), get()) }
-    // context, sourceDao, channelDao, movieDao, seriesDao, progressDao, tvProviderProgramDao, customize, settings
-    single { TvHomeRepository(androidContext(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    // planner, resolver, tvHomeRepository
-    single { LauncherIntegrationRepository(get(), get(), get()) }
-    // context, downloadDao, okHttpClient, settings
+    single<LauncherProfilePublisher> { com.lunaiptv.core.launcher.NoOpLauncherProfilePublisher() }
     single { DownloadManager(androidContext(), get(), get(), get()) }
-    // profileDao, sourceDao, settings, customizationStore, userDataResolver, epgSourceStore,
-    // launcherIntegrationRepository, forceMpvStore, vodEngineStore
     single { BackupManager(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-    // context, okHttpClient — in-app updates from GitHub Releases
-    single { UpdateManager(androidContext(), get()) }
     single { CatalogSyncScheduler(androidContext()) }
     single { EpgSyncScheduler(androidContext()) }
 }
