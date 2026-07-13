@@ -111,10 +111,15 @@ app/src/main/java/com/lunaiptv/
 - **Detail panel layout (Movies/Series)**: Poster height 260.dp, padding `horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge`. Plot has no maxLines (scrollable). The `roundedPanel()` carries background; inner Column only carries scroll + padding.
 - **LiveScreen detail panel**: Buttons use default sizing (no `weight(1f)`, no `fillMaxWidth()`). Horizontal padding = `Dimens.GapMedium` (16.dp) to fit button text fully.
 - **LunaIPtvButton**: No `maxLines`/`softWrap`/`overflow` — text wraps naturally to show fully on TV.
+- **Movies/Series grid**: Both use `BoxWithConstraints(Modifier.fillMaxSize())` → `LazyColumn(no modifier)` → `Row(no modifier)` → `PosterCard(weight(1f))`. The `LazyColumn` must NOT have `fillMaxSize()` and the `Row` must NOT have `fillMaxWidth()` — these break the weight-based card layout inside a `BoxWithConstraints`. Grid columns: `((maxWidth + 12.dp) / (130.dp + 12.dp)).toInt().coerceAtLeast(1)`.
+- **M3U parser heuristics**: `M3uParser` classifies entries via `type`/`tvg-type` attributes first, then falls back to `groupTitle` pattern matching (series keywords: `serie`, `season`, `episode`, `capitulo`; VOD keywords: `pelicula`, `movie`, `film`, `4k`). Source type (M3U vs Xtream) determines which content APIs are called.
+- **ActiveSources auto-repair**: `ActiveSources.kt` observes profile sources via `onEach` flow and auto-links orphaned sources (sources with `profileId = -1` that belong to the user's server).
+- **TMDB language sync**: `TmdbProvider.appLanguage()` reads `settings.language.first()` in a suspend context, passes `&language=es|en` to all TMDB API calls.
+- **Detail panel D-pad**: `LazyColumn` with `.focusable()` before `.focusRequester()` for reliable D-pad focus. RIGHT key on last-column PosterCards routes to detail pane via `Modifier.onKeyEvent`.
 
 ## Git Info
 - **Remote**: `origin https://github.com/JoseAngelAz/LunaIPtv.git` (your personal repo)
-- **Branch**: `main` (25+ commits ahead of origin/main, NOT pushed yet)
+- **Branch**: `main` (26+ commits ahead of origin/main, pushed)
 - **Isolation**: All changes are LOCAL. `git push` goes to your personal repo
 - **User**: Jose Angel Azucena Mendez
 - **Email**: lunaipTV@users.noreply.github.com
@@ -123,3 +128,4 @@ app/src/main/java/com/lunaiptv/
 - PiP/channel-switch visual bug: old channel frame can linger in corner (investigated, `clearVideoSurface()` approach — needs device testing)
 - `LunaIPtvDatabase` class name and schema directory must stay in sync (renaming the class requires renaming the schema export directory)
 - Auto-scroll bug: FIXED (fix 7: replaced LazyVerticalGrid with LazyColumn+Row pattern matching LiveScreen's 1D approach). Fix 6 (split FocusRequesters) also applied but insufficient alone.
+- Grid rendering: FIXED — root cause was missing function closing brace (`}`) from prior fix attempt; movies/series grids now use `BoxWithConstraints` matching SeriesScreen's proven pattern.
