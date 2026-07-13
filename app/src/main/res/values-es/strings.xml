@@ -175,7 +175,7 @@
     <string name="series_no_search">No se encontraron series para \u201c%1$s\u201d</string>
     <string name="series_empty">No hay series aquí.</string>
     <string name="series_focus_hint">Selecciona una serie y presiona OK para ver los episodios.</string>
-    <string name="series_press_ok">Presiona OK en el póster para ver los episodios.</string>
+    <string name="series_press_ok">Mantén presionado para opciones</string>
     <string name="series_download_all">Descargar todos los episodios</string>
     <string name="series_episode_focus_hint">Selecciona un episodio para ver los detalles.</string>
     <string name="series_next_up">A continuación</string>
@@ -192,7 +192,7 @@
     <string name="series_provider">Proveedor</string>
     <string name="series_focus_episode">Enfoca un episodio para ver detalles.</string>
     <string name="series_resume">Continuar %1$s</string>
-    <string name="series_instruction">OK para reproducir • mantén presionado para opciones</string>
+    <string name="series_instruction">Mantén presionado para opciones</string>
     <string name="series_episode_format">T%1$d • E%2$d</string>
     <string name="series_episode_title">T%1$d • E%2$d  %3$s</string>
     <string name="series_season_label">Temporada %1$d • %2$d/%3$d</string>
@@ -237,7 +237,7 @@
     <string name="movies_empty">No hay películas aquí.</string>
     <string name="movies_focus_hint">Enfoca una película para ver detalles.</string>
     <string name="movies_resume">Continuar %1$s</string>
-    <string name="movies_instruction">OK para reproducir \u00b7 mantén presionado para opciones</string>
+    <string name="movies_instruction">Mantén presionado para opciones</string>
     <string name="movies_duration_h">%1$dh %2$dm</string>
     <string name="movies_duration_m">%1$dm</string>
     <string name="movies_already_downloaded">Ya descargada \u2014 revisa el menú de Descargas.</string>

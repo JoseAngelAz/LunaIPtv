@@ -52,91 +52,80 @@ fun NavDuotoneIcon(
         }
 
         when (section) {
-            // ---- Home — house + roof + signal dash --------------------------------
+            // ---- Home — minimal house silhouette + door ----------------------------
             MainSection.HOME -> {
-                drawPath(polyC(17f,47f, 50f,17f, 83f,47f, 83f,83f, 17f,83f), soft)
-                drawPath(poly(17f,47f, 50f,17f, 83f,47f), fill, style = stroke)
-                drawPath(poly(27f,83f, 27f,44f), fill, style = stroke)
-                drawPath(poly(73f,83f, 73f,44f), fill, style = stroke)
-                drawPath(poly(42f,42f, 58f,42f), fill, style = stroke) // signal dash
-                drawPath(polyC(40f,83f, 40f,61f, 60f,61f, 60f,83f), soft)
+                drawPath(polyC(50f,18f, 84f,48f, 84f,82f, 16f,82f, 16f,48f), soft)
+                drawPath(poly(50f,18f, 84f,48f, 16f,48f), fill, style = stroke)
+                drawPath(poly(16f,82f, 16f,48f), fill, style = stroke)
+                drawPath(poly(84f,82f, 84f,48f), fill, style = stroke)
+                rect(39f,58f, 22f,24f, 4f, fill, stroke)
             }
 
-            // ---- Live TV — screen + stand + broadcast arcs -----------------------
+            // ---- Live TV — clean screen + stand + play ----------------------------
             MainSection.LIVE_TV -> {
-                rect(17f, 29f, 67f, 44f, 10f, fill, stroke)
-                drawPath(polyC(46f,42f, 46f,60f, 62f,51f), fill, style = Fill)
-                drawPath(poly(33f,83f, 67f,83f), soft, style = stroke)
-                drawPath(poly(50f,73f, 50f,83f), soft, style = stroke)
-                arc(soft, 50f, 15f, 20f, 210f, 100f, thin)
-                arc(soft, 50f, 8f, 12f, 210f, 100f, thin)
-                dot(50f, 22f, 2.5f, fill)
+                rect(16f,24f, 68f,42f, 8f, fill, stroke)
+                drawPath(polyC(44f,38f, 44f,56f, 60f,47f), fill, style = Fill)
+                drawPath(poly(36f,74f, 64f,74f), soft, style = stroke)
+                drawPath(poly(50f,66f, 50f,74f), soft, style = stroke)
             }
 
-            // ---- Movies — film strip sprocket + play ------------------------------
+            // ---- Movies — clean clapperboard + play -------------------------------
             MainSection.MOVIES -> {
-                drawPath(polyC(21f,33f, 76f,21f, 79f,36f, 24f,48f), soft)
-                drawPath(poly(33f,30f, 44f,43f), soft, style = thin)
-                drawPath(poly(51f,26f, 62f,39f), soft, style = thin)
-                drawPath(poly(68f,23f, 77f,33f), soft, style = thin)
-                rect(21f, 43f, 58f, 38f, 9f, fill, stroke)
-                drawPath(polyC(46f,55f, 46f,70f, 60f,62f), fill, style = Fill)
+                rect(17f,28f, 66f,46f, 8f, fill, stroke)
+                drawPath(poly(17f,38f, 83f,38f), fill, style = stroke)
+                drawPath(polyC(44f,52f, 44f,66f, 58f,59f), fill, style = Fill)
+                drawPath(poly(24f,22f, 36f,28f), soft, style = thin)
+                drawPath(poly(38f,22f, 50f,28f), soft, style = thin)
+                drawPath(poly(52f,22f, 64f,28f), soft, style = thin)
             }
 
-            // ---- Series — stacked screens + episode dots --------------------------
+            // ---- Series — clean stacked cards + dots ------------------------------
             MainSection.SERIES -> {
-                rect(21f, 24f, 53f, 37f, 8f, soft, stroke)
-                rect(30f, 36f, 49f, 40f, 9f, fill, stroke)
-                drawPath(poly(42f,50f, 66f,50f), fill, style = stroke)
-                drawPath(poly(42f,63f, 57f,63f), fill, style = stroke)
-                dot(37f, 83f, 3f, fill)
-                dot(50f, 83f, 3f, fill)
-                dot(63f, 83f, 3f, soft)
+                rect(22f,20f, 50f,34f, 7f, soft, stroke)
+                rect(28f,34f, 50f,34f, 7f, fill, stroke)
+                drawPath(poly(36f,46f, 62f,46f), fill, style = stroke)
+                drawPath(poly(36f,56f, 54f,56f), fill, style = stroke)
+                dot(36f,80f, 3f, fill)
+                dot(50f,80f, 3f, soft)
+                dot(64f,80f, 3f, soft)
             }
 
-            // ---- Downloads — down-arrow tray + accent arcs -----------------------
+            // ---- Downloads — clean down arrow + tray ------------------------------
             MainSection.DOWNLOADS -> {
-                drawPath(poly(50f,19f, 50f,58f), fill, style = stroke)
-                drawPath(poly(35f,43f, 50f,58f, 65f,43f), fill, style = stroke)
-                drawPath(poly(23f,73f, 23f,80f, 77f,80f, 77f,73f), soft, style = stroke)
-                drawPath(poly(31f,85f, 69f,85f), soft, style = stroke)
-                arc(soft, 21f, 16f, 12f, 220f, 90f, thin) // left accent
-                arc(soft, 79f, 16f, 12f, 50f, 90f, thin)  // right accent
-                dot(50f, 67f, 3f, fill)
+                drawPath(poly(50f,18f, 50f,56f), fill, style = stroke)
+                drawPath(poly(36f,44f, 50f,58f, 64f,44f), fill, style = stroke)
+                drawPath(poly(24f,72f, 24f,78f, 76f,78f, 76f,72f), soft, style = stroke)
+                drawPath(poly(32f,84f, 68f,84f), soft, style = stroke)
             }
 
-            // ---- Guide — grid with channel blocks + dot --------------------------
+            // ---- Guide — clean grid + channel line --------------------------------
             MainSection.EPG -> {
-                rect(17f, 21f, 67f, 63f, 10f, fill, stroke)
-                drawPath(poly(33f,21f, 33f,83f), fill, style = stroke)
-                drawPath(poly(17f,42f, 83f,42f), fill, style = stroke)
-                drawPath(poly(17f,63f, 83f,63f), fill, style = stroke)
-                drawPath(poly(44f,33f, 57f,33f), soft, style = stroke)
-                drawPath(poly(44f,54f, 69f,54f), soft, style = stroke)
-                drawPath(poly(44f,75f, 63f,75f), soft, style = stroke)
-                dot(25f, 32f, 3f, fill)
+                rect(17f,18f, 66f,64f, 8f, fill, stroke)
+                drawPath(poly(33f,18f, 33f,82f), fill, style = stroke)
+                drawPath(poly(50f,18f, 50f,82f), soft, style = stroke)
+                drawPath(poly(17f,38f, 83f,38f), fill, style = stroke)
+                drawPath(poly(17f,58f, 83f,58f), fill, style = stroke)
+                drawPath(poly(17f,78f, 83f,78f), soft, style = stroke)
             }
 
-            // ---- Search — magnifier + corner brackets + dash ---------------------
-            MainSection.SEARCH -> {
-                drawCircle(fill, radius = 24f * s, center = o(45f, 45f), style = stroke)
-                drawPath(poly(63f,63f, 82f,82f), fill, style = stroke)
-                drawPath(poly(21f,16f, 16f,16f, 16f,21f), soft, style = thin)
-                drawPath(poly(79f,16f, 84f,16f, 84f,21f), soft, style = thin)
-                drawPath(poly(16f,79f, 16f,84f, 21f,84f), soft, style = thin)
-                drawPath(poly(84f,79f, 84f,84f, 79f,84f), soft, style = thin)
-                drawPath(poly(35f,45f, 55f,45f), soft, style = stroke)
-            }
-
-            // ---- Settings — sliders + orbit accent --------------------------------
+            // ---- Settings — clean sliders + knobs ---------------------------------
             MainSection.SETTINGS -> {
-                drawPath(poly(20f,33f, 59f,33f), fill, style = stroke)
-                drawPath(poly(72f,33f, 83f,33f), fill, style = stroke)
-                drawCircle(fill, radius = 7f * s, center = o(65f, 33f), style = stroke)
-                drawPath(poly(20f,67f, 33f,67f), fill, style = stroke)
-                drawPath(poly(45f,67f, 83f,67f), fill, style = stroke)
-                drawCircle(fill, radius = 7f * s, center = o(39f, 67f), style = stroke)
-                drawPath(poly(50f,15f, 59f,21f, 69f,22f, 74f,30f), soft, style = thin)
+                drawPath(poly(22f,30f, 56f,30f), fill, style = stroke)
+                drawPath(poly(68f,30f, 80f,30f), fill, style = stroke)
+                drawCircle(fill, radius = 6f * s, center = o(62f, 30f), style = stroke)
+                drawPath(poly(22f,50f, 38f,50f), fill, style = stroke)
+                drawPath(poly(50f,50f, 80f,50f), fill, style = stroke)
+                drawCircle(fill, radius = 6f * s, center = o(44f, 50f), style = stroke)
+                drawPath(poly(22f,70f, 62f,70f), fill, style = stroke)
+                drawPath(poly(74f,70f, 80f,70f), fill, style = stroke)
+                drawCircle(fill, radius = 6f * s, center = o(68f, 70f), style = stroke)
+            }
+
+            // ---- Search — clean magnifier ----------------------------------------
+            MainSection.SEARCH -> {
+                drawCircle(fill, radius = 22f * s, center = o(44f, 44f), style = stroke)
+                drawPath(poly(60f,60f, 80f,80f), fill, style = stroke)
+                drawPath(poly(34f,44f, 54f,44f), soft, style = stroke)
             }
         }
     }

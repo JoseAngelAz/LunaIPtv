@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -89,6 +90,7 @@ class MovieViewModel(
     private val ctx: StateFlow<Ctx> = activeProfileSources(settings, sourceDao)
         .map { aps -> Ctx(aps.profileId, aps.sourceIds) }
         .distinctUntilChanged()
+        .onEach { Log.d(TAG, "DIAG ctx changed: profileId=${it.profileId} sourceIds=${it.sourceIds}") }
         .stateIn(viewModelScope, SharingStarted.Eagerly, Ctx(-1L, emptyList()))
 
     private val folderContextKeys: StateFlow<Map<Long, String>> = ctx
@@ -231,6 +233,7 @@ class MovieViewModel(
         _selected, ctx, _search.map { it.trim() }.debounce(300).distinctUntilChanged(), sortMode, _listRefresh,
     ) { key, c, query, sort, _ -> Args(key, c, query, sort) }
         .combine(custResolved.debounce(50)) { args, cs -> args to cs }
+        .onEach { (args, _) -> Log.d(TAG, "DIAG movies flow combine emitted: key=${args.key} ctx=${args.ctx} query='${args.query}' sort=${args.sort}") }
         .flatMapLatest { (args, cs) ->
             // Hidden items/categories are filtered on each fresh PagingData inside the pager chain —
             // a customization change re-creates the pager (same pattern as Live TV).
@@ -553,7 +556,8 @@ class MovieViewModel(
         val ids = c.sourceIds.ifEmpty { listOf(-1L) }
         val playlist = sort == SettingsRepository.SortMode.PLAYLIST
         val rating = sort == SettingsRepository.SortMode.RATING
-        return if (query.isBlank()) when (key) {
+        Log.d(TAG, "DIAG pagingSource key=$key profileId=${c.profileId} ids=$ids query='$query' sort=$sort")
+        val src = if (query.isBlank()) when (key) {
             LiveKey.All -> when {
                 rating -> movieDao.pagingAllRating(ids)
                 playlist -> movieDao.pagingAllOriginal(ids)
@@ -570,6 +574,8 @@ class MovieViewModel(
             LiveKey.History -> movieDao.searchHistory(query, c.profileId, ids)
             is LiveKey.Folder -> movieDao.searchInCategory(query, key.id)
         }
+        Log.d(TAG, "DIAG pagingSource -> ${src::class.simpleName}")
+        return src
     }
 
     private fun countFlow(key: LiveKey, c: Ctx, hiddenCats: Set<Long>): Flow<Int> {

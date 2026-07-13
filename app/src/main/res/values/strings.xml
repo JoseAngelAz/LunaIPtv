@@ -175,7 +175,7 @@
     <string name="series_no_search">No series found for \u201c%1$s\u201d</string>
     <string name="series_empty">No series here.</string>
     <string name="series_focus_hint">Focus a series, press OK to view episodes.</string>
-    <string name="series_press_ok">Press OK on the poster to view episodes.</string>
+    <string name="series_press_ok">Long-press for options</string>
     <string name="series_download_all">Download all episodes</string>
     <string name="series_episode_focus_hint">Focus an episode to see details.</string>
     <string name="series_next_up">Next up</string>
@@ -192,7 +192,7 @@
     <string name="series_provider">Provider</string>
     <string name="series_focus_episode">Focus an episode to see details.</string>
     <string name="series_resume">Resume %1$s</string>
-    <string name="series_instruction">OK to play • long-press for options</string>
+    <string name="series_instruction">Long-press for options</string>
     <string name="series_episode_format">S%1$d • E%2$d</string>
     <string name="series_episode_title">S%1$d • E%2$d  %3$s</string>
     <string name="series_season_label">Season %1$d • %2$d/%3$d</string>
@@ -237,7 +237,7 @@
     <string name="movies_empty">No movies here.</string>
     <string name="movies_focus_hint">Focus a movie to see details.</string>
     <string name="movies_resume">Resume %1$s</string>
-    <string name="movies_instruction">OK to play \u00b7 long-press for options</string>
+    <string name="movies_instruction">Long-press for options</string>
     <string name="movies_duration_h">%1$dh %2$dm</string>
     <string name="movies_duration_m">%1$dm</string>
     <string name="movies_already_downloaded">Already downloaded \u2014 check the Downloads menu.</string>

@@ -6,7 +6,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import com.lunaiptv.core.database.dao.SourceDao
+import com.lunaiptv.core.database.entity.ProfileSourceCrossRef
 import com.lunaiptv.core.database.entity.SourceEntity
 import com.lunaiptv.features.settings.data.SettingsRepository
 
@@ -25,6 +27,10 @@ data class ActiveProfileSources(val profileId: Long, val sources: List<SourceEnt
 /**
  * Reactive [ActiveProfileSources] for the current profile + active-playlist filter. Emits again whenever
  * the profile, its linked sources, or the chosen default changes, so Browse refreshes live.
+ *
+ * Auto-repairs orphaned sources: if the active profile has no linked sources but orphaned sources
+ * exist in the DB (e.g. from a previous import that didn't create the `profile_source` link),
+ * they are automatically linked to the active profile so content appears immediately.
  */
 @Suppress("OPT_IN_USAGE")
 fun activeProfileSources(
@@ -36,14 +42,25 @@ fun activeProfileSources(
             if (pid < 0) {
                 flowOf(ActiveProfileSources(pid, emptyList()))
             } else {
-                combine(sourceDao.observeForProfile(pid), settings.defaultSourceId) { srcs, defaultId ->
-                    val filtered = if (defaultId > 0 && srcs.any { it.id == defaultId }) {
-                        srcs.filter { it.id == defaultId }
-                    } else {
-                        srcs
+                sourceDao.observeForProfile(pid)
+                    .onEach { srcs ->
+                        if (srcs.isEmpty()) {
+                            val allIds = sourceDao.allSourceIds()
+                            if (allIds.isNotEmpty()) {
+                                allIds.forEach { sid ->
+                                    sourceDao.link(ProfileSourceCrossRef(profileId = pid, sourceId = sid))
+                                }
+                            }
+                        }
                     }
-                    ActiveProfileSources(pid, filtered)
-                }
+                    .combine(settings.defaultSourceId) { srcs, defaultId ->
+                        val filtered = if (defaultId > 0 && srcs.any { it.id == defaultId }) {
+                            srcs.filter { it.id == defaultId }
+                        } else {
+                            srcs
+                        }
+                        ActiveProfileSources(pid, filtered)
+                    }
             }
         }
         .distinctUntilChanged()

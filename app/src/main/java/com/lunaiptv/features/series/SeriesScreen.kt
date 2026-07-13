@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -41,6 +42,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -230,6 +236,7 @@ private fun SeriesGrid(
     val selectedItem = railItems.getOrNull(selectedIndex)
     val gridSelFocus = remember { androidx.compose.ui.focus.FocusRequester() }
     val firstItemFocus = remember { androidx.compose.ui.focus.FocusRequester() }
+    val detailFocus = remember { FocusRequester() }
     val gridListState = androidx.compose.foundation.lazy.rememberLazyListState()
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     var gridColumns by remember { mutableStateOf(1) }
@@ -408,6 +415,7 @@ private fun SeriesGrid(
                                     if (itemIndex < series.itemCount) {
                                         val s = series[itemIndex]
                                         if (s != null) {
+                                            val isLastColumn = colIndex == columns - 1
                                             PosterCard(
                                                 posterUrl = s.posterUrl,
                                                 title = s.name,
@@ -420,6 +428,12 @@ private fun SeriesGrid(
                                                         itemIndex == 0 -> Modifier.focusRequester(firstItemFocus)
                                                         else -> Modifier
                                                     }
+                                                ).then(
+                                                    if (isLastColumn) Modifier.onKeyEvent { event ->
+                                                        if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionRight) {
+                                                            runCatching { detailFocus.requestFocus() }; true
+                                                        } else false
+                                                    } else Modifier
                                                 ),
                                                 onFocus = { vm.onSeriesFocused(s) },
                                                 onClick = { vm.openSeries(s) },
@@ -437,35 +451,44 @@ private fun SeriesGrid(
             }
         }
 
-        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill)) {
-            val s = selectedSeries
-            if (s == null) {
-                PreviewPane(hint = stringResource(R.string.series_focus_hint))
-            } else {
-                // Gap-fill merge (§7.1/§4.1): provider wins unless the mode is TMDB-only.
-                val meta = selectedSeriesMeta?.takeIf { it.seriesId == s.id }?.cache
-                val tmdbWins = metadataMode.tmdbWins
-                val providerPoster = s.posterUrl?.takeIf { it.isNotBlank() }
-                val tmdbPoster = com.lunaiptv.core.metadata.MetadataImages.poster(meta?.posterPath)
-                val art = (if (tmdbWins) tmdbPoster ?: providerPoster else providerPoster ?: tmdbPoster)
-                    ?: s.backdropUrl?.takeIf { it.isNotBlank() }
-                    ?: com.lunaiptv.core.metadata.MetadataImages.backdrop(meta?.backdropPath)
-                val plot = if (tmdbWins) meta?.overview ?: s.plot?.takeIf { it.isNotBlank() }
-                    else s.plot?.takeIf { it.isNotBlank() } ?: meta?.overview
-                val year = if (tmdbWins) meta?.year ?: s.year else s.year ?: meta?.year
-                val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: s.rating?.takeIf { it > 0 }
-                    else s.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
-                val genres = remember(meta?.genresJson) { jsonStringList(meta?.genresJson) }
-                val cast = remember(meta?.castJson) { jsonStringList(meta?.castJson) }
-                Column(
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Dimens.CardCorner)).background(LunaIPtvTheme.colors.panel).verticalScroll(rememberScrollState()).padding(horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge),
-                ) {
-                    // Non-focusable status strip · only present while this series' episodes are downloading.
-                    com.lunaiptv.ui.components.downloadStripFor(selectedSeriesDownloads)?.let {
+        val s = selectedSeries
+        if (s == null) {
+            PreviewPane(
+                hint = stringResource(R.string.series_focus_hint),
+                modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).focusable().focusRequester(detailFocus),
+            )
+        } else {
+            // Gap-fill merge (§7.1/§4.1): provider wins unless the mode is TMDB-only.
+            val meta = selectedSeriesMeta?.takeIf { it.seriesId == s.id }?.cache
+            val tmdbWins = metadataMode.tmdbWins
+            val providerPoster = s.posterUrl?.takeIf { it.isNotBlank() }
+            val tmdbPoster = com.lunaiptv.core.metadata.MetadataImages.poster(meta?.posterPath)
+            val art = (if (tmdbWins) tmdbPoster ?: providerPoster else providerPoster ?: tmdbPoster)
+                ?: s.backdropUrl?.takeIf { it.isNotBlank() }
+                ?: com.lunaiptv.core.metadata.MetadataImages.backdrop(meta?.backdropPath)
+            val plot = if (tmdbWins) meta?.overview ?: s.plot?.takeIf { it.isNotBlank() }
+                else s.plot?.takeIf { it.isNotBlank() } ?: meta?.overview
+            val year = if (tmdbWins) meta?.year ?: s.year else s.year ?: meta?.year
+            val rating = if (tmdbWins) meta?.rating?.takeIf { it > 0 } ?: s.rating?.takeIf { it > 0 }
+                else s.rating?.takeIf { it > 0 } ?: meta?.rating?.takeIf { it > 0 }
+            val genres = remember(meta?.genresJson) { jsonStringList(meta?.genresJson) }
+            val cast = remember(meta?.castJson) { jsonStringList(meta?.castJson) }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .roundedPanel(fillColor = PreviewPanelFill)
+                    .focusable()
+                    .focusRequester(detailFocus)
+                    .padding(horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge),
+            ) {
+                com.lunaiptv.ui.components.downloadStripFor(selectedSeriesDownloads)?.let {
+                    item("download") {
                         com.lunaiptv.ui.components.DownloadStatusStrip(it)
                         Spacer(Modifier.height(12.dp))
                     }
-                    // Tall portrait poster (like the list / a phone screen), centred in the pane.
+                }
+                item("poster") {
                     Box(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp), contentAlignment = Alignment.Center) {
                         Box(
                             modifier = Modifier.width(200.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(LunaIPtvTheme.colors.surfaceContainerLowest),
@@ -479,28 +502,40 @@ private fun SeriesGrid(
                         }
                     }
                     Spacer(Modifier.height(10.dp))
+                }
+                item("title") {
                     Text(s.name, style = MaterialTheme.typography.titleLarge, color = LunaIPtvTheme.colors.onSurface)
-                    val metaBits = listOfNotNull(year?.toString(), rating?.let { "\u2605 %.1f".format(it) })
-                    if (metaBits.isNotEmpty()) {
+                }
+                val metaBits = listOfNotNull(year?.toString(), rating?.let { "\u2605 %.1f".format(it) })
+                if (metaBits.isNotEmpty()) {
+                    item("meta") {
                         Spacer(Modifier.height(2.dp))
                         Text(metaBits.joinToString("  ·  "), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
                     }
-                    if (genres.isNotEmpty()) {
+                }
+                if (genres.isNotEmpty()) {
+                    item("genres") {
                         Spacer(Modifier.height(4.dp))
                         Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.primary)
                     }
-                    if (!plot.isNullOrBlank()) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(plot, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
-                    }
-                    if (cast.isNotEmpty()) {
+                }
+                if (cast.isNotEmpty()) {
+                    item("cast") {
                         Spacer(Modifier.height(8.dp))
                         Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = LunaIPtvTheme.colors.onSurface)
                         Spacer(Modifier.height(2.dp))
                         Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = LunaIPtvTheme.colors.onSurfaceVariant, maxLines = 2)
                     }
+                }
+                item("instruction") {
                     Spacer(Modifier.height(12.dp))
                     Text(stringResource(R.string.series_press_ok), style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.primary)
+                }
+                if (!plot.isNullOrBlank()) {
+                    item("plot") {
+                        Spacer(Modifier.height(8.dp))
+                        Text(plot, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.lunaiptv.features.movies
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,8 +37,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -152,6 +159,7 @@ fun MoviesScreen(
     var gridColumns by remember { mutableStateOf(1) }
     val selFocus = remember { FocusRequester() }
     val firstItemFocus = remember { FocusRequester() }
+    val detailFocus = remember { FocusRequester() }
     // When the selected category changes, scroll the grid/list back to the top so the user starts
     // from position 0 — without this, switching from a Folder back to "All" could leave the scroll
     // position deep in the list (hundreds of items down) which causes a visible "jump".
@@ -338,6 +346,7 @@ fun MoviesScreen(
                                         if (movie != null) {
                                             val prog = movieProgress[movie.id]
                                             val done = prog?.let { vm.isMovieCompleted(it) } == true
+                                            val isLastColumn = colIndex == columns - 1
                                             PosterCard(
                                                 posterUrl = movie.posterUrl,
                                                 title = movie.name,
@@ -353,6 +362,12 @@ fun MoviesScreen(
                                                         itemIndex == 0 -> Modifier.focusRequester(firstItemFocus)
                                                         else -> Modifier
                                                     }
+                                                ).then(
+                                                    if (isLastColumn) Modifier.onKeyEvent { event ->
+                                                        if (event.type == KeyEventType.KeyDown && event.key == Key.DirectionRight) {
+                                                            runCatching { detailFocus.requestFocus() }; true
+                                                        } else false
+                                                    } else Modifier
                                                 ),
                                                 onFocus = { vm.onMovieFocused(movie) },
                                                 onClick = { startMovie(movie) },
@@ -368,17 +383,15 @@ fun MoviesScreen(
                     }
                 }
             }
-        }
 
-        Box(modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill)) {
-            MovieDetailsPane(
-                movie = selectedMovie,
-                meta = selectedMovieMeta?.takeIf { it.movieId == selectedMovie?.id }?.cache,
-                tmdbWins = metadataMode.tmdbWins,
-                resumePositionMs = selectedProgress?.takeIf { !vm.isMovieCompleted(it) }?.positionMs?.takeIf { it > 0 },
-                downloadStrip = selectedMovie?.let { m -> downloadStates[m.id]?.let { com.lunaiptv.ui.components.downloadStripFor(listOf(it)) } },
-            )
-        }
+        MovieDetailsPane(
+            movie = selectedMovie,
+            meta = selectedMovieMeta?.takeIf { it.movieId == selectedMovie?.id }?.cache,
+            tmdbWins = metadataMode.tmdbWins,
+            resumePositionMs = selectedProgress?.takeIf { !vm.isMovieCompleted(it) }?.positionMs?.takeIf { it > 0 },
+            downloadStrip = selectedMovie?.let { m -> downloadStates[m.id]?.let { com.lunaiptv.ui.components.downloadStripFor(listOf(it)) } },
+            modifier = Modifier.weight(1f).fillMaxSize().roundedPanel(fillColor = PreviewPanelFill).focusable().focusRequester(detailFocus),
+        )
     }
 
     resumePrompt?.let { (m, pos) ->
@@ -506,6 +519,7 @@ fun MoviesScreen(
     }
 
     InAppToast(toast)
+    }
 }
 
 @Composable
@@ -585,6 +599,7 @@ private fun MovieDetailsPane(
     tmdbWins: Boolean,
     resumePositionMs: Long? = null,
     downloadStrip: com.lunaiptv.ui.components.DownloadStripState? = null,
+    modifier: Modifier = Modifier,
 ) {
     val colors = LunaIPtvTheme.colors
     if (movie == null) {
@@ -600,75 +615,88 @@ private fun MovieDetailsPane(
         ?: com.lunaiptv.core.metadata.MetadataImages.backdrop(meta?.backdropPath)
     val providerPlot = movie.plot?.takeIf { it.isNotBlank() }
     val plot = if (tmdbWins) meta?.overview ?: providerPlot else providerPlot ?: meta?.overview
+    // Genres & cast are TMDB-only (§7.1) · a whole layer the provider never had.
+    val genres = remember(meta?.genresJson) { jsonList(meta?.genresJson) }
+    val cast = remember(meta?.castJson) { jsonList(meta?.castJson) }
     // Outer details Box carries the rounded panel (Phase 6); no clip/background here.
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge),
+    LazyColumn(
+        modifier = modifier.padding(horizontal = Dimens.GapMedium, vertical = Dimens.GapLarge),
     ) {
         // Non-focusable download status strip · only present while this movie is actually downloading.
         if (downloadStrip != null) {
-            com.lunaiptv.ui.components.DownloadStatusStrip(downloadStrip)
-            Spacer(Modifier.height(12.dp))
-        }
-        // Tall portrait poster (like the list / a phone screen), centred in the pane.
-        Box(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp), contentAlignment = Alignment.Center) {
-            Box(
-                modifier = Modifier.width(200.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (!posterArt.isNullOrBlank()) {
-                    AsyncImage(
-                        model = posterArt,
-                        contentDescription = null,
-                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else {
-                    LunaIPtvIcon(LunaIPtvIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.height(48.dp))
-                }
+            item("download") {
+                com.lunaiptv.ui.components.DownloadStatusStrip(downloadStrip)
+                Spacer(Modifier.height(12.dp))
             }
         }
-        Spacer(Modifier.height(10.dp))
-        // Always-visible, non-focusable resume label (kept above the title, not further down in the
-        // pane, since movie metadata below can push a lower placement out of view once it scrolls long).
+        // Tall portrait poster (like the list / a phone screen), centred in the pane.
+        item("poster") {
+            Box(modifier = Modifier.fillMaxWidth().heightIn(max = 300.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.width(200.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(12.dp)).background(colors.surfaceContainerLowest),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (!posterArt.isNullOrBlank()) {
+                        AsyncImage(
+                            model = posterArt,
+                            contentDescription = null,
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        LunaIPtvIcon(LunaIPtvIcon.MOVIES, tint = colors.onSurfaceVariant, modifier = Modifier.height(48.dp))
+                    }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
+        // Resume label (conditional)
         if (resumePositionMs != null) {
-            Text(
-                stringResource(R.string.movies_resume, com.lunaiptv.ui.components.formatTimestamp(resumePositionMs)),
-                style = MaterialTheme.typography.labelMedium,
-                color = colors.primary,
-            )
+            item("resume") {
+                Text(
+                    stringResource(R.string.movies_resume, com.lunaiptv.ui.components.formatTimestamp(resumePositionMs)),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = colors.primary,
+                )
+                Spacer(Modifier.height(4.dp))
+            }
+        }
+        item("title") {
+            Text(movie.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
             Spacer(Modifier.height(4.dp))
         }
-        Text(movie.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)
-        Spacer(Modifier.height(4.dp))
-        Text(metaLine(movie, meta, tmdbWins), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-        // Genres & cast are TMDB-only (§7.1) · a whole layer the provider never had.
-        val genres = remember(meta?.genresJson) { jsonList(meta?.genresJson) }
+        item("meta") {
+            Text(metaLine(movie, meta, tmdbWins), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+        }
         if (genres.isNotEmpty()) {
-            Spacer(Modifier.height(6.dp))
-            Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
+            item("genres") {
+                Spacer(Modifier.height(6.dp))
+                Text(genres.joinToString(" · "), style = MaterialTheme.typography.labelMedium, color = colors.primary)
+            }
         }
-        if (!plot.isNullOrBlank()) {
-            Spacer(Modifier.height(8.dp))
-            Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
-        }
-        val cast = remember(meta?.castJson) { jsonList(meta?.castJson) }
         if (cast.isNotEmpty()) {
-            Spacer(Modifier.height(8.dp))
-            Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = colors.onSurface)
-            Spacer(Modifier.height(2.dp))
-            Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 2)
+            item("cast") {
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(R.string.common_cast), style = MaterialTheme.typography.labelMedium, color = colors.onSurface)
+                Spacer(Modifier.height(2.dp))
+                Text(cast.take(6).joinToString(", "), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant, maxLines = 2)
+            }
         }
-        Spacer(Modifier.height(12.dp))
-        // Display-only pane (§11.1): actions live on the poster · OK plays, long-press opens the menu
-        // (Favorite / Download / TMDB Details). Keeping the pane non-focusable fixes grid?pane navigation.
-        Text(
-            stringResource(R.string.movies_instruction),
-            style = MaterialTheme.typography.labelMedium,
-            color = colors.onSurfaceVariant,
-        )
+        item("instruction") {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                stringResource(R.string.movies_instruction),
+                style = MaterialTheme.typography.labelMedium,
+                color = colors.onSurfaceVariant,
+            )
+        }
+        // Synopsis (below instruction text)
+        if (!plot.isNullOrBlank()) {
+            item("plot") {
+                Spacer(Modifier.height(8.dp))
+                Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            }
+        }
     }
 }
 

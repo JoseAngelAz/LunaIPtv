@@ -441,13 +441,13 @@ private fun CategoryRow(
             }
         }
         Spacer(Modifier.width(10.dp))
-        LunaIPtvButton("?", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY)
+        LunaIPtvButton("\u2912", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY)
+        LunaIPtvButton("\u2191", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY)
+        LunaIPtvButton("\u2193", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY)
+        LunaIPtvButton("\u2913", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))
         LunaIPtvButton(stringResource(R.string.customize_rename), onClick = onRename, style = LunaIPtvButtonStyle.SECONDARY)
         Spacer(Modifier.width(6.dp))

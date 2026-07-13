@@ -1,6 +1,7 @@
 package com.lunaiptv.core.metadata
 
 import android.util.Log
+import kotlinx.coroutines.flow.first
 import org.json.JSONObject
 import com.lunaiptv.core.network.HttpClient
 import com.lunaiptv.features.settings.data.SettingsRepository
@@ -21,6 +22,12 @@ class TmdbProvider(
 
     /** Resolved base URL + auth for one call. [apiKey] is null for Worker / self-host tiers. */
     private data class Endpoint(val baseUrl: String, val apiKey: String?)
+
+    /** Current app language for TMDB API (returns "es" or "en"). */
+    private suspend fun appLanguage(): String {
+        val lang = settings.language.first()
+        return if (lang == "es") "es" else "en"
+    }
 
     /** Precedence per plan §4: self-host URL > user key > default Worker. */
     private suspend fun resolveEndpoint(): Endpoint {
@@ -48,11 +55,13 @@ class TmdbProvider(
             type == MetadataType.TV -> "&first_air_date_year=$year"
             else -> "&year=$year"
         }
+        val lang = appLanguage()
         val url = buildString {
             append(ep.baseUrl).append(path)
             append("?query=").append(enc(query))
             append(yearParam)
             append("&include_adult=false")
+            append("&language=").append(enc(lang))
             ep.apiKey?.takeIf { it.isNotBlank() }?.let { append("&api_key=").append(enc(it)) }
         }
         // Transport failure (network down, HTTP 429 rate limit, proxy/Worker error) → null, NOT empty:
@@ -67,10 +76,12 @@ class TmdbProvider(
     override suspend fun movieDetails(tmdbId: Int): MovieDetails? {
         if (tmdbId <= 0) return null
         val ep = resolveEndpoint()
+        val lang = appLanguage()
         val url = buildString {
             append(ep.baseUrl).append("/3/movie/").append(tmdbId)
             append("?append_to_response=credits,external_ids,videos,images")
             append("&include_image_language=en,null")
+            append("&language=").append(enc(lang))
             ep.apiKey?.takeIf { it.isNotBlank() }?.let { append("&api_key=").append(enc(it)) }
         }
         val json = runCatching { http.getText(url) }
@@ -82,10 +93,12 @@ class TmdbProvider(
     override suspend fun tvDetails(tmdbId: Int): MovieDetails? {
         if (tmdbId <= 0) return null
         val ep = resolveEndpoint()
+        val lang = appLanguage()
         val url = buildString {
             append(ep.baseUrl).append("/3/tv/").append(tmdbId)
             append("?append_to_response=credits,external_ids,videos,images")
             append("&include_image_language=en,null")
+            append("&language=").append(enc(lang))
             ep.apiKey?.takeIf { it.isNotBlank() }?.let { append("&api_key=").append(enc(it)) }
         }
         val json = runCatching { http.getText(url) }
@@ -97,10 +110,12 @@ class TmdbProvider(
     override suspend fun tvEpisodeDetails(tvId: Int, season: Int, episode: Int): EpisodeDetails? {
         if (tvId <= 0) return null
         val ep = resolveEndpoint()
+        val lang = appLanguage()
         val url = buildString {
             append(ep.baseUrl).append("/3/tv/").append(tvId)
             append("/season/").append(season).append("/episode/").append(episode)
-            ep.apiKey?.takeIf { it.isNotBlank() }?.let { append("?api_key=").append(enc(it)) }
+            append("?language=").append(enc(lang))
+            ep.apiKey?.takeIf { it.isNotBlank() }?.let { append("&api_key=").append(enc(it)) }
         }
         val json = runCatching { http.getText(url) }
             .onFailure { Log.w(TAG, "TMDB episode details failed tv=$tvId s$season e$episode: ${it.message}") }

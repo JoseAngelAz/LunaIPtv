@@ -231,13 +231,13 @@ private fun HomeRowCard(
             )
             Spacer(Modifier.width(6.dp))
         }
-        LunaIPtvButton("?", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
+        LunaIPtvButton("\u2912", onClick = onMoveTop, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
+        LunaIPtvButton("\u2191", onClick = onMoveUp, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveUp)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
+        LunaIPtvButton("\u2193", onClick = onMoveDown, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
         Spacer(Modifier.width(6.dp))
-        LunaIPtvButton("?", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
+        LunaIPtvButton("\u2913", onClick = onMoveBottom, style = LunaIPtvButtonStyle.SECONDARY, enabled = canMoveDown)
         Spacer(Modifier.width(6.dp))
         LunaIPtvButton(
             label = if (hidden) stringResource(R.string.home_settings_show) else stringResource(R.string.hide),

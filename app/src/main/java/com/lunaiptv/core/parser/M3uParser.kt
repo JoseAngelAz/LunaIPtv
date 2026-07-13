@@ -27,11 +27,26 @@ data class M3uEntry(
     val catchupDays: Int?,
 ) {
     /** Tagged as series content — per-episode entries like "Show S01E05" grouped into shows. */
-    val isSeries: Boolean get() = type == "series" || tvgType == "series"
+    val isSeries: Boolean get() = type == "series" || tvgType == "series" || isGroupSeries
 
     /** True when the entry is explicitly tagged as VOD (movie or series), not a live channel. */
     val isVod: Boolean get() =
-        isSeries || type == "vod" || type == "movie" || tvgType == "vod" || tvgType == "movie"
+        isSeries || type == "vod" || type == "movie" || tvgType == "vod" || tvgType == "movie" || isGroupVod
+
+    /**
+     * Heuristic fallback for playlists that don't set `type`/`tvg-type` attributes.
+     * Many M3U playlists use `group-title` to categorize content (e.g. group-title="Movies",
+     * group-title="Series"). This detects common patterns so content routes correctly.
+     */
+    private val isGroupSeries: Boolean get() {
+        val g = groupTitle?.lowercase() ?: return false
+        return SERIES_GROUP_PATTERNS.any { g.contains(it) }
+    }
+
+    private val isGroupVod: Boolean get() {
+        val g = groupTitle?.lowercase() ?: return false
+        return VOD_GROUP_PATTERNS.any { g.contains(it) } && !isGroupSeries
+    }
 }
 
 /** Header info from the `#EXTM3U` line (notably the `url-tvg` EPG URL). */
@@ -180,6 +195,16 @@ class M3uParser {
         private const val STREAM_LOG_ITEM_STEP = 10_000
     }
 }
+
+/** Lowercase substrings that indicate a group-title refers to series content. */
+private val SERIES_GROUP_PATTERNS = listOf("series", "tv show", "tv shows", "show", "drama", "episodio")
+
+/** Lowercase substrings that indicate a group-title refers to VOD/movie content. */
+private val VOD_GROUP_PATTERNS = listOf(
+    "movie", "movies", "film", "films", "vod", "video on demand", "cinema",
+    "pelicula", "peliculas", "cine", "peliculа",   // Latin-а variant
+    "4k movies", "hd movies", "sd movies",
+)
 
 private suspend inline fun BufferedReader.forEachLineSafe(action: suspend (String) -> Unit) {
     val ctx = currentCoroutineContext()

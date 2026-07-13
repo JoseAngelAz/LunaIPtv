@@ -701,6 +701,11 @@ class SyncManager(
             val movieBuffer = ArrayList<PendingM3uChannel>(chunkSize)
             var order = 0 // playlist position — lets "Playlist order" sorting replay the file's order
             var categoryOrder = 0
+            // Diagnostic counters for M3U classification
+            var diagSeries = 0
+            var diagMovies = 0
+            var diagChannels = 0
+            val diagChannelGroups = LinkedHashSet<String>()
 
             fun queueCategory(type: MediaType, group: String) {
                 val key = type to group
@@ -858,6 +863,7 @@ class SyncManager(
                 when {
                     // type="series" / tvg-type="series" → grouped into the Series tab.
                     e.isSeries -> {
+                        diagSeries++
                         e.groupTitle?.let { queueCategory(MediaType.SERIES, it) }
                         val parsed = parseM3uEpisode(e.name)
                         val show = seriesAccumulator.getOrPut(parsed.show.lowercase()) {
@@ -875,6 +881,7 @@ class SyncManager(
                     }
                     // Other VOD tags (type="vod"/"movie", tvg-type="vod"/"movie") → the movie grid.
                     e.isVod -> {
+                        diagMovies++
                         e.groupTitle?.let { queueCategory(MediaType.MOVIE, it) }
                         movieBuffer.add(PendingM3uChannel(order = order++, entry = e))
                         if (movieBuffer.size >= chunkSize) {
@@ -882,6 +889,8 @@ class SyncManager(
                         }
                     }
                     else -> {
+                        diagChannels++
+                        e.groupTitle?.let { diagChannelGroups.add(it) }
                         e.groupTitle?.let { queueCategory(MediaType.LIVE, it) }
                         buffer.add(PendingM3uChannel(order = order++, entry = e))
                         if (buffer.size >= chunkSize) {
@@ -902,6 +911,10 @@ class SyncManager(
                 flushMovies()
             }
             flushSeries()
+            Log.i(TAG, "M3U classification sourceId=${s.id} series=$diagSeries movies=$diagMovies channels=$diagChannels")
+            if (diagChannelGroups.isNotEmpty()) {
+                Log.i(TAG, "M3U channel group-titles (potential missed VOD) sourceId=${s.id} groups=${diagChannelGroups.take(50)}")
+            }
             header
         }
         // Persist the playlist's EPG url (url-tvg) for the EPG engine if the source didn't have one.
