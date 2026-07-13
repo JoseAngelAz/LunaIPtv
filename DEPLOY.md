@@ -55,7 +55,7 @@ Si usas GitHub Actions, estas variables se inyectan automáticamente:
 | Variable | Descripción |
 |----------|-------------|
 | `VERSION_CODE` | Número de versión incremental |
-| `VERSION_NAME` | Nombre de versión (ej: 1.0.0-beta) |
+| `VERSION_NAME` | Nombre de versión (ej: 1.0.0) |
 | `KEYSTORE_FILE` | Ruta al keystore |
 | `KEYSTORE_PASSWORD` | Contraseña del keystore |
 | `KEY_ALIAS` | Alias de la clave |

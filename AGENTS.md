@@ -6,7 +6,7 @@ Android TV IPTV player forked from OwnTV by Jose Angel Azucena Mendez for person
 - **ApplicationId**: `com.lunaiptv`
 - **Namespace**: `com.lunaiptv`
 - **Min SDK**: 26 | **Target SDK**: 36 | **Compile SDK**: 36
-- **Version**: 1.0.0-beta
+- **Version**: 1.0.0
 - **Language**: Kotlin + Jetpack Compose for TV
 - **License**: GPLv3
 
