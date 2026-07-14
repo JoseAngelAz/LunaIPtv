@@ -1,0 +1,103 @@
+package com.lunaiptv.phone.di
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import com.lunaiptv.core.epg.EpgSource
+import com.lunaiptv.core.epg.EpgSourceStore
+import com.lunaiptv.core.repository.EpgRepository
+import com.lunaiptv.core.repository.SourceRepository
+import com.lunaiptv.core.sync.work.EpgSyncScheduler
+import com.lunaiptv.core.sync.work.EpgSyncState
+import com.lunaiptv.features.settings.data.EpgAutoRefresh
+import com.lunaiptv.features.settings.data.SettingsRepository
+import com.lunaiptv.core.database.dao.EpgDao
+import com.lunaiptv.core.database.dao.ChannelDao
+
+/** Manage standalone EPG (XMLTV) sources: list, add (auto-sync), edit, re-sync, delete. */
+class PhoneEPGSourcesViewModel(
+    private val store: EpgSourceStore,
+    private val epgRepository: EpgRepository,
+    private val sourceRepository: SourceRepository,
+    private val settings: SettingsRepository,
+    private val epgDao: EpgDao,
+    private val channelDao: ChannelDao,
+    private val epgSyncScheduler: EpgSyncScheduler,
+) : ViewModel() {
+
+    /** An existing playlist's EPG feed, offered as a one-tap "fill from playlist" option. */
+    data class PlaylistEpg(val name: String, val url: String)
+
+    val sources: StateFlow<List<EpgSource>> =
+        store.sources.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Per-source EPG auto-refresh selection (Off / Startup / staleness threshold). */
+    val autoRefresh: StateFlow<Map<Long, EpgAutoRefresh>> = settings.epgAutoRefresh
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun setAutoRefresh(source: EpgSource, mode: EpgAutoRefresh) {
+        viewModelScope.launch { settings.setEpgAutoRefresh(source.id, mode) }
+    }
+
+    fun add(name: String, url: String, userAgent: String? = null, autoRefresh: EpgAutoRefresh = EpgAutoRefresh.OFF) {
+        viewModelScope.launch {
+            val source = store.add(name, url, userAgent)
+            settings.setEpgAutoRefresh(source.id, autoRefresh)
+            epgSyncScheduler.enqueueSync(source.id, "add")
+        }
+    }
+
+    fun resync(source: EpgSource) {
+        viewModelScope.launch {
+            val base = epgDao.countForSources(listOf(source.id))
+            epgSyncScheduler.enqueueSync(source.id, "manual_resync", base)
+        }
+    }
+
+    fun update(source: EpgSource, name: String, url: String, userAgent: String?) {
+        viewModelScope.launch {
+            val updated = source.copy(name = name.trim().ifBlank { source.name }, url = url.trim(), userAgent = userAgent?.trim()?.takeIf { it.isNotBlank() })
+            store.update(updated)
+            val base = epgDao.countForSources(listOf(updated.id))
+            epgSyncScheduler.enqueueSync(updated.id, "update", base)
+        }
+    }
+
+    fun delete(source: EpgSource) {
+        viewModelScope.launch {
+            epgSyncScheduler.cancelSync(source.id)
+            store.remove(source.id)
+            epgRepository.clear(source.id)
+        }
+    }
+
+    fun observeSync(sourceId: Long): Flow<EpgSyncState> = epgSyncScheduler.observeSync(sourceId)
+
+    fun cancelSync(source: EpgSource) {
+        epgSyncScheduler.cancelSync(source.id)
+    }
+
+    /** A source's status line: guide channels, stored programmes, and how many of the profile's
+     *  channels advertise catch-up (the last is playlist-wide, shown so it's visible alongside the EPG). */
+    suspend fun counts(id: Long): Triple<Int, Int, Int> {
+        val channels = epgDao.countGuideChannels(listOf(id))
+        val programmes = epgDao.countForSources(listOf(id))
+        val pid = settings.activeProfileId.first()
+        val playlistIds = if (pid < 0) emptyList() else sourceRepository.observeSources(pid).first().map { it.id }
+        val catchup = if (playlistIds.isEmpty()) 0 else channelDao.countCatchup(playlistIds)
+        return Triple(channels, programmes, catchup)
+    }
+
+    /** Playlists whose own EPG can pre-fill the add form (Xtream xmltv.php / M3U url-tvg). */
+    suspend fun playlistEpgOptions(): List<PlaylistEpg> {
+        val pid = settings.activeProfileId.first()
+        if (pid < 0) return emptyList()
+        return sourceRepository.observeSources(pid).first()
+            .mapNotNull { src -> epgRepository.guideUrl(src)?.let { PlaylistEpg(src.name, it) } }
+    }
+}

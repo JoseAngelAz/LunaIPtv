@@ -30,6 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lunaiptv.phone.di.PhoneBackupViewModel
+import com.lunaiptv.phone.di.PhoneEPGSourcesViewModel
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
@@ -38,10 +40,13 @@ import com.lunaiptv.phone.di.PhoneSearchViewModel
 import com.lunaiptv.phone.di.PhoneSeriesViewModel
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
 import com.lunaiptv.phone.di.PhoneSourceViewModel
+import com.lunaiptv.phone.ui.screens.PhoneBackupScreen
+import com.lunaiptv.phone.ui.screens.PhoneEPGSourcesScreen
 import com.lunaiptv.phone.ui.screens.PhoneHomeScreen
 import com.lunaiptv.phone.ui.screens.PhoneLiveScreen
 import com.lunaiptv.phone.ui.screens.PhoneMovieDetailScreen
 import com.lunaiptv.phone.ui.screens.PhoneMoviesScreen
+import com.lunaiptv.phone.ui.screens.PhoneNetworkSettingsScreen
 import com.lunaiptv.phone.ui.screens.PhoneProfileScreen
 import com.lunaiptv.phone.ui.screens.PhoneSearchScreen
 import com.lunaiptv.phone.ui.screens.PhoneSeriesDetailScreen
@@ -50,6 +55,7 @@ import com.lunaiptv.phone.ui.screens.PhoneSettingsScreen
 import com.lunaiptv.phone.ui.screens.PhoneManageSourcesScreen
 import com.lunaiptv.phone.ui.screens.PhoneAddSourceScreen
 import com.lunaiptv.phone.ui.screens.PhonePlayerScreen
+import com.lunaiptv.phone.ui.screens.PhoneVideoPlayerSettingsScreen
 
 sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVector) {
     data object Home : PhoneScreen("home", "Home", Icons.Filled.Home)
@@ -86,6 +92,8 @@ fun PhoneShell() {
     val settingsVm: PhoneSettingsViewModel = koinViewModel()
     val profileVm: PhoneProfileViewModel = koinViewModel()
     val sourceVm: PhoneSourceViewModel = koinViewModel()
+    val epgVm: PhoneEPGSourcesViewModel = koinViewModel()
+    val backupVm: PhoneBackupViewModel = koinViewModel()
     val scope = rememberCoroutineScope()
 
     // Detail overlays (for Movies/Series detail navigation)
@@ -211,6 +219,10 @@ fun PhoneShell() {
                             onBack = { navController.popBackStack() },
                             onProfiles = { navController.navigate("profiles") },
                             onManageSources = { navController.navigate("manage-sources") },
+                            onEpgSources = { navController.navigate("epg-sources") },
+                            onNetworkSettings = { navController.navigate("network-settings") },
+                            onVideoPlayerSettings = { navController.navigate("video-player-settings") },
+                            onBackup = { navController.navigate("backup") },
                         )
                     }
                     composable("profiles") {
@@ -252,6 +264,30 @@ fun PhoneShell() {
                                 showDefaultToggle = sources.size > 1,
                             )
                         }
+                    }
+                    composable("epg-sources") {
+                        PhoneEPGSourcesScreen(
+                            vm = epgVm,
+                            onBack = { navController.popBackStack() },
+                        )
+                    }
+                    composable("network-settings") {
+                        PhoneNetworkSettingsScreen(
+                            vm = settingsVm,
+                            onBack = { navController.popBackStack() },
+                        )
+                    }
+                    composable("video-player-settings") {
+                        PhoneVideoPlayerSettingsScreen(
+                            vm = settingsVm,
+                            onBack = { navController.popBackStack() },
+                        )
+                    }
+                    composable("backup") {
+                        PhoneBackupScreen(
+                            vm = backupVm,
+                            onBack = { navController.popBackStack() },
+                        )
                     }
                 }
             }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +32,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material.icons.filled.Person
 import com.lunaiptv.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,6 +41,10 @@ fun PhoneSettingsScreen(
     onBack: () -> Unit,
     onProfiles: () -> Unit = {},
     onManageSources: () -> Unit = {},
+    onEpgSources: () -> Unit = {},
+    onNetworkSettings: () -> Unit = {},
+    onVideoPlayerSettings: () -> Unit = {},
+    onBackup: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
@@ -48,7 +52,8 @@ fun PhoneSettingsScreen(
     val language by vm.language.collectAsStateWithLifecycle()
     val livePreview by vm.livePreviewEnabled.collectAsStateWithLifecycle()
     val livePreviewAudio by vm.livePreviewAudio.collectAsStateWithLifecycle()
-    val externalPlayer by vm.externalPlayer.collectAsStateWithLifecycle()
+    val weatherEnabled by vm.weatherEnabled.collectAsStateWithLifecycle()
+    val metadataMode by vm.metadataMode.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -130,8 +135,14 @@ fun PhoneSettingsScreen(
                 onClick = onManageSources,
             )
 
+            SettingOption(
+                title = "EPG Sources",
+                subtitle = "Manage electronic program guide feeds",
+                onClick = onEpgSources,
+            )
+
             // ── Playback ────────────────────────────────────
-            SectionHeader("Playback")
+            SectionHeader("Live TV")
 
             SettingToggle(
                 title = "Live preview",
@@ -147,11 +158,70 @@ fun PhoneSettingsScreen(
                 onCheckedChange = vm::setLivePreviewAudio,
             )
 
+            // ── Video Player ────────────────────────────────
+            SectionHeader("Video Player")
+
+            SettingOption(
+                title = "Video Player Settings",
+                subtitle = "Decoder, zoom, subtitles, audio, resume",
+                onClick = onVideoPlayerSettings,
+            )
+
+            // ── Network ─────────────────────────────────────
+            SectionHeader("Network")
+
+            SettingOption(
+                title = "Proxy",
+                subtitle = "Configure HTTP proxy for all traffic",
+                onClick = onNetworkSettings,
+            )
+
+            // ── Weather ─────────────────────────────────────
+            SectionHeader("Weather")
+
             SettingToggle(
-                title = "External player",
-                subtitle = "Open videos in external player app",
-                checked = externalPlayer,
-                onCheckedChange = vm::setExternalPlayer,
+                title = "Weather chip",
+                subtitle = "Show weather in the top bar",
+                checked = weatherEnabled,
+                onCheckedChange = vm::setWeatherEnabled,
+            )
+
+            // ── Metadata ────────────────────────────────────
+            SectionHeader("Metadata")
+
+            SettingOption(
+                title = "TMDB enrichment",
+                subtitle = when (metadataMode) {
+                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER -> "Provider only (no TMDB)"
+                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER_PLUS_TMDB -> "Provider + TMDB"
+                    com.lunaiptv.core.metadata.MetadataMode.TMDB_ONLY -> "TMDB only"
+                },
+                onClick = {
+                    val next = when (metadataMode) {
+                        com.lunaiptv.core.metadata.MetadataMode.PROVIDER -> com.lunaiptv.core.metadata.MetadataMode.PROVIDER_PLUS_TMDB
+                        com.lunaiptv.core.metadata.MetadataMode.PROVIDER_PLUS_TMDB -> com.lunaiptv.core.metadata.MetadataMode.TMDB_ONLY
+                        com.lunaiptv.core.metadata.MetadataMode.TMDB_ONLY -> com.lunaiptv.core.metadata.MetadataMode.PROVIDER
+                    }
+                    vm.setMetadataMode(next)
+                },
+            )
+
+            // ── Backup ──────────────────────────────────────
+            SectionHeader("Backup & Restore")
+
+            SettingOption(
+                title = "Backup / Restore",
+                subtitle = "Export or import app settings",
+                onClick = onBackup,
+            )
+
+            // ── About ───────────────────────────────────────
+            SectionHeader("About")
+
+            SettingOption(
+                title = "LunaIPtv",
+                subtitle = "Version 1.0.0 · Forked from OwnTV",
+                onClick = { },
             )
 
             Spacer(Modifier.height(32.dp))

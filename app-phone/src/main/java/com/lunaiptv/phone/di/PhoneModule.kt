@@ -94,4 +94,18 @@ val phoneModule = module {
             profileDao = get(),
         )
     }
+    viewModel {
+        PhoneEPGSourcesViewModel(
+            store = get(),
+            epgRepository = get(),
+            sourceRepository = get(),
+            settings = get(),
+            epgDao = get(),
+            channelDao = get(),
+            epgSyncScheduler = get(),
+        )
+    }
+    viewModel {
+        PhoneBackupViewModel(backup = get())
+    }
 }
