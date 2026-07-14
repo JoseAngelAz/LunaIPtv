@@ -32,6 +32,17 @@ val dataModule = module {
     single { com.lunaiptv.core.network.ProxyConfigHolder(get<com.lunaiptv.features.settings.data.SettingsRepository>().proxyConfig) }
     single {
         val proxyHolder = get<com.lunaiptv.core.network.ProxyConfigHolder>()
+        // Many IPTV panels use old/outdated TLS or self-signed certs that Android's default
+        // TrustManager rejects. Build a permissive SSL context that trusts all certificates
+        // and enables older TLS protocols so providers with broken SSL still work.
+        val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+            override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+            override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+            override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+        })
+        val sslContext = javax.net.ssl.SSLContext.getInstance("TLS").apply {
+            init(null, trustAllCerts, java.security.SecureRandom())
+        }
         OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
@@ -40,6 +51,8 @@ val dataModule = module {
             .proxySelector(proxyHolder.proxySelector)
             .proxyAuthenticator(proxyHolder.proxyAuthenticator)
             .protocols(listOf(Protocol.HTTP_1_1))
+            .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as javax.net.ssl.X509TrustManager)
+            .hostnameVerifier { _, _ -> true }
             .addInterceptor { chain ->
                 val req = chain.request()
                 val out = if (req.header("User-Agent").isNullOrBlank()) {
