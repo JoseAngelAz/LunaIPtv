@@ -248,6 +248,17 @@ private fun SeriesGrid(
         if (viewMode == SettingsRepository.VodViewMode.LIST) listState.scrollToItem(0)
         else gridListState.scrollToItem(0)
     }
+    // D-pad focus scroll fix: when the selected series changes (D-pad navigation), ensure the full
+    // row is scrolled into view — not just the top of the poster but also the title below it.
+    LaunchedEffect(selectedSeries?.id) {
+        if (viewMode == SettingsRepository.VodViewMode.GRID && selectedSeries != null && series.itemCount > 0) {
+            val seriesIndex = series.itemSnapshotList.items.indexOfFirst { it?.id == selectedSeries?.id }
+            if (seriesIndex >= 0) {
+                val rowIndex = seriesIndex / gridColumns.coerceAtLeast(1)
+                gridListState.animateScrollToItem(rowIndex)
+            }
+        }
+    }
 
     // Back from a show's episodes: scroll the grid to the poster you opened, then focus it. It may be
     // far down and not composed, so without scrolling the focus request fails and focus falls to the

@@ -25,4 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "LunaIPtv"
 include(":core")
 include(":app")
- 
+include(":app-phone")

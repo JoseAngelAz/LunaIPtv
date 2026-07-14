@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">LunaIPtv</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_live">Live</string>
+    <string name="nav_movies">Movies</string>
+    <string name="nav_series">Series</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_coming_soon">Coming soon</string>
+</resources>

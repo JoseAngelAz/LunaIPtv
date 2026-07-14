@@ -167,6 +167,19 @@ fun MoviesScreen(
         if (viewMode == SettingsRepository.VodViewMode.LIST) listState.scrollToItem(0)
         else gridListState.scrollToItem(0)
     }
+    // D-pad focus scroll fix: when the selected movie changes (D-pad navigation), ensure the full
+    // row is scrolled into view — not just the top of the poster but also the title below it.
+    // Without this, the LazyColumn auto-scroll only brings the focused item partially into view,
+    // clipping the title text at the bottom while the previous row's title is still visible.
+    LaunchedEffect(selectedMovie?.id) {
+        if (viewMode == SettingsRepository.VodViewMode.GRID && selectedMovie != null && movies.itemCount > 0) {
+            val movieIndex = movies.itemSnapshotList.items.indexOfFirst { it?.id == selectedMovie?.id }
+            if (movieIndex >= 0) {
+                val rowIndex = movieIndex / gridColumns.coerceAtLeast(1)
+                gridListState.animateScrollToItem(rowIndex)
+            }
+        }
+    }
     // Returning from the player: scroll to and focus the movie you just played (waits for the grid to load).
     LaunchedEffect(restoreFocus, movies.itemCount) {
         if (!restoreFocus || movies.itemCount == 0) return@LaunchedEffect

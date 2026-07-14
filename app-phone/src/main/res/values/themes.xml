@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.LunaIPtvPhone" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/lunaip_bg</item>
+        <item name="android:statusBarColor">@color/lunaip_bg</item>
+        <item name="android:navigationBarColor">@color/lunaip_bg</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>
