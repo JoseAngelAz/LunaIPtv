@@ -69,6 +69,17 @@ val phoneModule = module {
     }
     viewModel { PhoneProfileViewModel(profileDao = get(), settings = get()) }
     viewModel {
+        PhoneSourceViewModel(
+            profileDao = get(),
+            sourceDao = get(),
+            sourceRepository = get(),
+            settings = get(),
+            connectivity = get(),
+            importFinalizer = get(),
+            catalogSyncScheduler = get(),
+        )
+    }
+    viewModel {
         PhoneHomeViewModel(
             planner = get(),
             channelDao = get(),

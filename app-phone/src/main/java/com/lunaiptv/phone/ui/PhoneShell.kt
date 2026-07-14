@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
@@ -36,6 +37,7 @@ import com.lunaiptv.phone.di.PhoneProfileViewModel
 import com.lunaiptv.phone.di.PhoneSearchViewModel
 import com.lunaiptv.phone.di.PhoneSeriesViewModel
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
+import com.lunaiptv.phone.di.PhoneSourceViewModel
 import com.lunaiptv.phone.ui.screens.PhoneHomeScreen
 import com.lunaiptv.phone.ui.screens.PhoneLiveScreen
 import com.lunaiptv.phone.ui.screens.PhoneMovieDetailScreen
@@ -45,6 +47,8 @@ import com.lunaiptv.phone.ui.screens.PhoneSearchScreen
 import com.lunaiptv.phone.ui.screens.PhoneSeriesDetailScreen
 import com.lunaiptv.phone.ui.screens.PhoneSeriesScreen
 import com.lunaiptv.phone.ui.screens.PhoneSettingsScreen
+import com.lunaiptv.phone.ui.screens.PhoneManageSourcesScreen
+import com.lunaiptv.phone.ui.screens.PhoneAddSourceScreen
 
 sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVector) {
     data object Home : PhoneScreen("home", "Home", Icons.Filled.Home)
@@ -80,6 +84,7 @@ fun PhoneShell() {
     val searchVm: PhoneSearchViewModel = koinViewModel()
     val settingsVm: PhoneSettingsViewModel = koinViewModel()
     val profileVm: PhoneProfileViewModel = koinViewModel()
+    val sourceVm: PhoneSourceViewModel = koinViewModel()
     val scope = rememberCoroutineScope()
 
     // Detail overlays (for Movies/Series detail navigation)
@@ -189,6 +194,7 @@ fun PhoneShell() {
                             vm = settingsVm,
                             onBack = { navController.popBackStack() },
                             onProfiles = { navController.navigate("profiles") },
+                            onManageSources = { navController.navigate("manage-sources") },
                         )
                     }
                     composable("profiles") {
@@ -199,6 +205,37 @@ fun PhoneShell() {
                                 navigateToTab(PhoneScreen.Home.route)
                             },
                         )
+                    }
+                    composable("manage-sources") {
+                        PhoneManageSourcesScreen(
+                            vm = sourceVm,
+                            onBack = { navController.popBackStack() },
+                            onAddSource = { navController.navigate("add-source") },
+                            onEditSource = { source -> navController.navigate("edit-source/${source.id}") },
+                        )
+                    }
+                    composable("add-source") {
+                        PhoneAddSourceScreen(
+                            vm = sourceVm,
+                            onBack = { navController.popBackStack() },
+                        )
+                    }
+                    composable("edit-source/{sourceId}") { backStackEntry ->
+                        val sourceId = backStackEntry.arguments?.getString("sourceId")?.toLongOrNull()
+                        val sources by sourceVm.sources.collectAsStateWithLifecycle()
+                        val source = sources.find { it.id == sourceId }
+                        val playlistAutoRefresh by sourceVm.playlistAutoRefresh.collectAsStateWithLifecycle()
+                        val defaultId by sourceVm.defaultSourceId.collectAsStateWithLifecycle()
+                        if (source != null) {
+                            PhoneAddSourceScreen(
+                                vm = sourceVm,
+                                onBack = { navController.popBackStack() },
+                                editing = source,
+                                initialAutoRefresh = playlistAutoRefresh[source.id] ?: com.lunaiptv.features.settings.data.PlaylistAutoRefresh.OFF,
+                                initialIsDefault = source.id == defaultId,
+                                showDefaultToggle = sources.size > 1,
+                            )
+                        }
                     }
                 }
             }

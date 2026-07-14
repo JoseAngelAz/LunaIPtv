@@ -40,6 +40,7 @@ fun PhoneSettingsScreen(
     vm: com.lunaiptv.phone.di.PhoneSettingsViewModel,
     onBack: () -> Unit,
     onProfiles: () -> Unit = {},
+    onManageSources: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
@@ -118,6 +119,15 @@ fun PhoneSettingsScreen(
                 subtitle = "Switch or manage profiles",
                 icon = Icons.Filled.Person,
                 onClick = onProfiles,
+            )
+
+            // ── Content ────────────────────────────────────
+            SectionHeader("Content")
+
+            SettingOption(
+                title = "Manage Sources",
+                subtitle = "Add, edit or remove IPTV sources",
+                onClick = onManageSources,
             )
 
             // ── Playback ────────────────────────────────────
