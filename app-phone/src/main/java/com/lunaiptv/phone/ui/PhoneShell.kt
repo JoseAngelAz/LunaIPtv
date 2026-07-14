@@ -1,5 +1,6 @@
 package com.lunaiptv.phone.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -128,6 +129,18 @@ fun PhoneShell() {
             }
         },
     ) { innerPadding ->
+        // Back handlers for overlays
+        BackHandler(enabled = showPlayer != null) {
+            showPlayer = null
+        }
+        BackHandler(enabled = showMovieDetail != null) {
+            moviesVm.saveProgress(showMovieDetail!!.id)
+            showMovieDetail = null
+        }
+        BackHandler(enabled = showSeriesDetail != null) {
+            showSeriesDetail = null
+        }
+
         when {
             showPlayer != null -> {
                 PhonePlayerScreen(

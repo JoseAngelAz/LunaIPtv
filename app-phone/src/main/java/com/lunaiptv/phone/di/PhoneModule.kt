@@ -7,6 +7,7 @@ import com.lunaiptv.features.settings.data.SettingsRepository
 
 val phoneModule = module {
     single { SettingsRepository(androidContext()) }
+    single { com.lunaiptv.core.player.VodEngineStore(androidContext()) }
 
     // ExoPlayer (single instance, shared for live + VOD)
     single { PhoneLivePlayer(androidContext(), get()) }
