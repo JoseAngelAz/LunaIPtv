@@ -49,6 +49,7 @@ import com.lunaiptv.phone.ui.screens.PhoneSeriesScreen
 import com.lunaiptv.phone.ui.screens.PhoneSettingsScreen
 import com.lunaiptv.phone.ui.screens.PhoneManageSourcesScreen
 import com.lunaiptv.phone.ui.screens.PhoneAddSourceScreen
+import com.lunaiptv.phone.ui.screens.PhonePlayerScreen
 
 sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVector) {
     data object Home : PhoneScreen("home", "Home", Icons.Filled.Home)
@@ -90,10 +91,12 @@ fun PhoneShell() {
     // Detail overlays (for Movies/Series detail navigation)
     var showMovieDetail by remember { mutableStateOf<com.lunaiptv.core.database.entity.MovieEntity?>(null) }
     var showSeriesDetail by remember { mutableStateOf<com.lunaiptv.core.database.entity.SeriesEntity?>(null) }
+    var showPlayer by remember { mutableStateOf<Pair<String, String>?>(null) } // title, url
 
     fun navigateToTab(route: String) {
         showMovieDetail = null
         showSeriesDetail = null
+        showPlayer = null
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
@@ -103,7 +106,7 @@ fun PhoneShell() {
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar && showMovieDetail == null && showSeriesDetail == null) {
+            if (showBottomBar && showMovieDetail == null && showSeriesDetail == null && showPlayer == null) {
                 NavigationBar {
                     bottomScreens.forEach { screen ->
                         NavigationBarItem(
@@ -118,6 +121,13 @@ fun PhoneShell() {
         },
     ) { innerPadding ->
         when {
+            showPlayer != null -> {
+                PhonePlayerScreen(
+                    player = liveVm.player,
+                    title = showPlayer!!.first,
+                    onBack = { showPlayer = null },
+                )
+            }
             showMovieDetail != null -> {
                 PhoneMovieDetailScreen(
                     movie = showMovieDetail!!,
@@ -126,6 +136,10 @@ fun PhoneShell() {
                         moviesVm.saveProgress(showMovieDetail!!.id)
                         showMovieDetail = null
                     },
+                    onPlay = { movie ->
+                        moviesVm.playMovie(movie)
+                        showPlayer = movie.name to movie.streamUrl
+                    },
                 )
             }
             showSeriesDetail != null -> {
@@ -133,7 +147,9 @@ fun PhoneShell() {
                     series = showSeriesDetail!!,
                     vm = seriesVm,
                     onBack = { showSeriesDetail = null },
-                    onPlayEpisode = { /* Episode plays via vm.playEpisode in detail screen */ },
+                    onPlayEpisode = { ep ->
+                        showPlayer = ep.name to ep.streamUrl
+                    },
                 )
             }
             else -> {

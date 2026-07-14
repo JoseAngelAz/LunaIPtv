@@ -44,6 +44,7 @@ fun PhoneMovieDetailScreen(
     movie: MovieEntity,
     vm: PhoneMoviesViewModel,
     onBack: () -> Unit,
+    onPlay: ((MovieEntity) -> Unit)? = null,
 ) {
     val allFavorites by vm.favoriteIds.collectAsState()
 
@@ -119,7 +120,9 @@ fun PhoneMovieDetailScreen(
             Spacer(Modifier.height(16.dp))
 
             Button(
-                onClick = { vm.playMovie(movie) },
+                onClick = {
+                    if (onPlay != null) onPlay(movie) else vm.playMovie(movie)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
