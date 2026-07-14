@@ -2,8 +2,10 @@ package com.lunaiptv.phone.ui.screens
 
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
@@ -41,8 +44,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +62,7 @@ import com.lunaiptv.features.live.LiveKey
 import com.lunaiptv.phone.di.PhoneLivePlayer
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
     val channels = vm.channels.collectAsLazyPagingItems()
@@ -69,6 +75,14 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
     val selectedChannel by vm.selectedChannel.collectAsStateWithLifecycle()
     val playerState by vm.player.state.collectAsStateWithLifecycle()
     val isPlaying by vm.player.isPlaying.collectAsStateWithLifecycle()
+    val epgMap by vm.epgMap.collectAsStateWithLifecycle()
+
+    var contextMenuChannel by remember { mutableStateOf<com.lunaiptv.core.database.entity.ChannelEntity?>(null) }
+
+    // Load EPG when visible channels change
+    LaunchedEffect(channels.itemSnapshotList.items) {
+        vm.loadEpgForVisible(channels.itemSnapshotList.items)
+    }
 
     Scaffold { padding ->
         Column(
@@ -76,7 +90,6 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            // ── Player area ─────────────────────────────────
             if (selectedChannel != null) {
                 PlayerArea(
                     vm = vm,
@@ -86,7 +99,6 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                 )
             }
 
-            // ── Category chips ──────────────────────────────
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -103,7 +115,6 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                 }
             }
 
-            // ── Search + Sort ───────────────────────────────
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -135,7 +146,6 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                 )
             }
 
-            // ── Channel list ────────────────────────────────
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 16.dp),
@@ -144,6 +154,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                     val ch = channels[index] ?: return@items
                     val isFav = favoriteIds.contains(ch.id)
                     val isSelected = ch.id == selectedChannel?.id
+                    val epg = epgMap[ch.id]
                     ListItem(
                         headlineContent = {
                             Text(
@@ -153,6 +164,28 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                                 color = if (isSelected) MaterialTheme.colorScheme.primary
                                 else MaterialTheme.colorScheme.onSurface,
                             )
+                        },
+                        supportingContent = {
+                            if (epg != null && epg.nowTitle != null) {
+                                Column {
+                                    Text(
+                                        text = "Now: ${epg.nowTitle}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    if (epg.nextTitle != null) {
+                                        Text(
+                                            text = "Next: ${epg.nextTitle}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    }
+                                }
+                            }
                         },
                         leadingContent = {
                             AsyncImage(
@@ -187,11 +220,41 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                                 }
                             }
                         },
-                        modifier = Modifier.clickable { vm.playChannel(ch) },
+                        modifier = Modifier.combinedClickable(
+                            onClick = { vm.playChannel(ch) },
+                            onLongClick = { contextMenuChannel = ch },
+                        ),
                     )
                 }
             }
         }
+    }
+
+    contextMenuChannel?.let { ch ->
+        val isFav = favoriteIds.contains(ch.id)
+        ContextMenuSheet(
+            title = ch.name,
+            items = listOf(
+                ContextMenuItem(
+                    icon = Icons.Default.PlayArrow,
+                    label = "Play",
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { vm.playChannel(ch) },
+                ),
+                ContextMenuItem(
+                    icon = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    label = if (isFav) "Remove from Favorites" else "Add to Favorites",
+                    tint = if (isFav) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                    onClick = { vm.toggleFavorite(ch) },
+                ),
+                ContextMenuItem(
+                    icon = Icons.Default.Info,
+                    label = "Channel Info",
+                    onClick = { /* Could show EPG detail */ },
+                ),
+            ),
+            onDismiss = { contextMenuChannel = null },
+        )
     }
 }
 

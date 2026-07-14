@@ -1,7 +1,9 @@
 package com.lunaiptv.phone.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
@@ -49,6 +52,7 @@ import coil3.compose.AsyncImage
 import com.lunaiptv.phone.di.PhoneSeriesViewModel
 import com.lunaiptv.core.database.entity.SeriesEntity
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PhoneSeriesScreen(
     vm: PhoneSeriesViewModel,
@@ -61,6 +65,7 @@ fun PhoneSeriesScreen(
     val favoriteIds by vm.favoriteIds.collectAsState()
     val seriesList = vm.series.collectAsLazyPagingItems()
     var showSearch by remember { mutableStateOf(false) }
+    var contextMenuSeries by remember { mutableStateOf<SeriesEntity?>(null) }
 
     Column(Modifier.fillMaxSize()) {
         if (showSearch) {
@@ -128,24 +133,49 @@ fun PhoneSeriesScreen(
                     isFavorited = s.id in favoriteIds,
                     onFavoriteToggle = { vm.toggleFavorite(s) },
                     onClick = { onSeriesClick(s) },
+                    onLongClick = { contextMenuSeries = s },
                 )
             }
         }
     }
+
+    contextMenuSeries?.let { s ->
+        val isFav = s.id in favoriteIds
+        ContextMenuSheet(
+            title = s.name,
+            items = listOf(
+                ContextMenuItem(
+                    icon = Icons.Default.Info,
+                    label = "View Details",
+                    tint = MaterialTheme.colorScheme.primary,
+                    onClick = { onSeriesClick(s) },
+                ),
+                ContextMenuItem(
+                    icon = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    label = if (isFav) "Remove from Favorites" else "Add to Favorites",
+                    tint = if (isFav) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                    onClick = { vm.toggleFavorite(s) },
+                ),
+            ),
+            onDismiss = { contextMenuSeries = null },
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SeriesPosterCard(
     series: SeriesEntity,
     isFavorited: Boolean,
     onFavoriteToggle: () -> Unit,
     onClick: () -> Unit,
+    onLongClick: () -> Unit = {},
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(0.67f)
-            .clickable(onClick = onClick),
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {

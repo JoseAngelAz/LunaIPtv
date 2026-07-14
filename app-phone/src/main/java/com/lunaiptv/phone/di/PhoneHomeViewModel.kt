@@ -5,6 +5,7 @@ package com.lunaiptv.phone.di
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,11 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.lunaiptv.core.database.dao.ChannelDao
 import com.lunaiptv.core.database.dao.FavoriteDao
 import com.lunaiptv.core.database.dao.HistoryDao
@@ -28,18 +28,28 @@ import com.lunaiptv.core.database.entity.ChannelEntity
 import com.lunaiptv.core.database.entity.MovieEntity
 import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.launcher.LauncherContinuationItem
+import com.lunaiptv.core.launcher.LauncherContinuationKind
 import com.lunaiptv.core.launcher.LauncherRecommendationPlanner
+import com.lunaiptv.core.metadata.MetadataRepository
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.settings.data.SettingsRepository
+
+data class HeroMeta(
+    val backdropUrl: String? = null,
+    val logoUrl: String? = null,
+    val plot: String? = null,
+)
 
 data class PhoneHomeState(
     val isLoading: Boolean = true,
     val heroItems: List<LauncherContinuationItem> = emptyList(),
+    val heroMeta: Map<String, HeroMeta> = emptyMap(),
     val continueMovies: List<LauncherContinuationItem> = emptyList(),
     val continueSeries: List<LauncherContinuationItem> = emptyList(),
     val recentChannels: List<ChannelEntity> = emptyList(),
     val favoriteChannels: List<ChannelEntity> = emptyList(),
     val hasAnyContent: Boolean = false,
+    val profileName: String = "",
 )
 
 class PhoneHomeViewModel(
@@ -52,6 +62,8 @@ class PhoneHomeViewModel(
     private val progressDao: ProgressDao,
     private val sourceDao: SourceDao,
     private val settings: SettingsRepository,
+    private val metadata: MetadataRepository,
+    private val profileDao: com.lunaiptv.core.database.dao.ProfileDao,
 ) : ViewModel() {
 
     private data class Ctx(val profileId: Long, val sourceIds: List<Long>)
@@ -79,9 +91,10 @@ class PhoneHomeViewModel(
     private suspend fun loadHome(profileId: Long) {
         _uiState.value = PhoneHomeState(isLoading = true)
         try {
+            val profileName = profileDao.getById(profileId)?.name ?: ""
             val continuations = planner.buildContinuationItems(profileId)
-            val movies = continuations.filter { it.kind == com.lunaiptv.core.launcher.LauncherContinuationKind.MOVIE }
-            val episodes = continuations.filter { it.kind == com.lunaiptv.core.launcher.LauncherContinuationKind.EPISODE }
+            val movies = continuations.filter { it.kind == LauncherContinuationKind.MOVIE }
+            val episodes = continuations.filter { it.kind == LauncherContinuationKind.EPISODE }
             val hero = continuations.take(5)
             val recent = try { channelDao.recentlyWatched(profileId, 20).first() } catch (_: Exception) { emptyList() }
             val favs = try { channelDao.favoritesListAlpha(profileId).first() } catch (_: Exception) { emptyList() }
@@ -94,10 +107,48 @@ class PhoneHomeViewModel(
                 recentChannels = recent,
                 favoriteChannels = favs,
                 hasAnyContent = continuations.isNotEmpty() || recent.isNotEmpty() || favs.isNotEmpty(),
+                profileName = profileName,
             )
+
+            // Resolve TMDB metadata for hero items (background)
+            resolveHeroMeta(hero)
         } catch (e: Exception) {
             Log.w(TAG, "loadHome failed for profile=$profileId", e)
             _uiState.value = PhoneHomeState(isLoading = false)
+        }
+    }
+
+    private suspend fun resolveHeroMeta(items: List<LauncherContinuationItem>) {
+        val meta = mutableMapOf<String, HeroMeta>()
+        for (item in items) {
+            val key = item.stableKey
+            try {
+                val m = when (item.kind) {
+                    LauncherContinuationKind.MOVIE -> {
+                        val movie = movieDao.getById(item.targetItemId) ?: continue
+                        metadata.resolveMovie(movie)
+                    }
+                    LauncherContinuationKind.EPISODE -> {
+                        val ep = seriesDao.getEpisodeById(item.targetItemId) ?: continue
+                        val show = seriesDao.getSeriesById(ep.seriesId) ?: continue
+                        metadata.resolveEpisode(show, ep)
+                    }
+                    LauncherContinuationKind.LIVE -> null
+                }
+                if (m != null) {
+                    val imgBase = "https://image.tmdb.org/t/p/"
+                    meta[key] = HeroMeta(
+                        backdropUrl = m.backdropPath?.let { "${imgBase}w780$it" },
+                        logoUrl = m.logoPath?.let { "${imgBase}w500$it" },
+                        plot = m.overview,
+                    )
+                }
+            } catch (e: Exception) {
+                Log.d(TAG, "resolveHeroMeta failed for $key", e)
+            }
+        }
+        if (meta.isNotEmpty()) {
+            _uiState.value = _uiState.value.copy(heroMeta = meta)
         }
     }
 

@@ -32,6 +32,7 @@ import org.koin.androidx.compose.koinViewModel
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
+import com.lunaiptv.phone.di.PhoneProfileViewModel
 import com.lunaiptv.phone.di.PhoneSearchViewModel
 import com.lunaiptv.phone.di.PhoneSeriesViewModel
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
@@ -39,6 +40,7 @@ import com.lunaiptv.phone.ui.screens.PhoneHomeScreen
 import com.lunaiptv.phone.ui.screens.PhoneLiveScreen
 import com.lunaiptv.phone.ui.screens.PhoneMovieDetailScreen
 import com.lunaiptv.phone.ui.screens.PhoneMoviesScreen
+import com.lunaiptv.phone.ui.screens.PhoneProfileScreen
 import com.lunaiptv.phone.ui.screens.PhoneSearchScreen
 import com.lunaiptv.phone.ui.screens.PhoneSeriesDetailScreen
 import com.lunaiptv.phone.ui.screens.PhoneSeriesScreen
@@ -77,6 +79,7 @@ fun PhoneShell() {
     val seriesVm: PhoneSeriesViewModel = koinViewModel()
     val searchVm: PhoneSearchViewModel = koinViewModel()
     val settingsVm: PhoneSettingsViewModel = koinViewModel()
+    val profileVm: PhoneProfileViewModel = koinViewModel()
     val scope = rememberCoroutineScope()
 
     // Detail overlays (for Movies/Series detail navigation)
@@ -185,6 +188,16 @@ fun PhoneShell() {
                         PhoneSettingsScreen(
                             vm = settingsVm,
                             onBack = { navController.popBackStack() },
+                            onProfiles = { navController.navigate("profiles") },
+                        )
+                    }
+                    composable("profiles") {
+                        PhoneProfileScreen(
+                            vm = profileVm,
+                            onProfileSelected = {
+                                navController.popBackStack()
+                                navigateToTab(PhoneScreen.Home.route)
+                            },
                         )
                     }
                 }

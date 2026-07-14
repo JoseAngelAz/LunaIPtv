@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material.icons.filled.Person
 import com.lunaiptv.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +39,7 @@ import com.lunaiptv.ui.theme.ThemeMode
 fun PhoneSettingsScreen(
     vm: com.lunaiptv.phone.di.PhoneSettingsViewModel,
     onBack: () -> Unit,
+    onProfiles: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
@@ -106,6 +108,16 @@ fun PhoneSettingsScreen(
                 onClick = {
                     vm.setLanguage(if (language == "en") "es" else "en")
                 },
+            )
+
+            // ── Account ────────────────────────────────────
+            SectionHeader("Account")
+
+            SettingOption(
+                title = "Profiles",
+                subtitle = "Switch or manage profiles",
+                icon = Icons.Filled.Person,
+                onClick = onProfiles,
             )
 
             // ── Playback ────────────────────────────────────

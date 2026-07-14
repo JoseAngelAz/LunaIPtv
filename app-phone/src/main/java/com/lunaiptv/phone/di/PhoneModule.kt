@@ -67,6 +67,7 @@ val phoneModule = module {
             player = get(),
         )
     }
+    viewModel { PhoneProfileViewModel(profileDao = get(), settings = get()) }
     viewModel {
         PhoneHomeViewModel(
             planner = get(),
@@ -78,6 +79,8 @@ val phoneModule = module {
             progressDao = get(),
             sourceDao = get(),
             settings = get(),
+            metadata = get(),
+            profileDao = get(),
         )
     }
 }

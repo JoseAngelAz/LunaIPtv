@@ -111,6 +111,35 @@ class PhoneLiveViewModel(
 
     fun selectChannel(ch: ChannelEntity) { _selectedChannel.value = ch }
 
+    // ── EPG now/next per visible channel ───────────────────
+    data class EpgInfo(val nowTitle: String?, val nextTitle: String?, val stopMs: Long)
+
+    private val _epgMap = MutableStateFlow<Map<Long, EpgInfo>>(emptyMap())
+    val epgMap: StateFlow<Map<Long, EpgInfo>> = _epgMap.asStateFlow()
+
+    fun loadEpgForVisible(channels: List<ChannelEntity>) {
+        viewModelScope.launch {
+            val c = ctx.value
+            if (c.profileId < 0 || c.sourceIds.isEmpty()) return@launch
+            val now = System.currentTimeMillis()
+            val map = mutableMapOf<Long, EpgInfo>()
+            for (ch in channels) {
+                val epgId = ch.epgChannelId?.lowercase()?.trim() ?: continue
+                try {
+                    val nowProg = epgDao.nowPlaying(epgId, now)
+                    val upcoming = epgDao.upcoming(epgId, now, 2).first()
+                    val nextProg = upcoming.getOrNull(1)
+                    map[ch.id] = EpgInfo(
+                        nowTitle = nowProg?.title,
+                        nextTitle = nextProg?.title,
+                        stopMs = nowProg?.stopMs ?: 0L,
+                    )
+                } catch (_: Exception) { /* skip */ }
+            }
+            _epgMap.value = map
+        }
+    }
+
     // ── Channel count ──────────────────────────────────────
     val channelCount: StateFlow<Int> = combine(ctx, _selectedKey) { c, k -> Pair(c, k) }
         .flatMapLatest { (c, k) ->

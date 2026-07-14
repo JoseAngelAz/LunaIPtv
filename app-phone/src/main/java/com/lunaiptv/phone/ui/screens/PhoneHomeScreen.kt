@@ -24,13 +24,20 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,12 +47,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
 import com.lunaiptv.phone.di.PhoneHomeState
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.core.database.entity.ChannelEntity
 import com.lunaiptv.core.launcher.LauncherContinuationItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhoneHomeScreen(
     vm: PhoneHomeViewModel,
@@ -54,8 +64,11 @@ fun PhoneHomeScreen(
     onPlayChannel: (ChannelEntity) -> Unit,
 ) {
     val state by vm.uiState.collectAsState()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val refreshState = rememberPullToRefreshState()
 
-    if (state.isLoading) {
+    if (state.isLoading && !isRefreshing) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -63,32 +76,86 @@ fun PhoneHomeScreen(
     }
 
     if (!state.hasAnyContent) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("🎬", style = MaterialTheme.typography.displayLarge)
-                Spacer(Modifier.height(16.dp))
-                Text("Welcome to LunaIPtv", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "Start watching to see your content here",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                vm.refresh()
+                scope.launch {
+                    kotlinx.coroutines.delay(800)
+                    isRefreshing = false
+                }
+            },
+            state = refreshState,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("🎬", style = MaterialTheme.typography.displayLarge)
+                    Spacer(Modifier.height(16.dp))
+                    Text("Welcome to LunaIPtv", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(4.dp))
+                    if (state.profileName.isNotBlank()) {
+                        Text(
+                            text = state.profileName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Pull down to refresh",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
         return
     }
 
-    LazyColumn(
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            vm.refresh()
+            scope.launch {
+                kotlinx.coroutines.delay(800)
+                isRefreshing = false
+            }
+        },
+        state = refreshState,
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(bottom = 24.dp),
     ) {
-        // ── Hero: Continue Watching (big featured card) ──────
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(bottom = 24.dp),
+        ) {
+        // Profile header
+        if (state.profileName.isNotBlank()) {
+            item {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = state.profileName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        }
+            // ── Hero: Continue Watching (big featured card) ──────
         if (state.heroItems.isNotEmpty()) {
             item {
                 HeroSection(
                     items = state.heroItems,
+                    heroMeta = state.heroMeta,
                     onPlayMovie = onPlayContinueMovie,
                     onPlaySeries = onPlayContinueSeries,
                 )
@@ -140,6 +207,7 @@ fun PhoneHomeScreen(
         }
     }
 }
+}
 
 @Composable
 private fun SectionHeader(title: String) {
@@ -154,10 +222,12 @@ private fun SectionHeader(title: String) {
 @Composable
 private fun HeroSection(
     items: List<LauncherContinuationItem>,
+    heroMeta: Map<String, com.lunaiptv.phone.di.HeroMeta>,
     onPlayMovie: (LauncherContinuationItem) -> Unit,
     onPlaySeries: (LauncherContinuationItem) -> Unit,
 ) {
     val first = items.first()
+    val meta = heroMeta[first.stableKey]
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -174,10 +244,11 @@ private fun HeroSection(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Box(Modifier.fillMaxSize()) {
-            // Backdrop / poster
-            if (first.posterUrl != null) {
+            // Backdrop (TMDB) or poster fallback
+            val imageUrl = meta?.backdropUrl ?: first.posterUrl
+            if (imageUrl != null) {
                 AsyncImage(
-                    model = first.posterUrl,
+                    model = imageUrl,
                     contentDescription = first.title,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
@@ -243,6 +314,17 @@ private fun HeroSection(
                         text = "${mins}m remaining",
                         style = MaterialTheme.typography.labelSmall,
                         color = Color.White.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+                // TMDB plot (if available)
+                meta?.plot?.let { plot ->
+                    Text(
+                        text = plot,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.7f),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
@@ -414,10 +496,10 @@ private fun ContinueSeriesCard(
                             .height(3.dp)
                             .clip(RoundedCornerShape(2.dp)),
                     )
-                }
             }
         }
     }
+}
 }
 
 @Composable
