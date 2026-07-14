@@ -67,4 +67,17 @@ val phoneModule = module {
             player = get(),
         )
     }
+    viewModel {
+        PhoneHomeViewModel(
+            planner = get(),
+            channelDao = get(),
+            movieDao = get(),
+            seriesDao = get(),
+            favoriteDao = get(),
+            historyDao = get(),
+            progressDao = get(),
+            sourceDao = get(),
+            settings = get(),
+        )
+    }
 }

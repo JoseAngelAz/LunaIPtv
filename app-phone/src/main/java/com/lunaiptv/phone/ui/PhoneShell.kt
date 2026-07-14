@@ -3,6 +3,7 @@ package com.lunaiptv.phone.ui
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -26,11 +27,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import org.koin.androidx.compose.koinViewModel
+import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
 import com.lunaiptv.phone.di.PhoneSearchViewModel
 import com.lunaiptv.phone.di.PhoneSeriesViewModel
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
+import com.lunaiptv.phone.ui.screens.PhoneHomeScreen
 import com.lunaiptv.phone.ui.screens.PhoneLiveScreen
 import com.lunaiptv.phone.ui.screens.PhoneMovieDetailScreen
 import com.lunaiptv.phone.ui.screens.PhoneMoviesScreen
@@ -40,6 +43,7 @@ import com.lunaiptv.phone.ui.screens.PhoneSeriesScreen
 import com.lunaiptv.phone.ui.screens.PhoneSettingsScreen
 
 sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVector) {
+    data object Home : PhoneScreen("home", "Home", Icons.Filled.Home)
     data object Live : PhoneScreen("live", "Live", Icons.Filled.PlayArrow)
     data object Movies : PhoneScreen("movies", "Movies", Icons.Filled.Star)
     data object Series : PhoneScreen("series", "Series", Icons.AutoMirrored.Filled.List)
@@ -48,6 +52,7 @@ sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVe
 }
 
 private val bottomScreens = listOf(
+    PhoneScreen.Home,
     PhoneScreen.Live,
     PhoneScreen.Movies,
     PhoneScreen.Series,
@@ -64,6 +69,7 @@ fun PhoneShell() {
     val showBottomBar = currentDestination?.route in bottomScreens.map { it.route }
 
     // Shared ViewModels scoped to composition
+    val homeVm: PhoneHomeViewModel = koinViewModel()
     val liveVm: PhoneLiveViewModel = koinViewModel()
     val moviesVm: PhoneMoviesViewModel = koinViewModel()
     val seriesVm: PhoneSeriesViewModel = koinViewModel()
@@ -120,9 +126,26 @@ fun PhoneShell() {
             else -> {
                 NavHost(
                     navController = navController,
-                    startDestination = PhoneScreen.Live.route,
+                    startDestination = PhoneScreen.Home.route,
                     modifier = Modifier.padding(innerPadding),
                 ) {
+                    composable(PhoneScreen.Home.route) {
+                        PhoneHomeScreen(
+                            vm = homeVm,
+                            onPlayContinueMovie = { item ->
+                                // Look up movie by sourceItemId and play
+                                moviesVm.selectKey(com.lunaiptv.features.live.LiveKey.All)
+                                navController.navigate(PhoneScreen.Movies.route)
+                            },
+                            onPlayContinueSeries = { item ->
+                                seriesVm.selectKey(com.lunaiptv.features.live.LiveKey.All)
+                                navController.navigate(PhoneScreen.Series.route)
+                            },
+                            onPlayChannel = { ch ->
+                                liveVm.playChannel(ch)
+                            },
+                        )
+                    }
                     composable(PhoneScreen.Live.route) {
                         PhoneLiveScreen(vm = liveVm)
                     }
