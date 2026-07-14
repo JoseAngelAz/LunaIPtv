@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
@@ -75,10 +77,21 @@ fun PhoneShell() {
     val seriesVm: PhoneSeriesViewModel = koinViewModel()
     val searchVm: PhoneSearchViewModel = koinViewModel()
     val settingsVm: PhoneSettingsViewModel = koinViewModel()
+    val scope = rememberCoroutineScope()
 
     // Detail overlays (for Movies/Series detail navigation)
     var showMovieDetail by remember { mutableStateOf<com.lunaiptv.core.database.entity.MovieEntity?>(null) }
     var showSeriesDetail by remember { mutableStateOf<com.lunaiptv.core.database.entity.SeriesEntity?>(null) }
+
+    fun navigateToTab(route: String) {
+        showMovieDetail = null
+        showSeriesDetail = null
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -89,15 +102,7 @@ fun PhoneShell() {
                             icon = { Icon(screen.icon, contentDescription = screen.label) },
                             label = { Text(screen.label) },
                             selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                            onClick = {
-                                showMovieDetail = null
-                                showSeriesDetail = null
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
+                            onClick = { navigateToTab(screen.route) },
                         )
                     }
                 }
@@ -133,16 +138,20 @@ fun PhoneShell() {
                         PhoneHomeScreen(
                             vm = homeVm,
                             onPlayContinueMovie = { item ->
-                                // Look up movie by sourceItemId and play
-                                moviesVm.selectKey(com.lunaiptv.features.live.LiveKey.All)
-                                navController.navigate(PhoneScreen.Movies.route)
+                                scope.launch {
+                                    val movie = homeVm.getMovieById(item.targetItemId)
+                                    if (movie != null) showMovieDetail = movie
+                                }
                             },
                             onPlayContinueSeries = { item ->
-                                seriesVm.selectKey(com.lunaiptv.features.live.LiveKey.All)
-                                navController.navigate(PhoneScreen.Series.route)
+                                scope.launch {
+                                    val series = homeVm.getSeriesForEpisode(item.targetItemId)
+                                    if (series != null) showSeriesDetail = series
+                                }
                             },
                             onPlayChannel = { ch ->
                                 liveVm.playChannel(ch)
+                                navigateToTab(PhoneScreen.Live.route)
                             },
                         )
                     }
@@ -164,7 +173,10 @@ fun PhoneShell() {
                     composable(PhoneScreen.Search.route) {
                         PhoneSearchScreen(
                             vm = searchVm,
-                            onPlayChannel = { /* live handles its own */ },
+                            onPlayChannel = { ch ->
+                                liveVm.playChannel(ch)
+                                navigateToTab(PhoneScreen.Live.route)
+                            },
                             onPlayMovie = { m -> showMovieDetail = m },
                             onOpenSeries = { s -> showSeriesDetail = s },
                         )

@@ -25,6 +25,8 @@ import com.lunaiptv.core.database.dao.ProgressDao
 import com.lunaiptv.core.database.dao.SeriesDao
 import com.lunaiptv.core.database.dao.SourceDao
 import com.lunaiptv.core.database.entity.ChannelEntity
+import com.lunaiptv.core.database.entity.MovieEntity
+import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.launcher.LauncherContinuationItem
 import com.lunaiptv.core.launcher.LauncherRecommendationPlanner
 import com.lunaiptv.core.repository.activeProfileSources
@@ -102,6 +104,13 @@ class PhoneHomeViewModel(
     fun refresh() {
         val c = ctx.value
         if (c.profileId > 0) viewModelScope.launch { loadHome(c.profileId) }
+    }
+
+    suspend fun getMovieById(id: Long): MovieEntity? = movieDao.getById(id)
+
+    suspend fun getSeriesForEpisode(episodeId: Long): SeriesEntity? {
+        val episode = seriesDao.getEpisodeById(episodeId) ?: return null
+        return seriesDao.getSeriesById(episode.seriesId)
     }
 
     private companion object { const val TAG = "PhoneHomeVM" }
