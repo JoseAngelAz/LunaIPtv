@@ -32,6 +32,7 @@ import com.lunaiptv.core.launcher.LauncherContinuationKind
 import com.lunaiptv.core.launcher.LauncherRecommendationPlanner
 import com.lunaiptv.core.metadata.MetadataRepository
 import com.lunaiptv.core.repository.activeProfileSources
+import com.lunaiptv.core.weather.WeatherRepository
 import com.lunaiptv.features.settings.data.SettingsRepository
 
 data class HeroMeta(
@@ -48,8 +49,11 @@ data class PhoneHomeState(
     val continueSeries: List<LauncherContinuationItem> = emptyList(),
     val recentChannels: List<ChannelEntity> = emptyList(),
     val favoriteChannels: List<ChannelEntity> = emptyList(),
+    val favoriteMovies: List<MovieEntity> = emptyList(),
+    val favoriteSeries: List<SeriesEntity> = emptyList(),
     val hasAnyContent: Boolean = false,
     val profileName: String = "",
+    val weatherText: String? = null,
 )
 
 class PhoneHomeViewModel(
@@ -63,6 +67,7 @@ class PhoneHomeViewModel(
     private val sourceDao: SourceDao,
     private val settings: SettingsRepository,
     private val metadata: MetadataRepository,
+    private val weatherRepo: WeatherRepository,
     private val profileDao: com.lunaiptv.core.database.dao.ProfileDao,
 ) : ViewModel() {
 
@@ -98,6 +103,10 @@ class PhoneHomeViewModel(
             val hero = continuations.take(5)
             val recent = try { channelDao.recentlyWatched(profileId, 20).first() } catch (_: Exception) { emptyList() }
             val favs = try { channelDao.favoritesListAlpha(profileId).first() } catch (_: Exception) { emptyList() }
+            val favMovieIds = try { favoriteDao.observeFavoriteIds(profileId, com.lunaiptv.core.model.MediaType.MOVIE).first() } catch (_: Exception) { emptyList() }
+            val favSeriesIds = try { favoriteDao.observeFavoriteIds(profileId, com.lunaiptv.core.model.MediaType.SERIES).first() } catch (_: Exception) { emptyList() }
+            val favMovies = try { if (favMovieIds.isNotEmpty()) movieDao.getByIds(favMovieIds) else emptyList() } catch (_: Exception) { emptyList() }
+            val favSeries = try { if (favSeriesIds.isNotEmpty()) seriesDao.getByIds(favSeriesIds) else emptyList() } catch (_: Exception) { emptyList() }
 
             _uiState.value = PhoneHomeState(
                 isLoading = false,
@@ -106,12 +115,24 @@ class PhoneHomeViewModel(
                 continueSeries = episodes,
                 recentChannels = recent,
                 favoriteChannels = favs,
-                hasAnyContent = continuations.isNotEmpty() || recent.isNotEmpty() || favs.isNotEmpty(),
+                favoriteMovies = favMovies,
+                favoriteSeries = favSeries,
+                hasAnyContent = continuations.isNotEmpty() || recent.isNotEmpty() || favs.isNotEmpty() || favMovies.isNotEmpty() || favSeries.isNotEmpty(),
                 profileName = profileName,
             )
 
             // Resolve TMDB metadata for hero items (background)
             resolveHeroMeta(hero)
+
+            // Fetch weather in background
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    val info = weatherRepo.get() ?: return@launch
+                    _uiState.value = _uiState.value.copy(
+                        weatherText = "${info.temperatureC.toInt()}\u00B0C ${info.city}"
+                    )
+                } catch (_: Exception) { }
+            }
         } catch (e: Exception) {
             Log.w(TAG, "loadHome failed for profile=$profileId", e)
             _uiState.value = PhoneHomeState(isLoading = false)
@@ -163,6 +184,8 @@ class PhoneHomeViewModel(
         val episode = seriesDao.getEpisodeById(episodeId) ?: return null
         return seriesDao.getSeriesById(episode.seriesId)
     }
+
+    fun getProfileId(): Long = ctx.value.profileId
 
     private companion object { const val TAG = "PhoneHomeVM" }
 }

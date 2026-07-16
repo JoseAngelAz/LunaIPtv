@@ -43,14 +43,20 @@ val dataModule = module {
         val sslContext = javax.net.ssl.SSLContext.getInstance("TLS").apply {
             init(null, trustAllCerts, java.security.SecureRandom())
         }
+        // Enable all TLS versions for maximum compatibility with old IPTV panels.
+        val tlsSpec = okhttp3.ConnectionSpec.Builder(okhttp3.ConnectionSpec.MODERN_TLS)
+            .allEnabledTlsVersions()
+            .allEnabledCipherSuites()
+            .build()
         OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .writeTimeout(20, TimeUnit.SECONDS)
-            .retryOnConnectionFailure(false)
+            .retryOnConnectionFailure(true)
             .proxySelector(proxyHolder.proxySelector)
             .proxyAuthenticator(proxyHolder.proxyAuthenticator)
-            .protocols(listOf(Protocol.HTTP_1_1))
+            .protocols(listOf(Protocol.HTTP_2, Protocol.HTTP_1_1))
+            .connectionSpecs(listOf(tlsSpec, okhttp3.ConnectionSpec.CLEARTEXT))
             .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as javax.net.ssl.X509TrustManager)
             .hostnameVerifier { _, _ -> true }
             .addInterceptor { chain ->

@@ -44,5 +44,9 @@
     public static final ** CREATOR;
 }
 
+# ── libmpv / is.your.mpv ─────────────────────────────
+-keep class is.your.mpv.** { *; }
+-dontwarn is.your.mpv.**
+
 # ── Compose (keep @Composable) ───────────────────────
 -dontwarn androidx.compose.**

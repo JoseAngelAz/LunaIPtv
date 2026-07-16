@@ -31,8 +31,10 @@ import com.lunaiptv.core.database.dao.MovieDao
 import com.lunaiptv.core.database.dao.ProgressDao
 import com.lunaiptv.core.database.dao.SourceDao
 import com.lunaiptv.core.database.entity.FavoriteEntity
+import com.lunaiptv.core.database.entity.MetadataCacheEntity
 import com.lunaiptv.core.database.entity.MovieEntity
 import com.lunaiptv.core.database.entity.WatchHistoryEntity
+import com.lunaiptv.core.metadata.MetadataRepository
 import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.core.repository.activeProfileSources
 import com.lunaiptv.features.live.LiveKey
@@ -50,6 +52,7 @@ class PhoneMoviesViewModel(
     private val sourceDao: SourceDao,
     private val settings: SettingsRepository,
     private val player: PhoneLivePlayer,
+    private val metadata: MetadataRepository,
 ) : ViewModel() {
 
     private data class Ctx(val profileId: Long, val sourceIds: List<Long>)
@@ -62,18 +65,21 @@ class PhoneMoviesViewModel(
     private val _selectedKey = MutableStateFlow<LiveKey>(LiveKey.All)
     val selectedKey: StateFlow<LiveKey> = _selectedKey.asStateFlow()
 
+    var firstVisibleIndex: Int = 0
+
     val railItems: StateFlow<List<PhoneMovieRailItem>> = ctx
         .flatMapLatest { c ->
             if (c.profileId < 0 || c.sourceIds.isEmpty()) flowOf(emptyList())
             else categoryDao.observe(c.sourceIds, com.lunaiptv.core.model.MediaType.MOVIE).map { cats ->
                 buildList {
-                    add(PhoneMovieRailItem(LiveKey.All, "All"))
                     add(PhoneMovieRailItem(LiveKey.Favorites, "Favorites"))
+                    add(PhoneMovieRailItem(LiveKey.History, "History"))
+                    add(PhoneMovieRailItem(LiveKey.All, "All"))
                     cats.forEach { add(PhoneMovieRailItem(LiveKey.Folder(it.id), it.name)) }
                 }
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun selectKey(key: LiveKey) { _selectedKey.value = key }
 
@@ -84,10 +90,31 @@ class PhoneMoviesViewModel(
     private val _sortByName = MutableStateFlow(false)
     val sortByName: StateFlow<Boolean> = _sortByName.asStateFlow()
     fun toggleSort() { _sortByName.value = !_sortByName.value }
+    fun setSortByName(v: Boolean) { _sortByName.value = v }
 
     private val _selectedMovie = MutableStateFlow<MovieEntity?>(null)
     val selectedMovie: StateFlow<MovieEntity?> = _selectedMovie.asStateFlow()
     fun selectMovie(m: MovieEntity) { _selectedMovie.value = m }
+
+    // TMDB metadata for current detail screen
+    private val _currentMovieMeta = MutableStateFlow<MetadataCacheEntity?>(null)
+    val currentMovieMeta: StateFlow<MetadataCacheEntity?> = _currentMovieMeta.asStateFlow()
+
+    fun loadMovieMeta(movie: MovieEntity) {
+        viewModelScope.launch {
+            _currentMovieMeta.value = null
+            try {
+                val result = metadata.resolveMovie(movie)
+                Log.d(TAG, "loadMovieMeta: movie=${movie.name}, result=${result?.overview?.take(50)}")
+                _currentMovieMeta.value = result
+            } catch (e: Exception) {
+                Log.w(TAG, "loadMovieMeta failed for ${movie.name}", e)
+                _currentMovieMeta.value = null
+            }
+        }
+    }
+
+    fun clearMovieMeta() { _currentMovieMeta.value = null }
 
     // Progress map for all visible movies (resume indicators on poster grid)
     private val _progressMap = MutableStateFlow<Map<Long, com.lunaiptv.core.database.entity.PlaybackProgressEntity>>(emptyMap())
@@ -96,7 +123,7 @@ class PhoneMoviesViewModel(
         .flatMapLatest { (c, k) ->
             if (c.profileId < 0) flowOf(0) else countFlow(c.profileId, c.sourceIds, k)
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val movies: StateFlow<PagingData<MovieEntity>> = combine(
         ctx, _selectedKey, _searchQuery.debounce(300).distinctUntilChanged(), _sortByName,
@@ -107,12 +134,12 @@ class PhoneMoviesViewModel(
             else moviePager(q.ctx.profileId, q.ctx.sourceIds, q.key, q.query, q.sortByName)
         }
         .cachedIn(viewModelScope)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, PagingData.empty())
 
     private data class MovieQuery(val ctx: Ctx, val key: LiveKey, val query: String, val sortByName: Boolean)
 
     private fun moviePager(pid: Long, sourceIds: List<Long>, key: LiveKey, query: String, sortByName: Boolean) =
-        Pager(PagingConfig(pageSize = 60, prefetchDistance = 30, initialLoadSize = 90, maxSize = 300)) {
+        Pager(PagingConfig(pageSize = 60, prefetchDistance = 50, initialLoadSize = 120, maxSize = 300)) {
             when (key) {
                 is LiveKey.All -> if (query.isBlank()) {
                     if (sortByName) movieDao.pagingAll(sourceIds) else movieDao.pagingAllOriginal(sourceIds)
@@ -137,7 +164,7 @@ class PhoneMoviesViewModel(
     val favoriteIds: StateFlow<Set<Long>> = ctx
         .flatMapLatest { favoriteDao.observeFavoriteIds(it.profileId, MediaType.MOVIE) }
         .map { it.toSet() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
     fun toggleFavorite(m: MovieEntity) {
         viewModelScope.launch {

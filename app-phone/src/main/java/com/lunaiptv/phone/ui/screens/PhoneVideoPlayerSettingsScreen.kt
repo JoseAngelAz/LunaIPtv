@@ -37,54 +37,68 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunaiptv.features.settings.data.SettingsRepository
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
 
 private enum class Dialog {
     NONE, ZOOM, SUB_SIZE, SUB_LANG, AUDIO_LANG, AUDIO_SYNC, RESUME
 }
 
-private data class ZoomModeOption(val name: String, val label: String)
+private data class ZoomModeOption(val name: String, val labelRes: Int)
 
 private val ZOOM_MODES = listOf(
-    ZoomModeOption("FIT", "Fit Screen"),
-    ZoomModeOption("FILL", "Fill / Crop"),
-    ZoomModeOption("STRETCH", "Stretch"),
-    ZoomModeOption("ORIGINAL", "Original (1:1)"),
-    ZoomModeOption("FORCE_16_9", "Force 16:9"),
-    ZoomModeOption("FORCE_4_3", "Force 4:3"),
+    ZoomModeOption("FIT", R.string.fit_screen),
+    ZoomModeOption("FILL", R.string.fill_crop),
+    ZoomModeOption("STRETCH", R.string.stretch),
+    ZoomModeOption("ORIGINAL", R.string.original_1_1),
+    ZoomModeOption("FORCE_16_9", R.string.force_16_9),
+    ZoomModeOption("FORCE_4_3", R.string.force_4_3),
 )
 
-private val SUB_SIZES = listOf(0.8f to "Small", 1.0f to "Normal", 1.3f to "Large", 1.6f to "Extra Large")
+private data class SubSizeOption(val scale: Float, val labelRes: Int)
+
+private val SUB_SIZES = listOf(
+    SubSizeOption(0.8f, R.string.small),
+    SubSizeOption(1.0f, R.string.normal),
+    SubSizeOption(1.3f, R.string.large),
+    SubSizeOption(1.6f, R.string.extra_large),
+)
+
+private data class LanguageOption(val code: String, val labelRes: Int)
 
 private val LANGUAGES = listOf(
-    "" to "None / Auto",
-    "eng" to "English",
-    "spa" to "Spanish",
-    "fra" to "French",
-    "deu" to "German",
-    "ita" to "Italian",
-    "por" to "Portuguese",
-    "nld" to "Dutch",
-    "rus" to "Russian",
-    "ara" to "Arabic",
-    "hin" to "Hindi",
-    "zho" to "Chinese",
-    "jpn" to "Japanese",
-    "kor" to "Korean",
-    "tur" to "Turkish",
+    LanguageOption("", R.string.none_auto),
+    LanguageOption("eng", R.string.lang_english),
+    LanguageOption("spa", R.string.lang_spanish),
+    LanguageOption("fra", R.string.lang_french),
+    LanguageOption("deu", R.string.lang_german),
+    LanguageOption("ita", R.string.lang_italian),
+    LanguageOption("por", R.string.lang_portuguese),
+    LanguageOption("nld", R.string.lang_dutch),
+    LanguageOption("rus", R.string.lang_russian),
+    LanguageOption("ara", R.string.lang_arabic),
+    LanguageOption("hin", R.string.lang_hindi),
+    LanguageOption("zho", R.string.lang_chinese),
+    LanguageOption("jpn", R.string.lang_japanese),
+    LanguageOption("kor", R.string.lang_korean),
+    LanguageOption("tur", R.string.lang_turkish),
 )
 
-private fun langName(code: String) =
-    LANGUAGES.firstOrNull { it.first == code }?.second ?: code.ifBlank { "None / Auto" }
+@Composable
+private fun langName(code: String): String =
+    stringResource(LANGUAGES.firstOrNull { it.code == code }?.labelRes ?: R.string.none_auto)
 
-private fun subSizeName(scale: Float) =
-    SUB_SIZES.minByOrNull { kotlin.math.abs(it.first - scale) }?.second ?: "Normal"
+@Composable
+private fun subSizeName(scale: Float): String =
+    stringResource(SUB_SIZES.minByOrNull { kotlin.math.abs(it.scale - scale) }?.labelRes ?: R.string.normal)
 
-private fun zoomLabel(name: String) =
-    ZOOM_MODES.firstOrNull { it.name == name }?.label ?: "Fit Screen"
+@Composable
+private fun zoomLabel(name: String): String =
+    stringResource(ZOOM_MODES.firstOrNull { it.name == name }?.labelRes ?: R.string.fit_screen)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,10 +125,10 @@ fun PhoneVideoPlayerSettingsScreen(
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text("Video Player") },
+                title = { Text(stringResource(R.string.video_player)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -129,92 +143,95 @@ fun PhoneVideoPlayerSettingsScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             // ── Decoding ──────────────────────────────────────
-            SectionHeader("Decoding")
+            SectionHeader(stringResource(R.string.decoding))
 
             SettingToggle(
-                title = "HW Decoding",
-                subtitle = "Use hardware decoding when available",
+                title = stringResource(R.string.hw_decoding),
+                subtitle = stringResource(R.string.use_hw_decoding),
                 checked = hw,
                 onCheckedChange = vm::setHwDecoding,
             )
 
             SettingToggle(
-                title = "VOD Player",
+                title = stringResource(R.string.vod_player),
                 subtitle = if (vodExo) "ExoPlayer" else "mpv",
                 checked = vodExo,
                 onCheckedChange = vm::setVodPreferExo,
             )
 
             SettingToggle(
-                title = "External Player",
-                subtitle = "Open videos in external player app",
+                title = stringResource(R.string.external_player),
+                subtitle = stringResource(R.string.open_in_external),
                 checked = externalPlayer,
                 onCheckedChange = vm::setExternalPlayer,
             )
 
             SettingOption(
-                title = "Default Zoom",
+                title = stringResource(R.string.default_zoom),
                 subtitle = zoomLabel(zoom),
                 onClick = { dialog = Dialog.ZOOM },
             )
 
             SettingOption(
-                title = "Resume Mode",
-                subtitle = runCatching { SettingsRepository.ResumeMode.valueOf(resumeMode.name).label }
-                    .getOrDefault(resumeMode.name),
+                title = stringResource(R.string.resume_mode),
+                subtitle = stringResource(when (runCatching { SettingsRepository.ResumeMode.valueOf(resumeMode.name) }.getOrNull()) {
+                    SettingsRepository.ResumeMode.AUTO -> R.string.resume_always
+                    SettingsRepository.ResumeMode.NEVER -> R.string.resume_never
+                    else -> R.string.resume_ask
+                }),
                 onClick = { dialog = Dialog.RESUME },
             )
 
             // ── Subtitles ─────────────────────────────────────
-            SectionHeader("Subtitles")
+            SectionHeader(stringResource(R.string.subtitles_section))
 
             SettingOption(
-                title = "Subtitle Size",
+                title = stringResource(R.string.subtitle_size),
                 subtitle = subSizeName(subScale),
                 onClick = { dialog = Dialog.SUB_SIZE },
             )
 
             SettingOption(
-                title = "Subtitle Language",
+                title = stringResource(R.string.subtitle_language),
                 subtitle = langName(subLang),
                 onClick = { dialog = Dialog.SUB_LANG },
             )
 
             // ── Audio ─────────────────────────────────────────
-            SectionHeader("Audio")
+            SectionHeader(stringResource(R.string.audio_section))
 
             SettingOption(
-                title = "Audio Language",
+                title = stringResource(R.string.audio_language),
                 subtitle = langName(audioLang),
                 onClick = { dialog = Dialog.AUDIO_LANG },
             )
 
             SettingOption(
-                title = "Audio Sync",
-                subtitle = "%+d ms".format(audioDelay),
+                title = stringResource(R.string.audio_sync),
+                subtitle = "%+d ${stringResource(R.string.ms_label)}".format(audioDelay),
                 onClick = { dialog = Dialog.AUDIO_SYNC },
             )
 
             // ── Other ─────────────────────────────────────────
-            SectionHeader("Other")
+            SectionHeader(stringResource(R.string.other))
 
             SettingToggle(
-                title = "Surround Sound",
-                subtitle = "Enable surround sound output",
+                title = stringResource(R.string.surround_sound),
+                subtitle = stringResource(R.string.enable_surround),
                 checked = surroundSound,
                 onCheckedChange = vm::setSurroundSound,
             )
 
             SettingToggle(
-                title = "Auto-play Next",
-                subtitle = "Automatically play the next item",
+                title = stringResource(R.string.auto_play_next),
+                subtitle = stringResource(R.string.auto_play_next_description),
                 checked = autoPlayNext,
                 onCheckedChange = vm::setAutoPlayNext,
             )
 
             SettingToggle(
-                title = "HDR",
-                subtitle = "Enable HDR rendering",
+                title = stringResource(R.string.hdr),
+                subtitle = stringResource(R.string.enable_hdr),
                 checked = hdrEnabled,
                 onCheckedChange = vm::setHdrEnabled,
             )
@@ -225,34 +242,38 @@ fun PhoneVideoPlayerSettingsScreen(
 
     when (dialog) {
         Dialog.ZOOM -> PickerDialog(
-            title = "Default Zoom",
-            options = ZOOM_MODES.map { it.name to it.label },
+            title = stringResource(R.string.default_zoom),
+            options = ZOOM_MODES.map { it.name to stringResource(it.labelRes) },
             selected = zoom,
             onSelect = { vm.setDefaultZoom(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.RESUME -> PickerDialog(
-            title = "Resume Mode",
-            options = SettingsRepository.ResumeMode.entries.map { it.name to it.label },
+            title = stringResource(R.string.resume_mode),
+            options = SettingsRepository.ResumeMode.entries.map { it.name to stringResource(when (it) {
+                SettingsRepository.ResumeMode.AUTO -> R.string.resume_always
+                SettingsRepository.ResumeMode.NEVER -> R.string.resume_never
+                else -> R.string.resume_ask
+            }) },
             selected = resumeMode.name,
             onSelect = { vm.setResumeMode(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.SUB_SIZE -> PickerDialog(
-            title = "Subtitle Size",
-            options = SUB_SIZES.map { it.first.toString() to it.second },
-            selected = (SUB_SIZES.minByOrNull { kotlin.math.abs(it.first - subScale) }?.first ?: 1.0f).toString(),
+            title = stringResource(R.string.subtitle_size),
+            options = SUB_SIZES.map { it.scale.toString() to stringResource(it.labelRes) },
+            selected = (SUB_SIZES.minByOrNull { kotlin.math.abs(it.scale - subScale) }?.scale ?: 1.0f).toString(),
             onSelect = { vm.setSubtitleScale(it.toFloat()); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.SUB_LANG -> LanguagePickerDialog(
-            title = "Subtitle Language",
+            title = stringResource(R.string.subtitle_language),
             selected = subLang,
             onSelect = { vm.setPreferredSubLang(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
         )
         Dialog.AUDIO_LANG -> LanguagePickerDialog(
-            title = "Audio Language",
+            title = stringResource(R.string.audio_language),
             selected = audioLang,
             onSelect = { vm.setPreferredAudioLang(it); dialog = Dialog.NONE },
             onDismiss = { dialog = Dialog.NONE },
@@ -362,7 +383,7 @@ private fun PickerDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
     )
 }
@@ -379,7 +400,7 @@ private fun LanguagePickerDialog(
         title = { Text(title) },
         text = {
             LazyColumn(modifier = Modifier.height(400.dp)) {
-                items(LANGUAGES, key = { it.first }) { (code, name) ->
+                items(LANGUAGES, key = { it.code }) { (code, labelRes) ->
                     val isSel = code == selected
                     Row(
                         modifier = Modifier
@@ -389,7 +410,7 @@ private fun LanguagePickerDialog(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = name,
+                            text = stringResource(labelRes),
                             style = MaterialTheme.typography.bodyLarge,
                             color = if (isSel) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onSurface,
@@ -407,7 +428,7 @@ private fun LanguagePickerDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) }
         },
     )
 }
@@ -422,11 +443,11 @@ private fun AudioSyncDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Audio Sync") },
+        title = { Text(stringResource(R.string.audio_sync)) },
         text = {
             Column {
                 Text(
-                    text = "Delay in milliseconds (-2000 to +2000)",
+                    text = stringResource(R.string.delay_ms_description),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -438,7 +459,7 @@ private fun AudioSyncDialog(
                             text = newValue
                         }
                     },
-                    label = { Text("ms") },
+                    label = { Text(stringResource(R.string.ms_label)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -449,10 +470,10 @@ private fun AudioSyncDialog(
                 val ms = text.toIntOrNull()?.coerceIn(-2000, 2000) ?: value
                 onSet(ms)
                 onDismiss()
-            }) { Text("OK") }
+            }) { Text(stringResource(R.string.ok)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }

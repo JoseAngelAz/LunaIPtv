@@ -19,6 +19,9 @@ interface SeriesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertSeries(series: List<SeriesEntity>)
 
+    @Query("SELECT * FROM series WHERE id IN (:ids) ORDER BY name ASC")
+    suspend fun getByIds(ids: List<Long>): List<SeriesEntity>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSeries(series: List<SeriesEntity>)
 

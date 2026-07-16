@@ -19,4 +19,7 @@ class PhoneViewModel(
 
     val customAccent = settings.customAccent
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    val language = settings.language
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "en")
 }

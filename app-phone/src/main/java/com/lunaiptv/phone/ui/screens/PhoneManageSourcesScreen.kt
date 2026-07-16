@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunaiptv.core.database.entity.SourceEntity
@@ -50,6 +51,7 @@ import com.lunaiptv.core.model.SourceType
 import com.lunaiptv.core.sync.SyncCounts
 import com.lunaiptv.core.sync.work.CatalogSyncState
 import com.lunaiptv.features.settings.data.PlaylistAutoRefresh
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneSourceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,15 +70,15 @@ fun PhoneManageSourcesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Manage Sources") },
+                title = { Text(stringResource(R.string.manage_sources_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
                     IconButton(onClick = onAddSource) {
-                        Icon(Icons.Filled.Add, contentDescription = "Add Source")
+                        Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_source))
                     }
                 },
             )
@@ -90,11 +92,11 @@ fun PhoneManageSourcesScreen(
                 contentAlignment = Alignment.Center,
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("No sources yet", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.no_sources), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(Modifier.height(8.dp))
-                    Text("Add your first IPTV source to get started.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.add_first_source), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(Modifier.height(20.dp))
-                    Button(onClick = onAddSource) { Text("Add Source") }
+                    Button(onClick = onAddSource) { Text(stringResource(R.string.add_source)) }
                 }
             }
         } else {
@@ -129,16 +131,16 @@ fun PhoneManageSourcesScreen(
     confirmDelete?.let { src ->
         AlertDialog(
             onDismissRequest = { confirmDelete = null },
-            title = { Text("Delete \"${src.name}\"?") },
-            text = { Text("This removes the source and all its channels, movies and series from every profile.") },
+            title = { Text(stringResource(R.string.delete_source_title_format, src.name)) },
+            text = { Text(stringResource(R.string.delete_source_detail)) },
             confirmButton = {
                 Button(
                     onClick = { vm.delete(src); confirmDelete = null },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                ) { Text("Delete") }
+                ) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmDelete = null }) { Text("Cancel") }
+                TextButton(onClick = { confirmDelete = null }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -173,7 +175,7 @@ private fun SourceCard(
                     if (isDefault) {
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            "DEFAULT",
+                            stringResource(R.string.source_default_badge),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier
@@ -198,16 +200,16 @@ private fun SourceCard(
                 Text(
                     buildString {
                         append(when (source.type) {
-                            SourceType.XTREAM -> "Xtream · ${source.url}"
-                            SourceType.M3U -> "M3U · ${source.url}"
-                            SourceType.LOCAL_BACKUP -> "Backup"
+                            SourceType.XTREAM -> "${context.getString(R.string.xtream_source)} \u00b7 ${source.url}"
+                            SourceType.M3U -> "${context.getString(R.string.m3u_source)} \u00b7 ${source.url}"
+                            SourceType.LOCAL_BACKUP -> context.getString(R.string.backup_source)
                         })
-                        if (autoRefresh != PlaylistAutoRefresh.OFF) append(" · ${autoRefresh.label}")
+                        if (autoRefresh != PlaylistAutoRefresh.OFF) append(" \u00b7 ${autoRefresh.label}")
                         val label = countsLabel(context, source.type, activeSync, counts)
                         if (!label.isNullOrBlank()) {
-                            append(" · $label")
+                            append(" \u00b7 $label")
                         } else if (activeSync != null) {
-                            append(" · Syncing…")
+                            append(" \u00b7 ${context.getString(R.string.syncing_source)}")
                         }
                     },
                     style = MaterialTheme.typography.bodySmall,
@@ -219,17 +221,17 @@ private fun SourceCard(
 
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(onClick = onEdit, modifier = Modifier.weight(1f)) { Text("Edit") }
+            FilledTonalButton(onClick = onEdit, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.edit)) }
             if (syncState.isActive) {
-                OutlinedButton(onClick = onCancelSync, modifier = Modifier.weight(1f)) { Text("Cancel") }
+                OutlinedButton(onClick = onCancelSync, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel)) }
             } else {
-                OutlinedButton(onClick = onResync, modifier = Modifier.weight(1f)) { Text("Resync") }
+                OutlinedButton(onClick = onResync, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.resync)) }
             }
             OutlinedButton(
                 onClick = onDelete,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text("Delete") }
+            ) { Text(stringResource(R.string.delete)) }
         }
     }
 }
@@ -243,18 +245,18 @@ private fun countsLabel(context: Context, sourceType: SourceType, activeSync: Ca
     val series = activeSync?.let { visibleCount(it.seriesActive, it.seriesProcessed, stored?.series ?: 0) } ?: (stored?.series ?: 0)
 
     val parts = buildList {
-        if (live > 0) add("${humanCount(live)} channels")
-        if (movies > 0) add("${humanCount(movies)} movies")
-        if (series > 0) add("${humanCount(series)} series")
+        if (live > 0) add(context.getString(R.string.count_channels_format, humanCount(live)))
+        if (movies > 0) add(context.getString(R.string.count_movies_format, humanCount(movies)))
+        if (series > 0) add(context.getString(R.string.count_series_format, humanCount(series)))
     }
-    return parts.joinToString(" · ").ifBlank { null }
+    return parts.joinToString(" \u00b7 ").ifBlank { null }
 }
 
 private fun resyncBadgeText(context: Context, baseItemCount: Int, totalProcessed: Int): String =
     if (baseItemCount > 0 && totalProcessed > 0) {
         "${((totalProcessed * 100L) / baseItemCount).coerceIn(1, 99).toInt()}%"
     } else {
-        "Syncing…"
+        context.getString(R.string.syncing_source)
     }
 
 private fun humanCount(n: Int): String = when {

@@ -28,9 +28,13 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -48,23 +52,28 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.lunaiptv.features.live.LiveKey
 import com.lunaiptv.phone.di.PhoneLivePlayer
 import com.lunaiptv.phone.di.PhoneLiveViewModel
+import com.lunaiptv.phone.R
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
+fun PhoneLiveScreen(vm: PhoneLiveViewModel, onOpenFullScreen: (() -> Unit)? = null) {
     val channels = vm.channels.collectAsLazyPagingItems()
     val railItems by vm.railItems.collectAsStateWithLifecycle()
     val selectedKey by vm.selectedKey.collectAsStateWithLifecycle()
@@ -78,6 +87,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
     val epgMap by vm.epgMap.collectAsStateWithLifecycle()
 
     var contextMenuChannel by remember { mutableStateOf<com.lunaiptv.core.database.entity.ChannelEntity?>(null) }
+    var showSortMenu by remember { mutableStateOf(false) }
 
     // Load EPG when visible channels change
     LaunchedEffect(channels.itemSnapshotList.items) {
@@ -96,6 +106,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                     channelName = selectedChannel!!.name,
                     isPlaying = isPlaying,
                     playerState = playerState,
+                    onOpenFullScreen = onOpenFullScreen,
                 )
             }
 
@@ -107,7 +118,15 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                     FilterChip(
                         selected = item.key == selectedKey,
                         onClick = { vm.selectKey(item.key) },
-                        label = { Text(item.title) },
+                        label = {
+                            Text(
+                                item.title,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (item.key == selectedKey) FontWeight.Bold else FontWeight.Normal,
+                            )
+                        },
+                        modifier = Modifier.height(40.dp),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
@@ -124,7 +143,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                 TextField(
                     value = searchQuery,
                     onValueChange = vm::setSearchQuery,
-                    placeholder = { Text("Search channels...") },
+                    placeholder = { Text(stringResource(R.string.search_channels)) },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(20.dp)) },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
@@ -134,10 +153,23 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(8.dp))
-                AssistChip(
-                    onClick = { vm.toggleSort() },
-                    label = { Text(if (sortByName) "A-Z" else "Playlist") },
-                )
+                Box {
+                    IconButton(onClick = { showSortMenu = true }) {
+                        Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.sort))
+                    }
+                    DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.sort_name)) },
+                            onClick = { vm.setSortByName(true); showSortMenu = false },
+                            leadingIcon = { if (sortByName) Icon(Icons.Filled.Check, null) else Spacer(Modifier.size(24.dp)) },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.sort_playlist)) },
+                            onClick = { vm.setSortByName(false); showSortMenu = false },
+                            leadingIcon = { if (!sortByName) Icon(Icons.Filled.Check, null) else Spacer(Modifier.size(24.dp)) },
+                        )
+                    }
+                }
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "$channelCount",
@@ -169,7 +201,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                             if (epg != null && epg.nowTitle != null) {
                                 Column {
                                     Text(
-                                        text = "Now: ${epg.nowTitle}",
+                                        text = stringResource(R.string.now_playing_epg, epg.nowTitle ?: ""),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.primary,
                                         maxLines = 1,
@@ -177,7 +209,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                                     )
                                     if (epg.nextTitle != null) {
                                         Text(
-                                            text = "Next: ${epg.nextTitle}",
+                                            text = stringResource(R.string.next_up_epg, epg.nextTitle ?: ""),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             maxLines = 1,
@@ -204,7 +236,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                                 IconButton(onClick = { vm.toggleFavorite(ch) }) {
                                     Icon(
                                         if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                        contentDescription = "Favorite",
+                                        contentDescription = stringResource(R.string.favorite),
                                         tint = if (isFav) MaterialTheme.colorScheme.error
                                         else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(20.dp),
@@ -213,7 +245,7 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
                                 IconButton(onClick = { vm.playChannel(ch) }) {
                                     Icon(
                                         Icons.Default.PlayArrow,
-                                        contentDescription = "Play",
+                                        contentDescription = stringResource(R.string.play),
                                         tint = if (isSelected && isPlaying) MaterialTheme.colorScheme.primary
                                         else MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
@@ -237,19 +269,19 @@ fun PhoneLiveScreen(vm: PhoneLiveViewModel) {
             items = listOf(
                 ContextMenuItem(
                     icon = Icons.Default.PlayArrow,
-                    label = "Play",
+                    label = stringResource(R.string.play_action),
                     tint = MaterialTheme.colorScheme.primary,
                     onClick = { vm.playChannel(ch) },
                 ),
                 ContextMenuItem(
                     icon = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    label = if (isFav) "Remove from Favorites" else "Add to Favorites",
+                    label = if (isFav) stringResource(R.string.remove_from_favorites) else stringResource(R.string.add_to_favorites),
                     tint = if (isFav) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     onClick = { vm.toggleFavorite(ch) },
                 ),
                 ContextMenuItem(
                     icon = Icons.Default.Info,
-                    label = "Channel Info",
+                    label = stringResource(R.string.channel_info),
                     onClick = { /* Could show EPG detail */ },
                 ),
             ),
@@ -264,7 +296,12 @@ private fun PlayerArea(
     channelName: String,
     isPlaying: Boolean,
     playerState: PhoneLivePlayer.State,
+    onOpenFullScreen: (() -> Unit)? = null,
 ) {
+    var showControls by remember { mutableStateOf(false) }
+    val autoHideJob = remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -286,6 +323,9 @@ private fun PlayerArea(
             AndroidView(
                 factory = { ctx ->
                     SurfaceView(ctx).apply {
+                        isClickable = false
+                        isFocusable = false
+                        isFocusableInTouchMode = false
                         holder.addCallback(object : SurfaceHolder.Callback {
                             override fun surfaceCreated(holder: SurfaceHolder) {
                                 player.setSurface(holder.surface)
@@ -302,9 +342,25 @@ private fun PlayerArea(
                 modifier = Modifier.fillMaxSize(),
             )
 
+            // Tap overlay: shows controls on tap
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        showControls = !showControls
+                        autoHideJob.value?.cancel()
+                        if (showControls) {
+                            autoHideJob.value = scope.launch {
+                                kotlinx.coroutines.delay(4000)
+                                showControls = false
+                            }
+                        }
+                    },
+            )
+
             if (playerState == PhoneLivePlayer.State.LOADING) {
                 Text(
-                    "Loading...",
+                    stringResource(R.string.loading),
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -312,10 +368,89 @@ private fun PlayerArea(
 
             if (playerState == PhoneLivePlayer.State.ERROR) {
                 Text(
-                    vm.player.error.collectAsStateWithLifecycle().value ?: "Error",
+                    vm.player.error.collectAsStateWithLifecycle().value ?: stringResource(R.string.error),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                 )
+            }
+
+            // Controls overlay
+            if (showControls) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                ) {
+                    // Top: play/pause
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        IconButton(onClick = {
+                            if (isPlaying) vm.player.pause() else vm.player.resume()
+                        }) {
+                            if (isPlaying) {
+                                Text(
+                                    "\u23F8",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Filled.PlayArrow,
+                                    contentDescription = stringResource(R.string.play),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(32.dp),
+                                )
+                            }
+                        }
+                        IconButton(onClick = { vm.player.toggleMute() }) {
+                            val isMuted by vm.player.isMuted.collectAsStateWithLifecycle()
+                            Icon(
+                                imageVector = if (isMuted) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                                contentDescription = if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute),
+                                tint = Color.White,
+                                modifier = Modifier.size(32.dp),
+                            )
+                        }
+                    }
+
+                    // Bottom: fullscreen button + channel name
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            channelName,
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        if (onOpenFullScreen != null) {
+                            Box(
+                                modifier = Modifier
+                                    .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                                    .clickable { onOpenFullScreen() }
+                                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    "\u25A1",
+                                    color = Color.White.copy(alpha = 0.9f),
+                                    style = MaterialTheme.typography.labelMedium,
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 

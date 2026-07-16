@@ -14,6 +14,7 @@ import com.lunaiptv.core.database.entity.MovieEntity
 import com.lunaiptv.core.database.entity.PlaybackProgressEntity
 import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.model.MediaType
+import android.util.Log
 import java.nio.ByteBuffer
 import java.security.MessageDigest
 
@@ -24,6 +25,7 @@ class LauncherRecommendationPlanner(
     private val progressDao: ProgressDao,
 ) {
     companion object {
+        private const val TAG = "LauncherPlanner"
         private const val WATCH_NEXT_MIN_POSITION_MS = 10_000L
         private const val WATCH_NEXT_COMPLETE_FRACTION = 0.95f
         private const val CONTINUATION_MAX_ITEMS = 10
@@ -35,17 +37,31 @@ class LauncherRecommendationPlanner(
 
     suspend fun buildContinuationItems(profileId: Long): List<LauncherContinuationItem> = withContext(Dispatchers.IO) {
         val sourceIds = sourceIdsForProfile(profileId)
-        if (sourceIds.isEmpty()) return@withContext emptyList()
+        if (sourceIds.isEmpty()) {
+            Log.w(TAG, "No source IDs for profile=$profileId — cannot build continuation items")
+            return@withContext emptyList()
+        }
 
         val allProgress = progressDao.getAllOnce().filter { it.profileId == profileId }
+        Log.d(TAG, "Found ${allProgress.size} progress rows for profile=$profileId")
         val out = ArrayList<LauncherContinuationItem>()
 
         for (progress in allProgress) {
             when (progress.mediaType) {
                 MediaType.MOVIE -> {
-                    val movie = movieDao.getById(progress.itemId) ?: continue
-                    if (movie.sourceId !in sourceIds) continue
-                    if (!eligibleForWatchNext(progress.positionMs, progress.durationMs)) continue
+                    val movie = movieDao.getById(progress.itemId)
+                    if (movie == null) {
+                        Log.w(TAG, "Movie not found for progress itemId=${progress.itemId} — stale after re-sync?")
+                        continue
+                    }
+                    if (movie.sourceId !in sourceIds) {
+                        Log.d(TAG, "Movie ${movie.name} sourceId=${movie.sourceId} not in profile sources — skipping")
+                        continue
+                    }
+                    if (!eligibleForWatchNext(progress.positionMs, progress.durationMs)) {
+                        Log.d(TAG, "Movie ${movie.name} not eligible: pos=${progress.positionMs} dur=${progress.durationMs}")
+                        continue
+                    }
                     out += movieItem(movie, progress)
                 }
 
@@ -57,7 +73,11 @@ class LauncherRecommendationPlanner(
         val latestBySeries = LinkedHashMap<Long, PlaybackProgressEntity>()
         for (progress in allProgress) {
             if (progress.mediaType != MediaType.EPISODE) continue
-            val episode = seriesDao.getEpisodeById(progress.itemId) ?: continue
+            val episode = seriesDao.getEpisodeById(progress.itemId)
+            if (episode == null) {
+                Log.w(TAG, "Episode not found for progress itemId=${progress.itemId} — stale after re-sync?")
+                continue
+            }
             val show = seriesDao.getSeriesById(episode.seriesId) ?: continue
             if (show.sourceId !in sourceIds) continue
             val current = latestBySeries[episode.seriesId]
@@ -65,6 +85,7 @@ class LauncherRecommendationPlanner(
                 latestBySeries[episode.seriesId] = progress
             }
         }
+        Log.d(TAG, "Found ${latestBySeries.size} series with episode progress for profile=$profileId")
         for (progress in latestBySeries.values) {
             val episode = seriesDao.getEpisodeById(progress.itemId) ?: continue
             val show = seriesDao.getSeriesById(episode.seriesId) ?: continue
@@ -76,6 +97,7 @@ class LauncherRecommendationPlanner(
             out += episodeItem(show, episode, progress, episodes, currentIndex, complete)
         }
 
+        Log.d(TAG, "Built ${out.size} continuation items for profile=$profileId")
         out.sortedByDescending { it.lastEngagementAt }.take(CONTINUATION_MAX_ITEMS)
     }
 

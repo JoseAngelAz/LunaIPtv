@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,6 +45,7 @@ import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.phone.di.PhoneSearchIntent
 import com.lunaiptv.phone.di.PhoneSearchResults
 import com.lunaiptv.phone.di.PhoneSearchViewModel
+import com.lunaiptv.phone.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,12 +72,12 @@ fun PhoneSearchScreen(
             TextField(
                 value = query,
                 onValueChange = { vm.setQuery(it) },
-                placeholder = { Text("Search channels, movies, series...") },
+                placeholder = { Text(stringResource(R.string.search_placeholder)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { vm.setQuery("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.close))
                         }
                     }
                 },
@@ -96,7 +98,7 @@ fun PhoneSearchScreen(
                 if (query.isEmpty() && intent == null && recentSearches.isNotEmpty()) {
                     item {
                         Text(
-                            "Recent searches",
+                            stringResource(R.string.recent_searches),
                             style = MaterialTheme.typography.labelLarge,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         )
@@ -110,7 +112,7 @@ fun PhoneSearchScreen(
                     }
                     item {
                         Text(
-                            "Clear history",
+                            stringResource(R.string.clear_history),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier
@@ -142,7 +144,7 @@ fun PhoneSearchScreen(
                 if (query.isEmpty() && intent != null) {
                     item {
                         Text(
-                            "← Back to search",
+                            stringResource(R.string.back_to_search),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
@@ -155,7 +157,7 @@ fun PhoneSearchScreen(
 
                 // Channel results
                 if (displayResults.channels.isNotEmpty()) {
-                    item { SectionLabel("Channels") }
+                    item { SectionLabel(stringResource(R.string.channels_section)) }
                     items(displayResults.channels) { row ->
                         val ch = row.channel
                         val isFav = favorites.contains(ch.id)
@@ -179,13 +181,13 @@ fun PhoneSearchScreen(
                                     IconButton(onClick = { vm.toggleFavoriteChannel(ch) }) {
                                         Icon(
                                             if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                            contentDescription = "Favorite",
+                                            contentDescription = stringResource(R.string.favorite),
                                             tint = if (isFav) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(20.dp),
                                         )
                                     }
                                     IconButton(onClick = { onPlayChannel(ch) }) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                                        Icon(Icons.Default.PlayArrow, contentDescription = stringResource(R.string.play))
                                     }
                                 }
                             },
@@ -196,7 +198,7 @@ fun PhoneSearchScreen(
 
                 // Movie results
                 if (displayResults.movies.isNotEmpty()) {
-                    item { SectionLabel("Movies") }
+                    item { SectionLabel(stringResource(R.string.movies_section)) }
                     items(displayResults.movies) { movie ->
                         ListItem(
                             headlineContent = { Text(movie.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
@@ -215,7 +217,7 @@ fun PhoneSearchScreen(
                             },
                             trailingContent = {
                                 IconButton(onClick = { onPlayMovie(movie) }) {
-                                    Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                                    Icon(Icons.Default.PlayArrow, contentDescription = stringResource(R.string.play))
                                 }
                             },
                             modifier = Modifier.clickable { onPlayMovie(movie) },
@@ -225,7 +227,7 @@ fun PhoneSearchScreen(
 
                 // Series results
                 if (displayResults.series.isNotEmpty()) {
-                    item { SectionLabel("Series") }
+                    item { SectionLabel(stringResource(R.string.series_section)) }
                     items(displayResults.series) { series ->
                         ListItem(
                             headlineContent = { Text(series.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
@@ -262,13 +264,13 @@ fun PhoneSearchScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        "Search",
+                        stringResource(R.string.search),
                         style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Find channels, movies, and series",
+                        stringResource(R.string.find_channels_movies_series),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

@@ -18,6 +18,9 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(movies: List<MovieEntity>)
 
+    @Query("SELECT * FROM movies WHERE id IN (:ids) ORDER BY name ASC")
+    suspend fun getByIds(ids: List<Long>): List<MovieEntity>
+
     @Update
     suspend fun updateAll(movies: List<MovieEntity>)
 

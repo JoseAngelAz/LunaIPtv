@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import com.lunaiptv.core.database.dao.DownloadDao
@@ -72,16 +73,20 @@ class DownloadManager(
         streamUrl: String, relativeDir: String, fileName: String,
     ) {
         scope.launch {
-            val root = StorageAccess.resolveRoot(context, settings.downloadRoot.first())
-            val target = File(File(root, relativeDir).apply { mkdirs() }, fileName)
-            val id = downloadDao.upsert(
-                DownloadEntity(
-                    profileId = profileId, mediaType = mediaType, itemId = itemId, title = title,
-                    posterUrl = posterUrl, streamUrl = streamUrl, filePath = target.absolutePath,
-                    status = DownloadStatus.QUEUED,
-                ),
-            )
-            start(id)
+            try {
+                val root = StorageAccess.resolveRoot(context, settings.downloadRoot.first())
+                val target = File(File(root, relativeDir).apply { mkdirs() }, fileName)
+                val id = downloadDao.upsert(
+                    DownloadEntity(
+                        profileId = profileId, mediaType = mediaType, itemId = itemId, title = title,
+                        posterUrl = posterUrl, streamUrl = streamUrl, filePath = target.absolutePath,
+                        status = DownloadStatus.QUEUED,
+                    ),
+                )
+                start(id)
+            } catch (e: Exception) {
+                Log.w("DownloadManager", "Enqueue failed: ${e.message}")
+            }
         }
     }
 
@@ -120,8 +125,23 @@ class DownloadManager(
         job.invokeOnCompletion { jobs.remove(id) }
     }
 
+    private fun startDownloadClient(): OkHttpClient {
+        // Clone the main client to inherit proxy settings, trust-all SSL, and TLS config
+        // that are required for IPTV providers with old/outdated certificates.
+        // Only customise timeouts for large file downloads and strip interceptors.
+        return client.newBuilder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .apply { interceptors().clear(); networkInterceptors().clear() }
+            .build()
+    }
+
     private suspend fun runDownload(id: Long) {
         val d = downloadDao.getById(id) ?: return
+        Log.i("DownloadManager", "Starting download $id: ${d.streamUrl}")
         val file = d.filePath?.let { File(it) } ?: File(StorageAccess.defaultRoot(context), "$id.mp4")
         file.parentFile?.mkdirs()
         // Resume only a previously-paused download; anything else starts fresh.
@@ -131,7 +151,7 @@ class DownloadManager(
         try {
             val rb = Request.Builder().url(d.streamUrl).header("User-Agent", HttpClient.DEFAULT_USER_AGENT)
             if (existing > 0) rb.header("Range", "bytes=$existing-")
-            client.newCall(rb.build()).execute().use { resp ->
+            startDownloadClient().newCall(rb.build()).execute().use { resp ->
                 val body = resp.body
                 if (!resp.isSuccessful || body == null) { markFailed(id, d.totalBytes); return }
                 val append = resp.code == 206 && existing > 0 // server honoured the Range
@@ -157,11 +177,13 @@ class DownloadManager(
                 downloadDao.upsert(d.copy(status = DownloadStatus.COMPLETED, downloadedBytes = size, totalBytes = size, updatedAt = System.currentTimeMillis()))
             }
         } catch (e: Exception) {
+            Log.w("DownloadManager", "Download $id failed: ${e.message}")
             if (currentCoroutineContext().isActive) markFailed(id, d.totalBytes)
         }
     }
 
     private suspend fun markFailed(id: Long, total: Long) {
+        Log.w("DownloadManager", "Marking download $id as FAILED")
         downloadDao.updateProgress(id, DownloadStatus.FAILED, 0, total, System.currentTimeMillis())
     }
 }

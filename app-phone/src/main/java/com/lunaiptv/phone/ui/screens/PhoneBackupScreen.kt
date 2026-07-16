@@ -44,10 +44,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunaiptv.core.backup.BackupManager
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneBackupViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -110,10 +112,10 @@ fun PhoneBackupScreen(
         Scaffold(
             topBar = {
                 LargeTopAppBar(
-                    title = { Text("Backup & Restore") },
+                    title = { Text(stringResource(R.string.backup_restore_title)) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -128,8 +130,7 @@ fun PhoneBackupScreen(
                     .verticalScroll(rememberScrollState()),
             ) {
                 Text(
-                    text = "Back up your profiles, favorites, watch history, and app settings to a JSON file. " +
-                        "You can also restore from a previous backup.",
+                    text = stringResource(R.string.backup_description_long),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -140,7 +141,7 @@ fun PhoneBackupScreen(
                         onClick = { showExportPicker = true },
                         enabled = state !is PhoneBackupViewModel.State.Working,
                     ) {
-                        Text("Export")
+                        Text(stringResource(R.string.export))
                     }
                     OutlinedButton(
                         onClick = {
@@ -148,7 +149,7 @@ fun PhoneBackupScreen(
                         },
                         enabled = state !is PhoneBackupViewModel.State.Working,
                     ) {
-                        Text("Restore")
+                        Text(stringResource(R.string.restore_action))
                     }
                 }
                 Spacer(Modifier.height(24.dp))
@@ -159,7 +160,7 @@ fun PhoneBackupScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                             Spacer(Modifier.width(12.dp))
-                            Text("Working…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(stringResource(R.string.working), color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                     is PhoneBackupViewModel.State.Done -> {
@@ -177,10 +178,10 @@ fun PhoneBackupScreen(
     // ── Export: section picker ──────────────────────────────────────
     if (showExportPicker) {
         SectionPickerDialog(
-            title = "What to back up",
+            title = stringResource(R.string.what_to_back_up),
             sections = BackupManager.Section.entries,
             initial = BackupManager.Section.entries.toSet(),
-            confirmLabel = "Choose folder",
+            confirmLabel = stringResource(R.string.choose_folder),
             onConfirm = { chosen ->
                 exportSections = chosen
                 showExportPicker = false
@@ -194,11 +195,10 @@ fun PhoneBackupScreen(
     if (showPasswordForExport && pendingFolderUri != null) {
         val exportFolder = File(context.cacheDir, "lunaiptv-export").also { it.mkdirs() }
         BackupPasswordDialog(
-            title = "Protect with password?",
-            message = "Encrypt sensitive fields (source passwords, proxy) with a backup passphrase. " +
-                "If you skip, passwords will be omitted and must be re-entered after restore.",
-            confirmLabel = "Encrypt & export",
-            skipLabel = "Export without passwords",
+            title = stringResource(R.string.protect_password),
+            message = stringResource(R.string.encrypt_backup_message),
+            confirmLabel = stringResource(R.string.encrypt_export),
+            skipLabel = stringResource(R.string.export_without_passwords),
             onConfirm = { pass ->
                 showPasswordForExport = false
                 lastExportedFile = File(exportFolder, "LunaIPtv-backup.json")
@@ -219,10 +219,10 @@ fun PhoneBackupScreen(
     // ── Restore: section picker ─────────────────────────────────────
     (state as? PhoneBackupViewModel.State.ChooseRestore)?.let { choose ->
         SectionPickerDialog(
-            title = "What to restore",
+            title = stringResource(R.string.what_to_restore),
             sections = BackupManager.Section.entries.filter { it in choose.available },
             initial = choose.available,
-            confirmLabel = "Restore",
+            confirmLabel = stringResource(R.string.restore_action),
             onConfirm = { chosen -> vm.beginImport(choose.file, chosen, choose.encrypted) },
             onDismiss = { vm.reset() },
         )
@@ -231,11 +231,10 @@ fun PhoneBackupScreen(
     // ── Restore: password prompt ────────────────────────────────────
     (state as? PhoneBackupViewModel.State.NeedPassword)?.let { need ->
         BackupPasswordDialog(
-            title = if (need.retry) "Wrong password" else "Enter backup password",
-            message = if (need.retry) "The password didn't match. Try again or skip (passwords will be omitted)." else
-                "This backup is encrypted. Enter the password to restore sensitive fields.",
-            confirmLabel = "Restore",
-            skipLabel = "Skip (no passwords)",
+            title = stringResource(if (need.retry) R.string.wrong_password else R.string.enter_backup_password),
+            message = stringResource(if (need.retry) R.string.wrong_password_retry_message else R.string.encrypted_backup_message),
+            confirmLabel = stringResource(R.string.restore_action),
+            skipLabel = stringResource(R.string.skip_no_passwords),
             onConfirm = { pass -> vm.import(need.file, need.sections, pass) },
             onSkip = { vm.import(need.file, need.sections, null) },
             onDismiss = { vm.reset() },
@@ -276,7 +275,7 @@ private fun SectionPickerDialog(
                         },
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Everything", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.everything), style = MaterialTheme.typography.bodyLarge)
                 }
                 HorizontalDivider()
                 sections.forEach { section ->
@@ -308,7 +307,7 @@ private fun SectionPickerDialog(
             ) { Text(confirmLabel) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }
@@ -337,7 +336,7 @@ private fun BackupPasswordDialog(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Backup password") },
+                    label = { Text(stringResource(R.string.backup_password)) },
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -353,7 +352,7 @@ private fun BackupPasswordDialog(
         dismissButton = {
             Row {
                 TextButton(onClick = onSkip) { Text(skipLabel) }
-                TextButton(onClick = onDismiss) { Text("Cancel") }
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
             }
         },
     )

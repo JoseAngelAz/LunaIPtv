@@ -32,8 +32,10 @@ import com.lunaiptv.core.database.dao.SeriesDao
 import com.lunaiptv.core.database.dao.SourceDao
 import com.lunaiptv.core.database.entity.EpisodeEntity
 import com.lunaiptv.core.database.entity.FavoriteEntity
+import com.lunaiptv.core.database.entity.MetadataCacheEntity
 import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.database.entity.WatchHistoryEntity
+import com.lunaiptv.core.metadata.MetadataRepository
 import com.lunaiptv.core.model.MediaType
 import com.lunaiptv.core.repository.SeriesRepository
 import com.lunaiptv.core.repository.activeProfileSources
@@ -53,6 +55,7 @@ class PhoneSeriesViewModel(
     private val settings: SettingsRepository,
     private val seriesRepository: SeriesRepository,
     private val player: PhoneLivePlayer,
+    private val metadata: MetadataRepository,
 ) : ViewModel() {
 
     private data class Ctx(val profileId: Long, val sourceIds: List<Long>)
@@ -66,18 +69,21 @@ class PhoneSeriesViewModel(
     private val _selectedKey = MutableStateFlow<LiveKey>(LiveKey.All)
     val selectedKey: StateFlow<LiveKey> = _selectedKey.asStateFlow()
 
+    var firstVisibleIndex: Int = 0
+
     val railItems: StateFlow<List<PhoneSeriesRailItem>> = ctx
         .flatMapLatest { c ->
             if (c.profileId < 0 || c.sourceIds.isEmpty()) flowOf(emptyList())
             else categoryDao.observe(c.sourceIds, com.lunaiptv.core.model.MediaType.SERIES).map { cats ->
                 buildList {
-                    add(PhoneSeriesRailItem(LiveKey.All, "All"))
                     add(PhoneSeriesRailItem(LiveKey.Favorites, "Favorites"))
+                    add(PhoneSeriesRailItem(LiveKey.History, "History"))
+                    add(PhoneSeriesRailItem(LiveKey.All, "All"))
                     cats.forEach { add(PhoneSeriesRailItem(LiveKey.Folder(it.id), it.name)) }
                 }
             }
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     fun selectKey(key: LiveKey) { _selectedKey.value = key }
 
@@ -88,6 +94,7 @@ class PhoneSeriesViewModel(
     private val _sortByName = MutableStateFlow(false)
     val sortByName: StateFlow<Boolean> = _sortByName.asStateFlow()
     fun toggleSort() { _sortByName.value = !_sortByName.value }
+    fun setSortByName(v: Boolean) { _sortByName.value = v }
 
     private val _selectedSeries = MutableStateFlow<SeriesEntity?>(null)
     val selectedSeries: StateFlow<SeriesEntity?> = _selectedSeries.asStateFlow()
@@ -108,13 +115,26 @@ class PhoneSeriesViewModel(
     private val _selectedEpisode = MutableStateFlow<EpisodeEntity?>(null)
     val selectedEpisode: StateFlow<EpisodeEntity?> = _selectedEpisode.asStateFlow()
 
+    // TMDB metadata for current series detail screen
+    private val _currentSeriesMeta = MutableStateFlow<MetadataCacheEntity?>(null)
+    val currentSeriesMeta: StateFlow<MetadataCacheEntity?> = _currentSeriesMeta.asStateFlow()
+
+    fun loadSeriesMeta(series: SeriesEntity) {
+        viewModelScope.launch {
+            _currentSeriesMeta.value = null
+            _currentSeriesMeta.value = try { metadata.resolveSeries(series) } catch (_: Exception) { null }
+        }
+    }
+
+    fun clearSeriesMeta() { _currentSeriesMeta.value = null }
+
     val seasons: StateFlow<List<Int>> = _episodes.map { eps ->
         eps.map { it.seasonNumber }.distinct().sorted()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val filteredEpisodes: StateFlow<List<EpisodeEntity>> = combine(_episodes, _selectedSeason) { eps, s ->
         eps.filter { it.seasonNumber == s }.sortedBy { it.episodeNumber }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val episodeProgress: StateFlow<Map<Long, com.lunaiptv.core.database.entity.PlaybackProgressEntity>> =
         combine(ctx, _openedSeries) { c, s -> Pair(c, s) }
@@ -123,14 +143,14 @@ class PhoneSeriesViewModel(
                 else progressDao.observeSeriesEpisodeProgress(c.profileId, s.id)
             }
             .map { list: List<com.lunaiptv.core.database.entity.PlaybackProgressEntity> -> list.associateBy { it.itemId } }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // ── Paginated series grid ──────────────────────────────
     val seriesCount: StateFlow<Int> = combine(ctx, _selectedKey) { c, k -> Pair(c, k) }
         .flatMapLatest { (c, k) ->
             if (c.profileId < 0) flowOf(0) else countFlow(c.profileId, c.sourceIds, k)
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val series: StateFlow<PagingData<SeriesEntity>> = combine(
         ctx, _selectedKey, _searchQuery.debounce(300).distinctUntilChanged(), _sortByName,
@@ -141,12 +161,12 @@ class PhoneSeriesViewModel(
             else seriesPager(q.ctx.profileId, q.ctx.sourceIds, q.key, q.query, q.sortByName)
         }
         .cachedIn(viewModelScope)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PagingData.empty())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, PagingData.empty())
 
     private data class SeriesQuery(val ctx: Ctx, val key: LiveKey, val query: String, val sortByName: Boolean)
 
     private fun seriesPager(pid: Long, sourceIds: List<Long>, key: LiveKey, query: String, sortByName: Boolean) =
-        Pager(PagingConfig(pageSize = 60, prefetchDistance = 30, initialLoadSize = 90, maxSize = 300)) {
+        Pager(PagingConfig(pageSize = 60, prefetchDistance = 50, initialLoadSize = 120, maxSize = 300)) {
             when (key) {
                 is LiveKey.All -> if (query.isBlank()) {
                     if (sortByName) seriesDao.pagingAll(sourceIds) else seriesDao.pagingAllOriginal(sourceIds)
@@ -171,7 +191,7 @@ class PhoneSeriesViewModel(
     val favoriteIds: StateFlow<Set<Long>> = ctx
         .flatMapLatest { favoriteDao.observeFavoriteIds(it.profileId, MediaType.SERIES) }
         .map { it.toSet() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
     fun toggleFavorite(s: SeriesEntity) {
         viewModelScope.launch {
@@ -213,6 +233,7 @@ class PhoneSeriesViewModel(
         _openedSeries.value = null
         _episodes.value = emptyList()
         _selectedEpisode.value = null
+        _currentSeriesMeta.value = null
     }
 
     fun selectSeason(n: Int) { _selectedSeason.value = n }
@@ -243,6 +264,28 @@ class PhoneSeriesViewModel(
         val ep = episodeProgress.value[episodeId] ?: return 0L
         val pct = ep.positionMs.toFloat() / ep.durationMs.coerceAtLeast(1).toFloat()
         return if (pct < 0.95f) ep.positionMs else 0L
+    }
+
+    fun saveEpisodeProgress(episodeId: Long) {
+        viewModelScope.launch {
+            val pid = ctx.value.profileId
+            if (pid < 0) return@launch
+            val pos = player.currentPositionMs()
+            val dur = player.durationMs()
+            if (pos > 0 && dur > 0) {
+                runCatching {
+                    progressDao.save(
+                        com.lunaiptv.core.database.entity.PlaybackProgressEntity(
+                            profileId = pid,
+                            mediaType = MediaType.EPISODE,
+                            itemId = episodeId,
+                            positionMs = pos,
+                            durationMs = dur,
+                        )
+                    )
+                }
+            }
+        }
     }
 
     override fun onCleared() { super.onCleared(); player.release() }

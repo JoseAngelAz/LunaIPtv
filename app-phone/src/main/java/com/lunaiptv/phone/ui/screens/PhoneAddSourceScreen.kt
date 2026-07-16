@@ -40,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -47,6 +49,7 @@ import com.lunaiptv.core.database.entity.SourceEntity
 import com.lunaiptv.core.model.SourceType
 import com.lunaiptv.core.sync.ImportStage
 import com.lunaiptv.features.settings.data.PlaylistAutoRefresh
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneSourceViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
@@ -107,10 +110,10 @@ fun PhoneAddSourceScreen(
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text(if (editingMode) "Edit Source" else "Add Source") },
+                title = { Text(stringResource(if (editingMode) R.string.edit_source else R.string.add_source)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -126,7 +129,7 @@ fun PhoneAddSourceScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                if (editingMode) "Update your source settings" else "Connect your IPTV provider",
+                if (editingMode) stringResource(R.string.update_source_settings) else stringResource(R.string.connect_iptv_provider),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -142,8 +145,8 @@ fun PhoneAddSourceScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name (optional)") },
-                placeholder = { Text("My IPTV") },
+                label = { Text(stringResource(R.string.name_optional)) },
+                placeholder = { Text(stringResource(R.string.my_iptv)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -154,8 +157,8 @@ fun PhoneAddSourceScreen(
                     OutlinedTextField(
                         value = server,
                         onValueChange = { server = it },
-                        label = { Text("Server URL") },
-                        placeholder = { Text("http://host:port") },
+                        label = { Text(stringResource(R.string.server_url)) },
+                        placeholder = { Text(stringResource(R.string.http_host_port_hint)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                         modifier = Modifier.fillMaxWidth(),
@@ -164,12 +167,12 @@ fun PhoneAddSourceScreen(
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
-                        label = { Text("Username") },
+                        label = { Text(stringResource(R.string.username)) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Spacer(Modifier.height(14.dp))
-                    val pwLabel = if (editingMode) "Password (keep blank to keep current)" else "Password"
+                    val pwLabel = if (editingMode) stringResource(R.string.password_keep_blank) else stringResource(R.string.password)
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -183,8 +186,8 @@ fun PhoneAddSourceScreen(
                     OutlinedTextField(
                         value = m3uUrl,
                         onValueChange = { m3uUrl = it },
-                        label = { Text("Playlist URL") },
-                        placeholder = { Text("http://…/playlist.m3u") },
+                        label = { Text(stringResource(R.string.playlist_url)) },
+                        placeholder = { Text(stringResource(R.string.playlist_m3u_hint)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                         modifier = Modifier.fillMaxWidth(),
@@ -196,8 +199,8 @@ fun PhoneAddSourceScreen(
             OutlinedTextField(
                 value = userAgent,
                 onValueChange = { userAgent = it },
-                label = { Text("User Agent (optional)") },
-                placeholder = { Text("e.g. VLC/3.0.20") },
+                label = { Text(stringResource(R.string.user_agent_optional_source)) },
+                placeholder = { Text(stringResource(R.string.user_agent_hint)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -206,8 +209,8 @@ fun PhoneAddSourceScreen(
             OutlinedTextField(
                 value = epgUrl,
                 onValueChange = { epgUrl = it },
-                label = { Text("EPG URL (optional)") },
-                placeholder = { Text("http://…/xmltv.php") },
+                label = { Text(stringResource(R.string.epg_url_optional)) },
+                placeholder = { Text(stringResource(R.string.epg_xmltv_hint)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 modifier = Modifier.fillMaxWidth(),
@@ -215,7 +218,7 @@ fun PhoneAddSourceScreen(
 
             Spacer(Modifier.height(16.dp))
             SettingToggle(
-                title = "Auto-refresh playlist",
+                title = stringResource(R.string.auto_refresh_playlist),
                 subtitle = autoRefresh.label,
                 checked = autoRefresh != PlaylistAutoRefresh.OFF,
                 onCheckedChange = {
@@ -226,8 +229,8 @@ fun PhoneAddSourceScreen(
             if (showDefaultToggle) {
                 Spacer(Modifier.height(8.dp))
                 SettingToggle(
-                    title = "Default playlist",
-                    subtitle = "Use as primary content source",
+                    title = stringResource(R.string.default_playlist),
+                    subtitle = stringResource(R.string.use_primary_source),
                     checked = isDefault,
                     onCheckedChange = { isDefault = it },
                 )
@@ -235,15 +238,15 @@ fun PhoneAddSourceScreen(
 
             if (showContentToggles) {
                 Spacer(Modifier.height(20.dp))
-                Text("First sync — choose content to import", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.first_sync_choose_content), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))
-                Text("You can sync the rest later from the source list.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.sync_rest_later_source_list), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(Modifier.height(12.dp))
-                SettingToggle(title = "Live TV", subtitle = "Channels and live streams", checked = syncLive, onCheckedChange = { syncLive = it })
+                SettingToggle(title = stringResource(R.string.live_tv_section), subtitle = stringResource(R.string.channels_live_streams), checked = syncLive, onCheckedChange = { syncLive = it })
                 Spacer(Modifier.height(4.dp))
-                SettingToggle(title = "Movies", subtitle = "Video on demand library", checked = syncMovies, onCheckedChange = { syncMovies = it })
+                SettingToggle(title = stringResource(R.string.movies_section), subtitle = stringResource(R.string.video_on_demand), checked = syncMovies, onCheckedChange = { syncMovies = it })
                 Spacer(Modifier.height(4.dp))
-                SettingToggle(title = "Series", subtitle = "TV series catalogue", checked = syncSeries, onCheckedChange = { syncSeries = it })
+                SettingToggle(title = stringResource(R.string.series_section), subtitle = stringResource(R.string.tv_series_catalogue), checked = syncSeries, onCheckedChange = { syncSeries = it })
             }
 
             Spacer(Modifier.height(28.dp))
@@ -257,7 +260,7 @@ fun PhoneAddSourceScreen(
                 enabled = canStart,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (editingMode) "Save" else "Start Import")
+                Text(stringResource(if (editingMode) R.string.save else R.string.start_import))
             }
             Spacer(Modifier.height(32.dp))
         }
@@ -266,7 +269,7 @@ fun PhoneAddSourceScreen(
     if (showAutoRefreshPicker) {
         AlertDialog(
             onDismissRequest = { showAutoRefreshPicker = false },
-            title = { Text("Auto-refresh playlist") },
+            title = { Text(stringResource(R.string.auto_refresh_playlist)) },
             text = {
                 Column {
                     PlaylistAutoRefresh.entries.forEach { mode ->
@@ -295,7 +298,7 @@ private fun SourceTypeSelector(
     onSelect: (SourceKind) -> Unit,
 ) {
     Column {
-        Text("Source type", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.source_type), style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -304,7 +307,7 @@ private fun SourceTypeSelector(
             FilterChip(
                 selected = selected == SourceKind.XTREAM,
                 onClick = { if (enabled) onSelect(SourceKind.XTREAM) },
-                label = { Text("Xtream Codes") },
+                label = { Text(stringResource(R.string.xtream_codes)) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 colors = FilterChipDefaults.filterChipColors(
@@ -314,7 +317,7 @@ private fun SourceTypeSelector(
             FilterChip(
                 selected = selected == SourceKind.M3U,
                 onClick = { if (enabled) onSelect(SourceKind.M3U) },
-                label = { Text("M3U Playlist") },
+                label = { Text(stringResource(R.string.m3u_playlist)) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 colors = FilterChipDefaults.filterChipColors(
@@ -327,6 +330,7 @@ private fun SourceTypeSelector(
 
 @Composable
 private fun ImportProgressScreen(progress: ImportStage?, onCancel: () -> Unit) {
+    val context = LocalContext.current
     Scaffold { padding ->
         Column(
             modifier = Modifier
@@ -337,20 +341,20 @@ private fun ImportProgressScreen(progress: ImportStage?, onCancel: () -> Unit) {
             verticalArrangement = Arrangement.Center,
         ) {
             CircularProgressIndicator(modifier = Modifier.padding(bottom = 24.dp))
-            Text("Importing catalog…", style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.importing_catalog), style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
             val live = progress?.liveProcessed ?: 0
             val movies = progress?.moviesProcessed ?: 0
             val series = progress?.seriesProcessed ?: 0
             val parts = buildList {
-                if (live > 0) add("$live channels")
-                if (movies > 0) add("$movies movies")
-                if (series > 0) add("$series series")
+                if (live > 0) add(context.getString(R.string.count_channels_format, live.toString()))
+                if (movies > 0) add(context.getString(R.string.count_movies_format, movies.toString()))
+                if (series > 0) add(context.getString(R.string.count_series_format, series.toString()))
             }
-            val label = parts.joinToString(" · ").ifBlank { "Preparing catalog" }
+            val label = parts.joinToString(" · ").ifBlank { context.getString(R.string.preparing_catalog) }
             Text(label, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
             Spacer(Modifier.height(32.dp))
-            OutlinedButton(onClick = onCancel) { Text("Cancel") }
+            OutlinedButton(onClick = onCancel) { Text(stringResource(R.string.cancel)) }
         }
     }
 }
@@ -366,13 +370,13 @@ private fun ImportErrorScreen(message: String, onRetry: () -> Unit, onBack: () -
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text("Import failed", style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(R.string.import_failed), style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
             Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(24.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick = onBack) { Text("Back") }
-                Button(onClick = onRetry) { Text("Try Again") }
+                OutlinedButton(onClick = onBack) { Text(stringResource(R.string.back)) }
+                Button(onClick = onRetry) { Text(stringResource(R.string.try_again)) }
             }
         }
     }

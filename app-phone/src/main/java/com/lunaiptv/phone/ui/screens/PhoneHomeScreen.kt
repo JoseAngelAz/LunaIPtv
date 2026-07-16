@@ -2,6 +2,7 @@ package com.lunaiptv.phone.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -28,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -47,12 +50,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import coil3.compose.AsyncImage
 import com.lunaiptv.phone.di.PhoneHomeState
 import com.lunaiptv.phone.di.PhoneHomeViewModel
+import com.lunaiptv.phone.R
 import com.lunaiptv.core.database.entity.ChannelEntity
+import com.lunaiptv.core.database.entity.MovieEntity
+import com.lunaiptv.core.database.entity.SeriesEntity
 import com.lunaiptv.core.launcher.LauncherContinuationItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +69,8 @@ fun PhoneHomeScreen(
     onPlayContinueMovie: (LauncherContinuationItem) -> Unit,
     onPlayContinueSeries: (LauncherContinuationItem) -> Unit,
     onPlayChannel: (ChannelEntity) -> Unit,
+    onFavMovie: (MovieEntity) -> Unit,
+    onFavSeries: (SeriesEntity) -> Unit,
 ) {
     val state by vm.uiState.collectAsState()
     var isRefreshing by remember { mutableStateOf(false) }
@@ -93,7 +102,7 @@ fun PhoneHomeScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("🎬", style = MaterialTheme.typography.displayLarge)
                     Spacer(Modifier.height(16.dp))
-                    Text("Welcome to LunaIPtv", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.welcome_lunaiptv), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
                     if (state.profileName.isNotBlank()) {
                         Text(
@@ -104,7 +113,7 @@ fun PhoneHomeScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Pull down to refresh",
+                        stringResource(R.string.pull_to_refresh),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -132,6 +141,32 @@ fun PhoneHomeScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
+        // Weather chip
+        state.weatherText?.let { weather ->
+            item {
+                OutlinedCard(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                    colors = CardDefaults.outlinedCardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                    ),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text("🌤", style = MaterialTheme.typography.labelMedium)
+                        Text(
+                            text = weather,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+            }
+        }
         // Profile header
         if (state.profileName.isNotBlank()) {
             item {
@@ -165,7 +200,7 @@ fun PhoneHomeScreen(
         // ── Continue Watching Movies ────────────────────────
         if (state.continueMovies.isNotEmpty()) {
             item {
-                SectionHeader("Continue Watching Movies")
+                SectionHeader(stringResource(R.string.continue_watching_movies))
                 ContinueMoviesRow(
                     items = state.continueMovies,
                     onClick = onPlayContinueMovie,
@@ -176,7 +211,7 @@ fun PhoneHomeScreen(
         // ── Continue Watching Series ────────────────────────
         if (state.continueSeries.isNotEmpty()) {
             item {
-                SectionHeader("Continue Watching Series")
+                SectionHeader(stringResource(R.string.continue_watching_series))
                 ContinueSeriesRow(
                     items = state.continueSeries,
                     onClick = onPlayContinueSeries,
@@ -187,7 +222,7 @@ fun PhoneHomeScreen(
         // ── Recent Channels ─────────────────────────────────
         if (state.recentChannels.isNotEmpty()) {
             item {
-                SectionHeader("Recent Channels")
+                SectionHeader(stringResource(R.string.recent_channels))
                 ChannelRow(
                     channels = state.recentChannels,
                     onClick = onPlayChannel,
@@ -198,10 +233,32 @@ fun PhoneHomeScreen(
         // ── Favorite Channels ───────────────────────────────
         if (state.favoriteChannels.isNotEmpty()) {
             item {
-                SectionHeader("Favorite Channels")
+                SectionHeader(stringResource(R.string.favorite_channels))
                 ChannelRow(
                     channels = state.favoriteChannels,
                     onClick = onPlayChannel,
+                )
+            }
+        }
+
+        // ── Favorite Movies ────────────────────────────────
+        if (state.favoriteMovies.isNotEmpty()) {
+            item {
+                SectionHeader(stringResource(R.string.favorite_movies))
+                FavoriteMovieRow(
+                    movies = state.favoriteMovies,
+                    onClick = onFavMovie,
+                )
+            }
+        }
+
+        // ── Favorite Series ────────────────────────────────
+        if (state.favoriteSeries.isNotEmpty()) {
+            item {
+                SectionHeader(stringResource(R.string.favorite_series))
+                FavoriteSeriesRow(
+                    series = state.favoriteSeries,
+                    onClick = onFavSeries,
                 )
             }
         }
@@ -273,7 +330,7 @@ private fun HeroSection(
             ) {
                 if (first.watchNextType == com.lunaiptv.core.launcher.LauncherWatchNextType.NEXT) {
                     Text(
-                        text = "NEXT UP",
+                        text = stringResource(R.string.next_up),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold,
@@ -340,7 +397,7 @@ private fun HeroSection(
             ) {
                 Icon(
                     Icons.Filled.PlayArrow,
-                    contentDescription = "Play",
+                    contentDescription = stringResource(R.string.play),
                     tint = Color.White,
                     modifier = Modifier.size(32.dp),
                 )
@@ -389,6 +446,22 @@ private fun ContinueMovieCard(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text("🎬")
                 }
+            }
+            // Play icon overlay (top-right)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(6.dp)
+                    .size(28.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.85f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp),
+                )
             }
             // Progress + title overlay
             Column(
@@ -466,6 +539,22 @@ private fun ContinueSeriesCard(
                     .fillMaxSize()
                     .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.75f)))),
             )
+            // Play icon overlay (top-right)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(6.dp)
+                    .size(28.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.85f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.PlayArrow,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
             Column(
                 Modifier
                     .align(Alignment.BottomStart)
@@ -565,6 +654,92 @@ private fun ChannelCard(
                     .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))))
                     .padding(horizontal = 4.dp, vertical = 2.dp),
             )
+        }
+    }
+}
+
+@Composable
+private fun FavoriteMovieRow(
+    movies: List<MovieEntity>,
+    onClick: (MovieEntity) -> Unit,
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(movies, key = { it.id }) { movie ->
+            Card(
+                modifier = Modifier
+                    .width(100.dp)
+                    .aspectRatio(0.67f)
+                    .clickable { onClick(movie) },
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            ) {
+                Box(Modifier.fillMaxSize()) {
+                    AsyncImage(
+                        model = movie.posterUrl,
+                        contentDescription = movie.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                    Text(
+                        text = movie.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth()
+                            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))))
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FavoriteSeriesRow(
+    series: List<SeriesEntity>,
+    onClick: (SeriesEntity) -> Unit,
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(series, key = { it.id }) { s ->
+            Card(
+                modifier = Modifier
+                    .width(100.dp)
+                    .aspectRatio(0.67f)
+                    .clickable { onClick(s) },
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            ) {
+                Box(Modifier.fillMaxSize()) {
+                    AsyncImage(
+                        model = s.posterUrl,
+                        contentDescription = s.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                    Text(
+                        text = s.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth()
+                            .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))))
+                            .padding(horizontal = 4.dp, vertical = 2.dp),
+                    )
+                }
+            }
         }
     }
 }

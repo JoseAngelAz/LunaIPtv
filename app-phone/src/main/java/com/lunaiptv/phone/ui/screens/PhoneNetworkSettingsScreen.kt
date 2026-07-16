@@ -1,5 +1,6 @@
 package com.lunaiptv.phone.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,10 +35,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,6 +54,7 @@ fun PhoneNetworkSettingsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val config by vm.proxyConfig.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     var seeded by remember { mutableStateOf(false) }
     var enabled by remember { mutableStateOf(false) }
@@ -76,10 +81,10 @@ fun PhoneNetworkSettingsScreen(
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text("Network / Proxy") },
+                title = { Text(stringResource(R.string.network_proxy_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -102,9 +107,9 @@ fun PhoneNetworkSettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("Use proxy", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(R.string.use_proxy), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text(
-                        "Route all app traffic through an HTTP proxy",
+                        stringResource(R.string.route_http_proxy),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -124,8 +129,8 @@ fun PhoneNetworkSettingsScreen(
             OutlinedTextField(
                 value = host,
                 onValueChange = { host = it },
-                label = { Text("Host") },
-                placeholder = { Text("proxy.example.com") },
+                label = { Text(stringResource(R.string.host)) },
+                placeholder = { Text(stringResource(R.string.proxy_host_hint)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -136,8 +141,8 @@ fun PhoneNetworkSettingsScreen(
             OutlinedTextField(
                 value = port,
                 onValueChange = { port = it.filter { c -> c.isDigit() }.take(5) },
-                label = { Text("Port") },
-                placeholder = { Text("8080") },
+                label = { Text(stringResource(R.string.port)) },
+                placeholder = { Text(stringResource(R.string.proxy_port_hint)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.width(160.dp),
@@ -149,7 +154,7 @@ fun PhoneNetworkSettingsScreen(
             OutlinedTextField(
                 value = user,
                 onValueChange = { user = it },
-                label = { Text("Username (optional)") },
+                label = { Text(stringResource(R.string.username_optional)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -160,7 +165,7 @@ fun PhoneNetworkSettingsScreen(
             OutlinedTextField(
                 value = pass,
                 onValueChange = { pass = it },
-                label = { Text("Password (optional)") },
+                label = { Text(stringResource(R.string.password_optional)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
@@ -176,19 +181,19 @@ fun PhoneNetworkSettingsScreen(
                         testState = ProxyTestState.Idle
                     },
                 ) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
                 OutlinedButton(
                     onClick = {
                         if (host.isBlank() || portInt !in 1..65535) {
-                            testState = ProxyTestState.Fail("Enter a valid host and port (1\u201365535).")
+                            testState = ProxyTestState.Fail("${context.getString(R.string.enter_valid_host_port)} (1\u201365535).")
                             return@OutlinedButton
                         }
                         testState = ProxyTestState.Testing
                     },
                     enabled = testState !is ProxyTestState.Testing,
                 ) {
-                    Text(if (testState is ProxyTestState.Testing) "Testing\u2026" else "Test proxy")
+                    Text(if (testState is ProxyTestState.Testing) stringResource(R.string.testing) else stringResource(R.string.test_proxy_btn))
                 }
             }
 
@@ -232,13 +237,13 @@ fun PhoneNetworkSettingsScreen(
                         }
                         testState = result.fold(
                             onSuccess = { ProxyTestState.Ok(it) },
-                            onFailure = { ProxyTestState.Fail(friendlyProxyError(it)) },
+                            onFailure = { ProxyTestState.Fail(friendlyProxyError(context, it)) },
                         )
                     }
                 }
                 is ProxyTestState.Ok -> {
                     Text(
-                        text = "Connected \u2713 (${s.millis} ms)",
+                        text = stringResource(R.string.connected_format, "${s.millis} ms"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(top = 12.dp),
@@ -285,9 +290,9 @@ private sealed interface ProxyTestState {
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
-private fun friendlyProxyError(t: Throwable): String = when (t) {
-    is java.net.UnknownHostException -> "Can\u2019t reach the proxy host."
-    is java.net.SocketTimeoutException -> "Connection to the proxy timed out."
-    is java.net.ConnectException -> "Couldn\u2019t connect to the proxy (check host/port)."
-    else -> t.message?.takeIf { it.isNotBlank() } ?: "Proxy test failed."
+private fun friendlyProxyError(context: Context, t: Throwable): String = when (t) {
+    is java.net.UnknownHostException -> context.getString(R.string.cant_reach_proxy_host)
+    is java.net.SocketTimeoutException -> context.getString(R.string.proxy_connection_timeout)
+    is java.net.ConnectException -> context.getString(R.string.couldnt_connect_proxy_detail)
+    else -> t.message?.takeIf { it.isNotBlank() } ?: context.getString(R.string.proxy_test_failed)
 }

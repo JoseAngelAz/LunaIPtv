@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -27,10 +28,13 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,10 +53,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
 import com.lunaiptv.core.database.entity.MovieEntity
 
@@ -68,7 +76,19 @@ fun PhoneMoviesScreen(
     val favoriteIds by vm.favoriteIds.collectAsState()
     val movies = vm.movies.collectAsLazyPagingItems()
     var showSearch by remember { mutableStateOf(false) }
+    var showSortMenu by remember { mutableStateOf(false) }
     var contextMenuMovie by remember { mutableStateOf<MovieEntity?>(null) }
+
+    val savedFirstVisible = vm.firstVisibleIndex
+    val gridState = rememberLazyGridState(
+        initialFirstVisibleItemIndex = savedFirstVisible,
+    )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            vm.firstVisibleIndex = gridState.firstVisibleItemIndex
+        }
+    }
 
     Column(Modifier.fillMaxSize()) {
         // Search bar
@@ -79,7 +99,7 @@ fun PhoneMoviesScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Search movies...") },
+                placeholder = { Text(stringResource(R.string.search_movies)) },
                 leadingIcon = { Icon(Icons.Filled.Search, null) },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
@@ -106,27 +126,50 @@ fun PhoneMoviesScreen(
                     FilterChip(
                         selected = item.key == selectedKey,
                         onClick = { vm.selectKey(item.key) },
-                        label = { Text(item.title, maxLines = 1) },
+                        label = {
+                            Text(
+                                item.title,
+                                maxLines = 1,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = if (item.key == selectedKey) FontWeight.Bold else FontWeight.Normal,
+                            )
+                        },
+                        modifier = Modifier.height(40.dp),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                         ),
                     )
                 }
             }
-            IconButton(onClick = { vm.toggleSort() }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Sort")
+            Box {
+                IconButton(onClick = { showSortMenu = true }) {
+                    Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.sort))
+                }
+                DropdownMenu(expanded = showSortMenu, onDismissRequest = { showSortMenu = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_name)) },
+                        onClick = { vm.setSortByName(true); showSortMenu = false },
+                        leadingIcon = { if (sortByName) Icon(Icons.Filled.Check, null) else Spacer(Modifier.size(24.dp)) },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.sort_playlist)) },
+                        onClick = { vm.setSortByName(false); showSortMenu = false },
+                        leadingIcon = { if (!sortByName) Icon(Icons.Filled.Check, null) else Spacer(Modifier.size(24.dp)) },
+                    )
+                }
             }
             IconButton(onClick = {
                 showSearch = !showSearch
                 if (!showSearch) vm.setSearchQuery("")
             }) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
+                Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search))
             }
         }
 
         // Movie grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
+            state = gridState,
             contentPadding = PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -152,19 +195,19 @@ fun PhoneMoviesScreen(
             items = listOf(
                 ContextMenuItem(
                     icon = Icons.Default.PlayArrow,
-                    label = "Play",
+                    label = stringResource(R.string.play_action),
                     tint = MaterialTheme.colorScheme.primary,
                     onClick = { onMovieClick(movie) },
                 ),
                 ContextMenuItem(
                     icon = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    label = if (isFav) "Remove from Favorites" else "Add to Favorites",
+                    label = if (isFav) stringResource(R.string.remove_from_favorites) else stringResource(R.string.add_to_favorites),
                     tint = if (isFav) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                     onClick = { vm.toggleFavorite(movie) },
                 ),
                 ContextMenuItem(
                     icon = Icons.Default.Info,
-                    label = "Movie Info",
+                    label = stringResource(R.string.movie_info),
                     onClick = { onMovieClick(movie) },
                 ),
             ),
@@ -208,19 +251,19 @@ private fun MoviePosterCard(
                 Text(
                     text = "★ %.1f".format(r),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = androidx.compose.ui.graphics.Color.White,
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(6.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.9f))
+                        .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.7f))
                         .padding(horizontal = 4.dp, vertical = 2.dp),
                 )
             }
             // Favorite icon
             Icon(
                 imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                contentDescription = "Favorite",
+                contentDescription = stringResource(R.string.favorite),
                 tint = if (isFavorited) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier
                     .align(Alignment.TopEnd)

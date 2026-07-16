@@ -8,9 +8,13 @@ import com.lunaiptv.features.settings.data.SettingsRepository
 val phoneModule = module {
     single { SettingsRepository(androidContext()) }
     single { com.lunaiptv.core.player.VodEngineStore(androidContext()) }
+    single { PhoneEngineStore(androidContext()) }
 
     // ExoPlayer (single instance, shared for live + VOD)
     single { PhoneLivePlayer(androidContext(), get()) }
+
+    // mpv player engine (alternative to ExoPlayer)
+    single { PhoneMpvPlayer(androidContext(), get()) }
 
     // ViewModels
     viewModel { PhoneViewModel(get()) }
@@ -53,6 +57,7 @@ val phoneModule = module {
             sourceDao = get(),
             settings = get(),
             player = get(),
+            metadata = get(),
         )
     }
     viewModel {
@@ -66,6 +71,7 @@ val phoneModule = module {
             settings = get(),
             seriesRepository = get(),
             player = get(),
+            metadata = get(),
         )
     }
     viewModel { PhoneProfileViewModel(profileDao = get(), settings = get()) }
@@ -92,6 +98,7 @@ val phoneModule = module {
             sourceDao = get(),
             settings = get(),
             metadata = get(),
+            weatherRepo = get(),
             profileDao = get(),
         )
     }
@@ -108,5 +115,13 @@ val phoneModule = module {
     }
     viewModel {
         PhoneBackupViewModel(backup = get())
+    }
+    viewModel {
+        PhoneDownloadsViewModel(
+            downloadManager = get(),
+            downloadDao = get(),
+            settings = get(),
+            sourceDao = get(),
+        )
     }
 }

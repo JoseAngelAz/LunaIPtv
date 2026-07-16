@@ -40,20 +40,25 @@ class HttpClient(private val client: OkHttpClient) {
         val safeUrl = redact(url)
         val attempts = maxAttempts.coerceAtLeast(1)
         var attempt = 1
+        var httpsFailed = false
         while (attempt <= attempts) {
             coroutineContext.ensureActive()
-            val call = client.newCall(request)
+            val effectiveUrl = if (httpsFailed) url.replaceFirst("https://", "http://") else url
+            val effectiveRequest = if (httpsFailed) {
+                Request.Builder().url(effectiveUrl).header("User-Agent", ua).build()
+            } else request
+            val call = client.newCall(effectiveRequest)
             val cancellationHook = coroutineContext[Job]?.invokeOnCompletion { cause ->
                 if (cause is CancellationException) call.cancel()
             }
             var responseReceived = false
-            Log.d(TAG, "GET start url=$safeUrl ua=${ua.take(48)} attempt=$attempt/$attempts")
+            Log.d(TAG, "GET start url=$safeUrl ua=${ua.take(48)} attempt=$attempt/$attempts httpsFallback=$httpsFailed")
             try {
                 call.execute().use { response ->
                     responseReceived = true
                     val headersAt = SystemClock.elapsedRealtime()
-                    if (!response.isSuccessful) throw IOException("HTTP ${response.code} for ${redact(url)}")
-                    val body = response.body ?: throw IOException("Empty response body for ${redact(url)}")
+                    if (!response.isSuccessful) throw IOException("HTTP ${response.code} for ${redact(effectiveUrl)}")
+                    val body = response.body ?: throw IOException("Empty response body for ${redact(effectiveUrl)}")
                     val totalBytes = body.contentLength().takeIf { it >= 0 }
                     Log.d(
                         TAG,
@@ -69,6 +74,14 @@ class HttpClient(private val client: OkHttpClient) {
                 }
             } catch (e: IOException) {
                 coroutineContext.ensureActive()
+                // If HTTPS URL failed with what looks like a TLS error, retry as HTTP
+                if (!httpsFailed && url.startsWith("https://") && !responseReceived) {
+                    Log.w(TAG, "HTTPS failed for $safeUrl, retrying as HTTP: ${e.message}")
+                    httpsFailed = true
+                    attempt = 1
+                    delay(RETRY_DELAY_MS)
+                    continue
+                }
                 val retrying = !responseReceived && attempt < attempts
                 Log.w(
                     TAG,

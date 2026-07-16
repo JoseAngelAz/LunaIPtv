@@ -81,8 +81,9 @@ class PhoneLiveViewModel(
             if (c.profileId < 0 || c.sourceIds.isEmpty()) flowOf(emptyList())
             else categoryDao.observe(c.sourceIds, MediaType.LIVE).map { cats ->
                 buildList {
-                    add(PhoneLiveRailItem(LiveKey.All, "All"))
                     add(PhoneLiveRailItem(LiveKey.Favorites, "Favorites"))
+                    add(PhoneLiveRailItem(LiveKey.History, "History"))
+                    add(PhoneLiveRailItem(LiveKey.All, "All"))
                     cats.forEach { cat ->
                         add(PhoneLiveRailItem(LiveKey.Folder(cat.id), cat.name))
                     }
@@ -104,6 +105,7 @@ class PhoneLiveViewModel(
     val sortByName: StateFlow<Boolean> = _sortByName.asStateFlow()
 
     fun toggleSort() { _sortByName.value = !_sortByName.value }
+    fun setSortByName(v: Boolean) { _sortByName.value = v }
 
     // ── Selected channel ───────────────────────────────────
     private val _selectedChannel = MutableStateFlow<ChannelEntity?>(null)
@@ -169,7 +171,7 @@ class PhoneLiveViewModel(
 
     // pagingAll = A-Z (name ASC); pagingAllOriginal = playlist order
     private fun channelPager(pid: Long, sourceIds: List<Long>, key: LiveKey, query: String, sortByName: Boolean) =
-        Pager(PagingConfig(pageSize = 60, prefetchDistance = 30, initialLoadSize = 90, maxSize = 300)) {
+        Pager(PagingConfig(pageSize = 60, prefetchDistance = 50, initialLoadSize = 120, maxSize = 300)) {
             when (key) {
                 is LiveKey.All -> {
                     if (query.isBlank()) {

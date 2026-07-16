@@ -15,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,15 +24,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lunaiptv.phone.R
 import com.lunaiptv.ui.theme.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +52,7 @@ fun PhoneSettingsScreen(
     onNetworkSettings: () -> Unit = {},
     onVideoPlayerSettings: () -> Unit = {},
     onBackup: () -> Unit = {},
+    onDownloads: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
@@ -54,14 +62,15 @@ fun PhoneSettingsScreen(
     val livePreviewAudio by vm.livePreviewAudio.collectAsStateWithLifecycle()
     val weatherEnabled by vm.weatherEnabled.collectAsStateWithLifecycle()
     val metadataMode by vm.metadataMode.collectAsStateWithLifecycle()
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             LargeTopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -76,14 +85,14 @@ fun PhoneSettingsScreen(
                 .verticalScroll(rememberScrollState()),
         ) {
             // ── Appearance ──────────────────────────────────
-            SectionHeader("Appearance")
+            SectionHeader(stringResource(R.string.appearance))
 
             SettingOption(
-                title = "Theme",
+                title = stringResource(R.string.theme),
                 subtitle = when (themeMode) {
-                    ThemeMode.DARK -> "Dark"
-                    ThemeMode.LIGHT -> "Light"
-                    ThemeMode.SYSTEM -> "System default"
+                    ThemeMode.DARK -> stringResource(R.string.dark)
+                    ThemeMode.LIGHT -> stringResource(R.string.light)
+                    ThemeMode.SYSTEM -> stringResource(R.string.system_default)
                 },
                 onClick = {
                     val next = when (themeMode) {
@@ -96,7 +105,7 @@ fun PhoneSettingsScreen(
             )
 
             SettingOption(
-                title = "Accent",
+                title = stringResource(R.string.accent),
                 subtitle = accent.label,
                 onClick = {
                     val colors = com.lunaiptv.ui.theme.AccentColor.entries
@@ -106,10 +115,10 @@ fun PhoneSettingsScreen(
             )
 
             SettingOption(
-                title = "Language",
+                title = stringResource(R.string.language_setting),
                 subtitle = when (language) {
-                    "es" -> "Español"
-                    else -> "English"
+                    "es" -> stringResource(R.string.language_es)
+                    else -> stringResource(R.string.language_en)
                 },
                 onClick = {
                     vm.setLanguage(if (language == "en") "es" else "en")
@@ -117,84 +126,84 @@ fun PhoneSettingsScreen(
             )
 
             // ── Account ────────────────────────────────────
-            SectionHeader("Account")
+            SectionHeader(stringResource(R.string.account))
 
             SettingOption(
-                title = "Profiles",
-                subtitle = "Switch or manage profiles",
+                title = stringResource(R.string.profiles),
+                subtitle = stringResource(R.string.switch_manage_profiles),
                 icon = Icons.Filled.Person,
                 onClick = onProfiles,
             )
 
             // ── Content ────────────────────────────────────
-            SectionHeader("Content")
+            SectionHeader(stringResource(R.string.content))
 
             SettingOption(
-                title = "Manage Sources",
-                subtitle = "Add, edit or remove IPTV sources",
+                title = stringResource(R.string.manage_sources),
+                subtitle = stringResource(R.string.add_edit_remove_sources),
                 onClick = onManageSources,
             )
 
             SettingOption(
-                title = "EPG Sources",
-                subtitle = "Manage electronic program guide feeds",
+                title = stringResource(R.string.epg_sources),
+                subtitle = stringResource(R.string.manage_epg_feeds),
                 onClick = onEpgSources,
             )
 
             // ── Playback ────────────────────────────────────
-            SectionHeader("Live TV")
+            SectionHeader(stringResource(R.string.live_tv_section))
 
             SettingToggle(
-                title = "Live preview",
-                subtitle = "Show live TV preview in channel list",
+                title = stringResource(R.string.live_preview),
+                subtitle = stringResource(R.string.show_live_preview),
                 checked = livePreview,
                 onCheckedChange = vm::setLivePreview,
             )
 
             SettingToggle(
-                title = "Preview audio",
-                subtitle = "Play audio during live preview",
+                title = stringResource(R.string.preview_audio),
+                subtitle = stringResource(R.string.play_audio_preview),
                 checked = livePreviewAudio,
                 onCheckedChange = vm::setLivePreviewAudio,
             )
 
             // ── Video Player ────────────────────────────────
-            SectionHeader("Video Player")
+            SectionHeader(stringResource(R.string.video_player))
 
             SettingOption(
-                title = "Video Player Settings",
-                subtitle = "Decoder, zoom, subtitles, audio, resume",
+                title = stringResource(R.string.video_player_settings),
+                subtitle = stringResource(R.string.decoder_zoom_subtitles_audio_resume),
                 onClick = onVideoPlayerSettings,
             )
 
             // ── Network ─────────────────────────────────────
-            SectionHeader("Network")
+            SectionHeader(stringResource(R.string.network))
 
             SettingOption(
-                title = "Proxy",
-                subtitle = "Configure HTTP proxy for all traffic",
+                title = stringResource(R.string.proxy),
+                subtitle = stringResource(R.string.configure_http_proxy),
                 onClick = onNetworkSettings,
             )
 
             // ── Weather ─────────────────────────────────────
-            SectionHeader("Weather")
+            SectionHeader(stringResource(R.string.weather))
 
             SettingToggle(
-                title = "Weather chip",
-                subtitle = "Show weather in the top bar",
+                title = stringResource(R.string.weather_chip),
+                subtitle = stringResource(R.string.show_weather_top_bar),
                 checked = weatherEnabled,
                 onCheckedChange = vm::setWeatherEnabled,
             )
 
             // ── Metadata ────────────────────────────────────
-            SectionHeader("Metadata")
+            SectionHeader(stringResource(R.string.metadata))
 
             SettingOption(
-                title = "TMDB enrichment",
+                title = stringResource(R.string.tmdb_enrichment),
                 subtitle = when (metadataMode) {
-                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER -> "Provider only (no TMDB)"
-                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER_PLUS_TMDB -> "Provider + TMDB"
-                    com.lunaiptv.core.metadata.MetadataMode.TMDB_ONLY -> "TMDB only"
+                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER -> stringResource(R.string.provider_only)
+                    com.lunaiptv.core.metadata.MetadataMode.PROVIDER_PLUS_TMDB -> stringResource(R.string.provider_tmdb)
+                    com.lunaiptv.core.metadata.MetadataMode.TMDB_ONLY -> stringResource(R.string.tmdb_only)
                 },
                 onClick = {
                     val next = when (metadataMode) {
@@ -207,25 +216,60 @@ fun PhoneSettingsScreen(
             )
 
             // ── Backup ──────────────────────────────────────
-            SectionHeader("Backup & Restore")
+            SectionHeader(stringResource(R.string.backup_restore))
 
             SettingOption(
-                title = "Backup / Restore",
-                subtitle = "Export or import app settings",
+                title = stringResource(R.string.backup_restore),
+                subtitle = stringResource(R.string.export_import_settings),
                 onClick = onBackup,
             )
 
+            // ── Downloads ───────────────────────────────────
+            SectionHeader(stringResource(R.string.downloads))
+
+            SettingOption(
+                title = stringResource(R.string.downloads),
+                subtitle = stringResource(R.string.manage_downloaded_content),
+                onClick = onDownloads,
+            )
+
             // ── About ───────────────────────────────────────
-            SectionHeader("About")
+            SectionHeader(stringResource(R.string.about))
 
             SettingOption(
                 title = "LunaIPtv",
-                subtitle = "Version 1.0.0 · Forked from OwnTV",
-                onClick = { },
+                subtitle = stringResource(R.string.version_info),
+                onClick = { showAboutDialog = true },
             )
 
             Spacer(Modifier.height(32.dp))
         }
+    }
+
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = { Text("LunaIPtv") },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(R.string.version_info),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.lunaiptv_fork_info),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text(stringResource(R.string.close))
+                }
+            },
+        )
     }
 }
 

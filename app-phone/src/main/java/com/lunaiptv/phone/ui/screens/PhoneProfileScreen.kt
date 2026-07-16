@@ -43,8 +43,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneProfileViewModel
 import com.lunaiptv.core.database.entity.ProfileEntity
 
@@ -65,7 +67,7 @@ fun PhoneProfileScreen(
                 .padding(16.dp),
         ) {
             Text(
-                text = "Who's watching?",
+                text = stringResource(R.string.whos_watching),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 24.dp),
@@ -96,7 +98,7 @@ fun PhoneProfileScreen(
                 .padding(16.dp),
             containerColor = MaterialTheme.colorScheme.primary,
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add Profile")
+            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_profile))
         }
     }
 
@@ -113,19 +115,19 @@ fun PhoneProfileScreen(
     showDeleteConfirm?.let { profile ->
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = null },
-            title = { Text("Delete Profile?") },
-            text = { Text("Are you sure you want to delete \"${profile.name}\"? All their favorites, history, and settings will be lost.") },
+            title = { Text(stringResource(R.string.delete_profile)) },
+            text = { Text(stringResource(R.string.delete_profile_message, profile.name)) },
             confirmButton = {
                 TextButton(onClick = {
                     vm.deleteProfile(profile)
                     showDeleteConfirm = null
                 }) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
@@ -180,7 +182,7 @@ private fun ProfileCard(
                 )
                 if (profile.isKids) {
                     Text(
-                        text = "Kids Profile",
+                        text = stringResource(R.string.kids_profile),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -189,7 +191,7 @@ private fun ProfileCard(
             if (isActive) {
                 Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Active",
+                    contentDescription = stringResource(R.string.active),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp),
                 )
@@ -197,7 +199,7 @@ private fun ProfileCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Filled.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.delete),
                         tint = MaterialTheme.colorScheme.error.copy(alpha = 0.6f),
                     )
                 }
@@ -215,12 +217,12 @@ private fun CreateProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New Profile") },
+        title = { Text(stringResource(R.string.new_profile)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Name") },
+                label = { Text(stringResource(R.string.name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -230,11 +232,11 @@ private fun CreateProfileDialog(
                 onClick = { if (name.isNotBlank()) onCreate(name.trim()) },
                 enabled = name.isNotBlank(),
             ) {
-                Text("Create")
+                Text(stringResource(R.string.create))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
         },
     )
 }
