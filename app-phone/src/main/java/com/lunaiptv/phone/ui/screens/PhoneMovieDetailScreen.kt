@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material3.Button
@@ -69,7 +71,8 @@ fun PhoneMovieDetailScreen(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(8.dp)
+                .statusBarsPadding(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
@@ -195,15 +198,31 @@ fun PhoneMovieDetailScreen(
                 )
                 Spacer(Modifier.height(4.dp))
 
-                // Synopsis text — scrollable as part of the parent Column scroll
+                // Synopsis text
                 val synopsisText = movie.plot?.takeIf { it.isNotBlank() }
                     ?: movieMeta?.overview
-                    ?: stringResource(R.string.no_synopsis_available)
-                Text(
-                    text = synopsisText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                if (synopsisText != null) {
+                    Text(
+                        text = synopsisText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.no_synopsis_available),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedButton(
+                        onClick = { vm.loadMovieMeta(movie) },
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(R.string.search_synopsis), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
                 Spacer(Modifier.height(32.dp))
             }
         }

@@ -139,7 +139,7 @@ fun PhonePlayerScreen(
         }
     }
 
-    DisposableEffect(Unit) { onDispose { player.stop() } }
+
 
     val positionMs = if (userSeeking) seekPosition.toLong() else player.currentPositionMs()
     val durationMs = player.durationMs()
@@ -213,20 +213,40 @@ fun PhonePlayerScreen(
                 .background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)))))
         }
 
-        // Loading
+        // Loading spinner — top-right corner
         if (buffering && controlsVisible) {
-            CircularProgressIndicator(color = Color.White, modifier = Modifier.align(Alignment.Center))
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 16.dp).size(28.dp),
+                strokeWidth = 3.dp,
+            )
         }
 
-        // Error
+        // Error — red spinner + retry in top-right
         if (playerState == PhoneLivePlayer.State.ERROR) {
-            Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.playback_error), style = MaterialTheme.typography.titleMedium, color = Color.White)
-                Spacer(Modifier.height(8.dp))
-                Text(error ?: "", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(0.8f))
-                Spacer(Modifier.height(12.dp))
-                TextButton(onClick = { player.retry() }) {
-                    Text(stringResource(R.string.retry), color = TEAL, fontWeight = FontWeight.Bold)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 12.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Black.copy(alpha = 0.7f))
+                    .clickable { player.retry() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(
+                        color = Color.Red,
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.5.dp,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.retry),
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }

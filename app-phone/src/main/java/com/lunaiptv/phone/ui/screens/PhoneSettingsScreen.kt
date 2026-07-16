@@ -14,7 +14,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -94,6 +103,7 @@ fun PhoneSettingsScreen(
                     ThemeMode.LIGHT -> stringResource(R.string.light)
                     ThemeMode.SYSTEM -> stringResource(R.string.system_default)
                 },
+                icon = Icons.Filled.Palette,
                 onClick = {
                     val next = when (themeMode) {
                         ThemeMode.SYSTEM -> ThemeMode.DARK
@@ -107,6 +117,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.accent),
                 subtitle = accent.label,
+                icon = Icons.Filled.WbSunny,
                 onClick = {
                     val colors = com.lunaiptv.ui.theme.AccentColor.entries
                     val idx = colors.indexOf(accent)
@@ -120,6 +131,7 @@ fun PhoneSettingsScreen(
                     "es" -> stringResource(R.string.language_es)
                     else -> stringResource(R.string.language_en)
                 },
+                icon = Icons.Filled.Language,
                 onClick = {
                     vm.setLanguage(if (language == "en") "es" else "en")
                 },
@@ -141,12 +153,14 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.manage_sources),
                 subtitle = stringResource(R.string.add_edit_remove_sources),
+                icon = Icons.Filled.Storage,
                 onClick = onManageSources,
             )
 
             SettingOption(
                 title = stringResource(R.string.epg_sources),
                 subtitle = stringResource(R.string.manage_epg_feeds),
+                icon = Icons.Filled.DateRange,
                 onClick = onEpgSources,
             )
 
@@ -173,6 +187,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.video_player_settings),
                 subtitle = stringResource(R.string.decoder_zoom_subtitles_audio_resume),
+                icon = Icons.Filled.Tv,
                 onClick = onVideoPlayerSettings,
             )
 
@@ -182,6 +197,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.proxy),
                 subtitle = stringResource(R.string.configure_http_proxy),
+                icon = Icons.Filled.Security,
                 onClick = onNetworkSettings,
             )
 
@@ -221,6 +237,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.backup_restore),
                 subtitle = stringResource(R.string.export_import_settings),
+                icon = Icons.Filled.CloudDownload,
                 onClick = onBackup,
             )
 
@@ -230,6 +247,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = stringResource(R.string.downloads),
                 subtitle = stringResource(R.string.manage_downloaded_content),
+                icon = Icons.Filled.CloudDownload,
                 onClick = onDownloads,
             )
 
@@ -239,6 +257,7 @@ fun PhoneSettingsScreen(
             SettingOption(
                 title = "LunaIPtv",
                 subtitle = stringResource(R.string.version_info),
+                icon = Icons.Filled.Info,
                 onClick = { showAboutDialog = true },
             )
 

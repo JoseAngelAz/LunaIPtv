@@ -383,5 +383,6 @@
     <string name="download">Download</string>
     <string name="download_started">Download started: %1$s</string>
     <string name="no_synopsis_available">Synopsis not available.</string>
+    <string name="search_synopsis">Search synopsis on TMDB</string>
     <string name="lunaiptv_fork_info">This app is a free, open-source fork of OwnTV. No one should ever be charged to use LunaIPtv.</string>
 </resources>

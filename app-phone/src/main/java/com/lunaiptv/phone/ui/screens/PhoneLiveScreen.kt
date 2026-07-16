@@ -316,9 +316,6 @@ private fun PlayerArea(
             contentAlignment = Alignment.Center,
         ) {
             val player = vm.player
-            DisposableEffect(Unit) {
-                onDispose { player.stop() }
-            }
 
             AndroidView(
                 factory = { ctx ->

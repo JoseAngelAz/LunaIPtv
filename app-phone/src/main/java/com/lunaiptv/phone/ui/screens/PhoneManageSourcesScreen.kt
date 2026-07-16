@@ -20,6 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -221,17 +224,33 @@ private fun SourceCard(
 
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilledTonalButton(onClick = onEdit, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.edit)) }
+            FilledTonalButton(onClick = onEdit, modifier = Modifier.weight(1f)) {
+                Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(stringResource(R.string.edit))
+            }
             if (syncState.isActive) {
-                OutlinedButton(onClick = onCancelSync, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.cancel)) }
+                OutlinedButton(onClick = onCancelSync, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Filled.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.cancel))
+                }
             } else {
-                OutlinedButton(onClick = onResync, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.resync)) }
+                OutlinedButton(onClick = onResync, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Filled.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.resync))
+                }
             }
             OutlinedButton(
                 onClick = onDelete,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
-            ) { Text(stringResource(R.string.delete)) }
+            ) {
+                Icon(Icons.Filled.Delete, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(stringResource(R.string.delete))
+            }
         }
     }
 }

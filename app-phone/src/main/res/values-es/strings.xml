@@ -380,5 +380,6 @@
     <string name="download">Descargar</string>
     <string name="download_started">Descarga iniciada: %1$s</string>
     <string name="no_synopsis_available">Sinopsis no disponible.</string>
+    <string name="search_synopsis">Buscar sinopsis en TMDB</string>
     <string name="lunaiptv_fork_info">Esta app es una bifurcación gratuita y de código abierto de OwnTV. Nadie debería pagar por usar LunaIPtv.</string>
 </resources>
