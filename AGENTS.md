@@ -132,6 +132,12 @@ LunaIPtv/
 - **ActiveSources auto-repair**: `ActiveSources.kt` observes profile sources via `onEach` flow and auto-links orphaned sources (sources with `profileId = -1` that belong to the user's server).
 - **TMDB language sync**: `TmdbProvider.appLanguage()` reads `settings.language.first()` in a suspend context, passes `&language=es|en` to all TMDB API calls.
 - **Detail panel D-pad**: `LazyColumn` with `.focusable()` before `.focusRequester()` for reliable D-pad focus. RIGHT key on last-column PosterCards routes to detail pane via `Modifier.onKeyEvent`.
+- **DownloadManager HTTP client**: `startDownloadClient()` clones the main singleton OkHttpClient via `client.newBuilder()` to inherit proxy/SSL/TLS config. Strips interceptors for clean downloads. Bare `OkHttpClient.Builder()` was causing download failures with old/self-signed IPTV certs.
+- **Player loading states**: PhonePlayerScreen uses small `CircularProgressIndicator` (28dp, top-right corner). White for buffering, red for error. Error state is clickable to retry.
+- **Live TV player lifecycle**: PlayerArea and PhonePlayerScreen do NOT call `player.stop()` on dispose. Player survives full-screen ↔ preview transitions. Only the PhoneShell's `dismissPlayer()` stops the player.
+- **Movie synopsis fallback**: When `movie.plot` and TMDB overview are both null, shows a "Search synopsis on TMDB" retry button that re-triggers `loadMovieMeta()`.
+- **Phone detail screen top bar**: Uses `.statusBarsPadding()` to avoid overlapping with phone status bar icons.
+- **Phone settings icons**: All SettingOption entries have leading icons (Palette, Language, Storage, etc.).
 
 ## Git Info
 - **Remote**: `origin https://github.com/JoseAngelAz/LunaIPtv.git` (your personal repo)
