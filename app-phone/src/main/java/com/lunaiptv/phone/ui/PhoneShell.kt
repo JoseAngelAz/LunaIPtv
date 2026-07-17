@@ -18,6 +18,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +36,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lunaiptv.phone.di.PhoneDownloadsViewModel
 import com.lunaiptv.phone.di.PhoneBackupViewModel
 import com.lunaiptv.phone.di.PhoneEPGSourcesViewModel
+import com.lunaiptv.phone.di.PhoneEngineStore
 import com.lunaiptv.phone.di.PhoneHomeViewModel
 import com.lunaiptv.phone.di.PhoneLiveViewModel
 import com.lunaiptv.phone.di.PhoneMoviesViewModel
@@ -114,11 +117,20 @@ fun PhoneShell() {
     val epgVm: PhoneEPGSourcesViewModel = koinViewModel()
     val backupVm: PhoneBackupViewModel = koinViewModel()
     val downloadsVm: PhoneDownloadsViewModel = koinViewModel()
+    val engineStore: PhoneEngineStore = koinInject()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     val downloads by downloadsVm.downloads.collectAsStateWithLifecycle()
+
+    // Stop live TV player when navigating away from the Live tab
+    val currentRoute = currentDestination?.route
+    LaunchedEffect(currentRoute) {
+        if (currentRoute != null && currentRoute != PhoneScreen.Live.route) {
+            liveVm.stopPlayback()
+        }
+    }
 
     // Detail overlays (for Movies/Series detail navigation)
     var showMovieDetail by remember { mutableStateOf<com.lunaiptv.core.database.entity.MovieEntity?>(null) }
@@ -186,6 +198,10 @@ fun PhoneShell() {
                     url = showPlayer!!.url,
                     isLive = showPlayer!!.isLive,
                     userAgent = showPlayer!!.userAgent,
+                    currentEngine = engineStore.getEngineForUrl(showPlayer!!.url),
+                    onSwitchEngine = { newEngine ->
+                        engineStore.pinEngine(showPlayer!!.url, newEngine)
+                    },
                     onBack = { dismissPlayer() },
                 )
             }

@@ -315,6 +315,8 @@
     <string name="settings_surround_desc">Decode Dolby/DTS to surround (5.1/7.1) for a real 5.1/7.1 receiver. Leave OFF for TV speakers or a stereo soundbar \u2014 multichannel can lag audio behind video on some TVs/soundbars. If it drifts, nudge the player\'s Audio menu \u2192 A/V sync.</string>
     <string name="settings_auto_next">Auto-play next episode</string>
     <string name="settings_auto_next_desc">When an episode ends, automatically start the next one \u2014 and roll into the next season.</string>
+    <string name="settings_synopsis_scroll">Synopsis auto-scroll</string>
+    <string name="settings_synopsis_scroll_desc">Slowly scroll synopsis text so you can read it without D-pad scrolling</string>
     <string name="settings_catchup_time">Catch-up time</string>
     <string name="settings_catchup_channels">%1$d channels support catch-up</string>
     <string name="settings_video_player">Video Player Settings</string>

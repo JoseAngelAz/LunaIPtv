@@ -315,6 +315,8 @@
     <string name="settings_surround_desc">Decodificar Dolby/DTS a envolvente (5.1/7.1) para un receptor real 5.1/7.1. Desactiva para parlantes de TV o barra de sonido estéreo \u2014 el multicanal puede retrasar el audio respecto al video en algunos TV/barras. Si se desincroniza, ajusta el menú de Audio del reproductor \u2192 Sinc. audio/video.</string>
     <string name="settings_auto_next">Reproducir siguiente episodio</string>
     <string name="settings_auto_next_desc">Cuando termine un episodio, iniciar automáticamente el siguiente \u2014 y continuar con la próxima temporada.</string>
+    <string name="settings_synopsis_scroll">Desplazamiento automático de sinopsis</string>
+    <string name="settings_synopsis_scroll_desc">Desplaza lentamente el texto de la sinopsis para poder leerlo sin usar el D-pad</string>
     <string name="settings_catchup_time">Tiempo de catch-up</string>
     <string name="settings_catchup_channels">%1$d canales soportan catch-up</string>
     <string name="settings_video_player">Configuración del reproductor</string>

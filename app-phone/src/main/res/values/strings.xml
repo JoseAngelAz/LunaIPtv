@@ -385,4 +385,12 @@
     <string name="no_synopsis_available">Synopsis not available.</string>
     <string name="search_synopsis">Search synopsis on TMDB</string>
     <string name="lunaiptv_fork_info">This app is a free, open-source fork of OwnTV. No one should ever be charged to use LunaIPtv.</string>
+
+    <!-- Player engine -->
+    <string name="player_engine">Player engine</string>
+    <string name="engine_exoplayer">ExoPlayer</string>
+    <string name="engine_exoplayer_desc">Default Android player. Good compatibility.</string>
+    <string name="engine_mpv">mpv</string>
+    <string name="engine_mpv_desc">FFmpeg-based. Better codec &amp; network support.</string>
+    <string name="engine_switch_hint">Applied on next playback.</string>
 </resources>

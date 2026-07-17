@@ -138,6 +138,7 @@ LunaIPtv/
 - **Movie synopsis fallback**: When `movie.plot` and TMDB overview are both null, shows a "Search synopsis on TMDB" retry button that re-triggers `loadMovieMeta()`.
 - **Phone detail screen top bar**: Uses `.statusBarsPadding()` to avoid overlapping with phone status bar icons.
 - **Phone settings icons**: All SettingOption entries have leading icons (Palette, Language, Storage, etc.).
+- **Auto-scroll synopsis (TV series)**: `SynopsisScrollSpeed` enum in `:core` (`OFF/SLOW/MEDIUM/FAST` with `dpPerSec` 0/15/30/50). Setting stored in `SettingsRepository.Keys.SYNOPSIS_SCROLL_SPEED`. `AutoScrollText` composable in `SeriesScreen.kt` uses `animateScrollTo` with `LinearEasing`, 2.5s pause at each end, `heightIn(max=150.dp)`. Applied to both series grid preview pane and `EpisodeDetailPane`. Default: OFF.
 
 ## Git Info
 - **Remote**: `origin https://github.com/JoseAngelAz/LunaIPtv.git` (your personal repo)

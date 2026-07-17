@@ -23,7 +23,7 @@ enum class LunaIPtvIcon {
     PERSON, ADD, SETTINGS, PALETTE, THEME, ZOOM, PLAYLIST, EPG, VIDEO, SHARE, CHEVRON, FAVORITE,
     PAUSE, REWIND, FORWARD, AUDIO, SUBTITLE, SKIP_NEXT, SKIP_PREVIOUS,
     BACK, VOLUME_HIGH, VOLUME_LOW, VOLUME_MUTE, ASPECT, FULLSCREEN, FULLSCREEN_EXIT, PIP, CLOSE,
-    SORT, SWAP,
+    SORT, SWAP, SCROLL,
 }
 
 @Composable
@@ -291,6 +291,15 @@ fun LunaIPtvIcon(
                 drawLineStroke(p(6f, 15f), p(20f, 15f), tint, stroke)
                 drawLineStroke(p(6f, 15f), p(9f, 12.5f), tint, stroke)
                 drawLineStroke(p(6f, 15f), p(9f, 17.5f), tint, stroke)
+            }
+            LunaIPtvIcon.SCROLL -> { // auto-scroll indicator — document with up/down arrows
+                drawRoundRectStroke(p(6f, 3f), p(18f, 21f), 2f * s, tint, stroke)
+                drawLineStroke(p(9f, 7f), p(15f, 7f), tint, stroke)
+                drawLineStroke(p(9f, 11f), p(15f, 11f), tint, stroke)
+                drawLineStroke(p(9f, 15f), p(13f, 15f), tint, stroke)
+                // down arrow
+                drawLineStroke(p(18f, 18f), p(12f, 18f), tint, stroke)
+                drawLineStroke(p(12f, 18f), p(12f, 16f), tint, stroke)
             }
         }
     }

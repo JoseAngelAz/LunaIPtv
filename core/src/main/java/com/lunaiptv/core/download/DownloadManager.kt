@@ -75,7 +75,9 @@ class DownloadManager(
         scope.launch {
             try {
                 val root = StorageAccess.resolveRoot(context, settings.downloadRoot.first())
+                Log.i("DownloadManager", "Enqueue: root=${root.absolutePath} exists=${root.exists()}")
                 val target = File(File(root, relativeDir).apply { mkdirs() }, fileName)
+                Log.i("DownloadManager", "Enqueue: target=${target.absolutePath}")
                 val id = downloadDao.upsert(
                     DownloadEntity(
                         profileId = profileId, mediaType = mediaType, itemId = itemId, title = title,
@@ -83,9 +85,10 @@ class DownloadManager(
                         status = DownloadStatus.QUEUED,
                     ),
                 )
+                Log.i("DownloadManager", "Enqueue: entity id=$id for $title")
                 start(id)
             } catch (e: Exception) {
-                Log.w("DownloadManager", "Enqueue failed: ${e.message}")
+                Log.e("DownloadManager", "Enqueue failed: ${e.message}", e)
             }
         }
     }
@@ -144,6 +147,10 @@ class DownloadManager(
         Log.i("DownloadManager", "Starting download $id: ${d.streamUrl}")
         val file = d.filePath?.let { File(it) } ?: File(StorageAccess.defaultRoot(context), "$id.mp4")
         file.parentFile?.mkdirs()
+        if (!file.parentFile?.exists()!!) {
+            Log.e("DownloadManager", "Cannot create parent dir: ${file.parentFile?.absolutePath}")
+            markFailed(id, d.totalBytes); return
+        }
         // Resume only a previously-paused download; anything else starts fresh.
         val resuming = d.status == DownloadStatus.PAUSED && file.exists() && file.length() > 0
         if (!resuming && file.exists()) runCatching { file.delete() }
@@ -151,10 +158,17 @@ class DownloadManager(
         try {
             val rb = Request.Builder().url(d.streamUrl).header("User-Agent", HttpClient.DEFAULT_USER_AGENT)
             if (existing > 0) rb.header("Range", "bytes=$existing-")
-            startDownloadClient().newCall(rb.build()).execute().use { resp ->
-                val body = resp.body
-                if (!resp.isSuccessful || body == null) { markFailed(id, d.totalBytes); return }
-                val append = resp.code == 206 && existing > 0 // server honoured the Range
+            Log.i("DownloadManager", "HTTP request: ${d.streamUrl}")
+            val call = startDownloadClient().newCall(rb.build())
+            val resp = call.execute()
+            resp.use { r ->
+                Log.i("DownloadManager", "Response code=${r.code} contentLength=${r.body?.contentLength()} url=${r.request.url}")
+                val body = r.body
+                if (!r.isSuccessful || body == null) {
+                    Log.w("DownloadManager", "Download $id HTTP error: code=${r.code} body=$body")
+                    markFailed(id, d.totalBytes); return
+                }
+                val append = r.code == 206 && existing > 0 // server honoured the Range
                 val total = (if (append) existing else 0L) + body.contentLength().coerceAtLeast(0)
                 var done = if (append) existing else 0L
                 downloadDao.updateProgress(id, DownloadStatus.RUNNING, done, total, System.currentTimeMillis())
@@ -174,10 +188,11 @@ class DownloadManager(
                     }
                 }
                 val size = file.length()
+                Log.i("DownloadManager", "Download $id completed: ${size} bytes -> ${file.absolutePath}")
                 downloadDao.upsert(d.copy(status = DownloadStatus.COMPLETED, downloadedBytes = size, totalBytes = size, updatedAt = System.currentTimeMillis()))
             }
         } catch (e: Exception) {
-            Log.w("DownloadManager", "Download $id failed: ${e.message}")
+            Log.e("DownloadManager", "Download $id failed: ${e.message}", e)
             if (currentCoroutineContext().isActive) markFailed(id, d.totalBytes)
         }
     }

@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,6 +38,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -169,7 +171,7 @@ fun PhoneSeriesDetailScreen(
             }
 
             val synopsisPlot = series.plot?.takeIf { it.isNotBlank() } ?: seriesMeta?.overview
-            synopsisPlot?.let { plot ->
+            if (synopsisPlot != null) {
                 Spacer(Modifier.height(6.dp))
                 Box(
                     Modifier
@@ -178,10 +180,25 @@ fun PhoneSeriesDetailScreen(
                         .verticalScroll(rememberScrollState()),
                 ) {
                     Text(
-                        text = plot,
+                        text = synopsisPlot,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.no_synopsis_available),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedButton(
+                    onClick = { vm.retrySeriesMeta(series) },
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.search_synopsis), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }

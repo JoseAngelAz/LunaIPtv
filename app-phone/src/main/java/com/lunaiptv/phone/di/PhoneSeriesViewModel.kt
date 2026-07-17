@@ -126,6 +126,14 @@ class PhoneSeriesViewModel(
         }
     }
 
+    fun retrySeriesMeta(series: SeriesEntity) {
+        viewModelScope.launch {
+            metadata.clearSeries(series)
+            _currentSeriesMeta.value = null
+            _currentSeriesMeta.value = try { metadata.resolveSeries(series) } catch (_: Exception) { null }
+        }
+    }
+
     fun clearSeriesMeta() { _currentSeriesMeta.value = null }
 
     val seasons: StateFlow<List<Int>> = _episodes.map { eps ->

@@ -114,6 +114,21 @@ class PhoneMoviesViewModel(
         }
     }
 
+    fun retryMovieMeta(movie: MovieEntity) {
+        viewModelScope.launch {
+            metadata.clearMovie(movie)
+            _currentMovieMeta.value = null
+            try {
+                val result = metadata.resolveMovie(movie)
+                Log.d(TAG, "retryMovieMeta: movie=${movie.name}, result=${result?.overview?.take(50)}")
+                _currentMovieMeta.value = result
+            } catch (e: Exception) {
+                Log.w(TAG, "retryMovieMeta failed for ${movie.name}", e)
+                _currentMovieMeta.value = null
+            }
+        }
+    }
+
     fun clearMovieMeta() { _currentMovieMeta.value = null }
 
     // Progress map for all visible movies (resume indicators on poster grid)

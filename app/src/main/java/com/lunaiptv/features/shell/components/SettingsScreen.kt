@@ -107,6 +107,7 @@ fun SettingsScreen(
     var showAnimations by remember { mutableStateOf(false) }
     var showStartup by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
+    var showSynopsisScroll by remember { mutableStateOf(false) }
 
     // Batch 4 · Settings search + quick toggles. Empty query = normal grouped list; a non-blank
     // query swaps the list for flat results that carry their group context ("Playback › HDR").
@@ -131,12 +132,13 @@ fun SettingsScreen(
     val animationsRowFocus = remember { FocusRequester() }
     val startupRowFocus = remember { FocusRequester() }
     val languageRowFocus = remember { FocusRequester() }
+    val synopsisScrollRowFocus = remember { FocusRequester() }
     // NOTE: this restore request crosses INTO the root focus group from outside (the dialog), so
     // the group's onEnter intercepts it — onEnter must consult dialogReturn first (it does, below)
     // or it would hijack the restore to its own default target. dialogReturn is cleared by onEnter.
     var dialogReturn by remember { mutableStateOf<FocusRequester?>(null) }
-    LaunchedEffect(showZoom, showTheme, showAccent, showFolderPicker, showUpdate, showAbout, showCatchupTime, showClearHistory, showAnimations, showStartup, showLanguage) {
-        if (!showZoom && !showTheme && !showAccent && !showFolderPicker && !showUpdate && !showAbout && !showCatchupTime && !showClearHistory && !showAnimations && !showStartup && !showLanguage) {
+    LaunchedEffect(showZoom, showTheme, showAccent, showFolderPicker, showUpdate, showAbout, showCatchupTime, showClearHistory, showAnimations, showStartup, showLanguage, showSynopsisScroll) {
+        if (!showZoom && !showTheme && !showAccent && !showFolderPicker && !showUpdate && !showAbout && !showCatchupTime && !showClearHistory && !showAnimations && !showStartup && !showLanguage && !showSynopsisScroll) {
             dialogReturn?.let { row ->
                 kotlinx.coroutines.delay(80)
                 runCatching { row.requestFocus() }
@@ -159,6 +161,7 @@ fun SettingsScreen(
     val animationLevel by settingsVm.animationLevel.collectAsStateWithLifecycle()
     val weatherEnabled by settingsVm.weatherEnabled.collectAsStateWithLifecycle()
     val startupMode by settingsVm.startupMode.collectAsStateWithLifecycle()
+    val synopsisScrollSpeed by settingsVm.synopsisScrollSpeed.collectAsStateWithLifecycle()
 
     // Restore focus to the row a sub-screen was opened from when the user navigates back.
     var lastTab by remember { mutableStateOf<SettingsTab?>(null) }
@@ -409,6 +412,15 @@ fun SettingsScreen(
             onClick = { settingsVm.setAutoPlayNext(!autoPlayNext) },
         )
         SettingsRow(
+            tone = TileTone.SECONDARY, icon = LunaIPtvIcon.SCROLL,
+            title = stringResource(R.string.settings_synopsis_scroll),
+            desc = stringResource(R.string.settings_synopsis_scroll_desc),
+            chip = synopsisScrollSpeed.label,
+            chipTone = TileTone.PRIMARY,
+            onClick = { dialogReturn = synopsisScrollRowFocus; showSynopsisScroll = true }, showChevron = true,
+            modifier = Modifier.focusRequester(synopsisScrollRowFocus),
+        )
+        SettingsRow(
             tone = TileTone.SECONDARY, icon = LunaIPtvIcon.EPG,
             title = stringResource(R.string.settings_catchup_time),
             desc = if (catchupChannels > 0) stringResource(R.string.settings_catchup_channels, catchupChannels)
@@ -502,6 +514,8 @@ fun SettingsScreen(
                     chip = if (surroundSound) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (surroundSound) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setSurroundSound(!surroundSound) },
                 SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_auto_next), "autoplay series season episodio siguiente", LunaIPtvIcon.SKIP_NEXT, TileTone.SECONDARY,
                     chip = if (autoPlayNext) stringResource(R.string.on) else stringResource(R.string.off), chipTone = if (autoPlayNext) TileTone.PRIMARY else TileTone.SECONDARY, showChevron = false) { settingsVm.setAutoPlayNext(!autoPlayNext) },
+                SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_synopsis_scroll), "sinopsis auto scroll texto lectura lento rápido", LunaIPtvIcon.SCROLL, TileTone.SECONDARY,
+                    chip = synopsisScrollSpeed.label, chipTone = TileTone.PRIMARY) { dialogReturn = synopsisScrollRowFocus; showSynopsisScroll = true },
                 SettingsSearchEntry(stringResource(R.string.settings_group_playback), stringResource(R.string.settings_catchup_time), "archive timezone offset repetición zona horaria", LunaIPtvIcon.EPG, TileTone.SECONDARY,
                     chip = when (catchupTz) {
                         SettingsRepository.CatchupTimezone.DEVICE -> stringResource(R.string.settings_catchup_device)
@@ -596,6 +610,15 @@ fun SettingsScreen(
             selected = language,
             onSelect = { onSetLanguage(it); showLanguage = false },
             onDismiss = { showLanguage = false },
+        )
+    }
+    if (showSynopsisScroll) {
+        com.lunaiptv.features.settings.PickerDialog(
+            title = stringResource(R.string.settings_synopsis_scroll),
+            options = com.lunaiptv.ui.theme.SynopsisScrollSpeed.entries.map { it.name to it.label },
+            selected = synopsisScrollSpeed.name,
+            onSelect = { settingsVm.setSynopsisScrollSpeed(com.lunaiptv.ui.theme.SynopsisScrollSpeed.valueOf(it)); showSynopsisScroll = false },
+            onDismiss = { showSynopsisScroll = false },
         )
     }
     if (showAccent) {

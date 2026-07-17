@@ -105,6 +105,8 @@ fun SeriesScreen(
 ) {
     val vm: SeriesViewModel = koinViewModel()
     val openedSeries by vm.openedSeries.collectAsStateWithLifecycle()
+    val settingsVm: com.lunaiptv.features.settings.SettingsViewModel = koinViewModel()
+    val synopsisScrollSpeed by settingsVm.synopsisScrollSpeed.collectAsStateWithLifecycle()
 
     // Track leaving a show so the grid can put focus back on the poster you came from (the episode
     // view that held focus is unmounted on Back · focus would otherwise die and land on the sidebar).
@@ -119,6 +121,7 @@ fun SeriesScreen(
             onChildFocused = onChildFocused,
             restoreFocus = restoreFocus,
             onRestored = onRestored,
+            synopsisScrollSpeed = synopsisScrollSpeed,
             modifier = modifier,
         )
     } else {
@@ -129,6 +132,7 @@ fun SeriesScreen(
             onChildFocused = onChildFocused,
             restoreSelected = returnFromShow,
             onRestoredSelected = { returnFromShow = false },
+            synopsisScrollSpeed = synopsisScrollSpeed,
             modifier = modifier,
         )
     }
@@ -200,6 +204,7 @@ private fun SeriesGrid(
     onChildFocused: () -> Unit,
     restoreSelected: Boolean = false,
     onRestoredSelected: () -> Unit = {},
+    synopsisScrollSpeed: com.lunaiptv.ui.theme.SynopsisScrollSpeed = com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF,
     modifier: Modifier,
 ) {
     val railItems by vm.railItems.collectAsStateWithLifecycle()
@@ -545,7 +550,7 @@ private fun SeriesGrid(
                 if (!plot.isNullOrBlank()) {
                     item("plot") {
                         Spacer(Modifier.height(8.dp))
-                        Text(plot, style = MaterialTheme.typography.bodyMedium, color = LunaIPtvTheme.colors.onSurfaceVariant)
+                        AutoScrollText(plot, synopsisScrollSpeed)
                     }
                 }
             }
@@ -697,6 +702,7 @@ private fun EpisodeDetailPane(
     nextUpEpisode: EpisodeEntity?,
     nextUpPositionMs: Long,
     onPlayNextUp: () -> Unit,
+    synopsisScrollSpeed: com.lunaiptv.ui.theme.SynopsisScrollSpeed = com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF,
     downloadStrip: com.lunaiptv.ui.components.DownloadStripState? = null,
 ) {
     val colors = LunaIPtvTheme.colors
@@ -754,7 +760,7 @@ private fun EpisodeDetailPane(
         Text(bits.joinToString("  ·  "), style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
         if (!plot.isNullOrBlank()) {
             Spacer(Modifier.height(8.dp))
-            Text(plot, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+            AutoScrollText(plot, synopsisScrollSpeed)
         }
         Spacer(Modifier.height(10.dp))
         Text(stringResource(R.string.movies_instruction), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
@@ -837,6 +843,7 @@ private fun EpisodeView(
     onChildFocused: () -> Unit,
     restoreFocus: Boolean,
     onRestored: () -> Unit,
+    synopsisScrollSpeed: com.lunaiptv.ui.theme.SynopsisScrollSpeed = com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF,
     modifier: Modifier,
 ) {
     val episodes by vm.episodes.collectAsStateWithLifecycle()
@@ -1040,6 +1047,7 @@ private fun EpisodeView(
                             nextUpEpisode = nextUpEp,
                             nextUpPositionMs = nextUpPos,
                             onPlayNextUp = { nextUpEp?.let { startEpisode(it) } },
+                            synopsisScrollSpeed = synopsisScrollSpeed,
                             // The focused episode's own download, else the whole-series aggregate.
                             downloadStrip = (ep?.let { e -> episodeDownloadStates[e.id]?.let { com.lunaiptv.ui.components.downloadStripFor(listOf(it)) } })
                                 ?: com.lunaiptv.ui.components.downloadStripFor(openedSeriesDownloads),
@@ -1260,6 +1268,40 @@ private fun SeriesListRow(
             if (isFavorite) {
                 LunaIPtvIcon(LunaIPtvIcon.STAR, tint = colors.primary, modifier = Modifier.size(18.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun AutoScrollText(
+    text: String,
+    speed: com.lunaiptv.ui.theme.SynopsisScrollSpeed,
+    style: androidx.compose.ui.text.TextStyle = MaterialTheme.typography.bodyMedium,
+    color: Color = LunaIPtvTheme.colors.onSurfaceVariant,
+    modifier: Modifier = Modifier,
+) {
+    if (speed == com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF || text.isBlank()) {
+        Text(text, style = style, color = color, modifier = modifier)
+        return
+    }
+    val scrollState = rememberScrollState()
+    LaunchedEffect(text, speed) {
+        kotlinx.coroutines.delay(400)
+        val maxScroll = scrollState.maxValue
+        if (maxScroll <= 0) return@LaunchedEffect
+        val pauseMs = 2500L
+        val tweenDuration = (maxScroll.toFloat() / speed.dpPerSec * 1000f).toInt().coerceAtLeast(500)
+        val easing = androidx.compose.animation.core.LinearEasing
+        while (true) {
+            scrollState.animateScrollTo(maxScroll, animationSpec = androidx.compose.animation.core.tween(tweenDuration, easing = easing))
+            kotlinx.coroutines.delay(pauseMs)
+            scrollState.animateScrollTo(0, animationSpec = androidx.compose.animation.core.tween(tweenDuration, easing = easing))
+            kotlinx.coroutines.delay(pauseMs)
+        }
+    }
+    Box(modifier = modifier.heightIn(max = 150.dp)) {
+        Column(Modifier.verticalScroll(scrollState)) {
+            Text(text, style = style, color = color)
         }
     }
 }

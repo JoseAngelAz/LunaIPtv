@@ -64,6 +64,7 @@ import androidx.media3.ui.SubtitleView
 import androidx.compose.ui.res.stringResource
 import com.lunaiptv.phone.R
 import com.lunaiptv.phone.di.PhoneLivePlayer
+import com.lunaiptv.phone.di.PhoneEngineStore
 import kotlinx.coroutines.delay
 
 private val TEAL = Color(0xFF52DBC8)
@@ -76,6 +77,8 @@ fun PhonePlayerScreen(
     url: String? = null,
     isLive: Boolean = false,
     userAgent: String? = null,
+    currentEngine: PhoneEngineStore.Engine = PhoneEngineStore.Engine.EXO,
+    onSwitchEngine: ((PhoneEngineStore.Engine) -> Unit)? = null,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -371,6 +374,13 @@ fun PhonePlayerScreen(
                         active = zoomMode != PhoneLivePlayer.ZoomMode.FIT,
                         onClick = { showDialog = DialogType.ZOOM; lastInteraction = System.currentTimeMillis() },
                     )
+                    if (onSwitchEngine != null) {
+                        ControlChip(
+                            label = if (currentEngine == PhoneEngineStore.Engine.MPV) "mpv" else "Exo",
+                            active = true,
+                            onClick = { showDialog = DialogType.ENGINE; lastInteraction = System.currentTimeMillis() },
+                        )
+                    }
                 }
             }
         }
@@ -382,12 +392,13 @@ fun PhonePlayerScreen(
             DialogType.VOLUME -> VolumeDialog(volume = volume, isMuted = isMuted, onSetVolume = { player.setVolume(it) }, onToggleMute = { player.toggleMute() }, onDismiss = { showDialog = null })
             DialogType.AUDIO -> AudioTrackDialog(tracks = audioTracks, onSelect = { player.selectAudioTrack(it) }, onDismiss = { showDialog = null })
             DialogType.SUBS -> SubtitleTrackDialog(tracks = subtitleTracks, onSelect = { player.selectSubtitleTrack(it) }, onOff = { player.disableSubtitles() }, onDismiss = { showDialog = null })
+            DialogType.ENGINE -> EngineDialog(currentEngine = currentEngine, onSelect = { engine -> onSwitchEngine?.invoke(engine); showDialog = null }, onDismiss = { showDialog = null })
             null -> {}
         }
     }
 }
 
-private enum class DialogType { SPEED, ZOOM, VOLUME, AUDIO, SUBS }
+private enum class DialogType { SPEED, ZOOM, VOLUME, AUDIO, SUBS, ENGINE }
 
 @Composable
 private fun ControlChip(
@@ -570,6 +581,57 @@ private fun SubtitleTrackDialog(tracks: List<PhoneLivePlayer.SubtitleTrack>, onS
                         Text(t.label, style = MaterialTheme.typography.bodyLarge, color = if (t.isSelected) TEAL else MaterialTheme.colorScheme.onSurface, fontWeight = if (t.isSelected) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
+            }
+        },
+        confirmButton = {},
+    )
+}
+
+@Composable
+private fun EngineDialog(currentEngine: PhoneEngineStore.Engine, onSelect: (PhoneEngineStore.Engine) -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.player_engine)) },
+        text = {
+            Column {
+                PhoneEngineStore.Engine.entries.forEach { engine ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(engine) }
+                            .padding(vertical = 12.dp, horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (engine == currentEngine) Icon(Icons.Filled.Check, null, tint = TEAL, modifier = Modifier.size(20.dp))
+                        else Spacer(Modifier.size(20.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                when (engine) {
+                                    PhoneEngineStore.Engine.EXO -> stringResource(R.string.engine_exoplayer)
+                                    PhoneEngineStore.Engine.MPV -> stringResource(R.string.engine_mpv)
+                                },
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = if (engine == currentEngine) TEAL else MaterialTheme.colorScheme.onSurface,
+                                fontWeight = if (engine == currentEngine) FontWeight.Bold else FontWeight.Normal,
+                            )
+                            Text(
+                                when (engine) {
+                                    PhoneEngineStore.Engine.EXO -> stringResource(R.string.engine_exoplayer_desc)
+                                    PhoneEngineStore.Engine.MPV -> stringResource(R.string.engine_mpv_desc)
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.engine_switch_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         },
         confirmButton = {},

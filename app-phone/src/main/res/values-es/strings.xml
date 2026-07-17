@@ -382,4 +382,12 @@
     <string name="no_synopsis_available">Sinopsis no disponible.</string>
     <string name="search_synopsis">Buscar sinopsis en TMDB</string>
     <string name="lunaiptv_fork_info">Esta app es una bifurcación gratuita y de código abierto de OwnTV. Nadie debería pagar por usar LunaIPtv.</string>
+
+    <!-- Player engine -->
+    <string name="player_engine">Motor de reproducción</string>
+    <string name="engine_exoplayer">ExoPlayer</string>
+    <string name="engine_exoplayer_desc">Reproductor Android predeterminado. Buena compatibilidad.</string>
+    <string name="engine_mpv">mpv</string>
+    <string name="engine_mpv_desc">Basado en FFmpeg. Mejor soporte de códecs y red.</string>
+    <string name="engine_switch_hint">Se aplicará en la próxima reproducción.</string>
 </resources>

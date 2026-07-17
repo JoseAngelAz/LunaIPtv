@@ -190,6 +190,13 @@ class SettingsViewModel(
         viewModelScope.launch { settings.setAutoPlayNext(enabled) }
     }
 
+    val synopsisScrollSpeed: StateFlow<com.lunaiptv.ui.theme.SynopsisScrollSpeed> = settings.synopsisScrollSpeed
+        .stateIn(viewModelScope, SharingStarted.Eagerly, com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF)
+
+    fun setSynopsisScrollSpeed(speed: com.lunaiptv.ui.theme.SynopsisScrollSpeed) {
+        viewModelScope.launch { settings.setSynopsisScrollSpeed(speed) }
+    }
+
     val catchupTimezone: StateFlow<SettingsRepository.CatchupTimezone> = settings.catchupTimezone
         .stateIn(viewModelScope, SharingStarted.Eagerly, SettingsRepository.CatchupTimezone.MANUAL)
 

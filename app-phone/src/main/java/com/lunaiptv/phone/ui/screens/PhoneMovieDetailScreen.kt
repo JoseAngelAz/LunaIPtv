@@ -215,7 +215,7 @@ fun PhoneMovieDetailScreen(
                     )
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(
-                        onClick = { vm.loadMovieMeta(movie) },
+                        onClick = { vm.retryMovieMeta(movie) },
                         shape = RoundedCornerShape(8.dp),
                     ) {
                         Icon(Icons.Default.Search, contentDescription = null, modifier = Modifier.size(18.dp))

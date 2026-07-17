@@ -129,6 +129,8 @@ class SettingsRepository(private val context: Context) {
         val METADATA_SERVER_URL = stringPreferencesKey("metadata_server_url")
         // Language ("en" or "es")
         val LANGUAGE = stringPreferencesKey("language")
+        // Synopsis auto-scroll speed (Off/Slow/Medium/Fast)
+        val SYNOPSIS_SCROLL_SPEED = stringPreferencesKey("synopsis_scroll_speed")
     }
 
     // --- Live TV: remember the last focused channel so reopening lands focus back on it ---
@@ -622,6 +624,16 @@ class SettingsRepository(private val context: Context) {
         context.dataStore.edit { it[Keys.LANGUAGE] = lang }
     }
 
+    /** Auto-scroll speed for synopsis text in series detail views (Off/Slow/Medium/Fast). */
+    val synopsisScrollSpeed: Flow<com.lunaiptv.ui.theme.SynopsisScrollSpeed> = context.dataStore.data.map { prefs ->
+        prefs[Keys.SYNOPSIS_SCROLL_SPEED]?.let { runCatching { com.lunaiptv.ui.theme.SynopsisScrollSpeed.valueOf(it) }.getOrNull() }
+            ?: com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF
+    }
+
+    suspend fun setSynopsisScrollSpeed(speed: com.lunaiptv.ui.theme.SynopsisScrollSpeed) {
+        context.dataStore.edit { it[Keys.SYNOPSIS_SCROLL_SPEED] = speed.name }
+    }
+
     val uiZoomPercent: Flow<Int> = context.dataStore.data.map { prefs ->
         UiZoom.clamp(prefs[Keys.UI_ZOOM_PCT] ?: UiZoom.DEFAULT)
     }
@@ -715,6 +727,8 @@ class SettingsRepository(private val context: Context) {
         // device a path that no longer exists is harmless — StorageAccess.resolveRoot falls back to app
         // storage, so a stale restore never breaks downloads.
         Keys.DOWNLOAD_ROOT,
+        // Synopsis auto-scroll speed
+        Keys.SYNOPSIS_SCROLL_SPEED,
     )
     private val backupIntKeys = listOf(Keys.UI_ZOOM_PCT, Keys.AUDIO_DELAY_MS, Keys.CATCHUP_OFFSET_MIN, Keys.PROXY_PORT)
     private val backupBoolKeys = listOf(
