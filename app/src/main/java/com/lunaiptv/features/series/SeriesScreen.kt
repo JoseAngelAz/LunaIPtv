@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -132,7 +133,6 @@ fun SeriesScreen(
             onChildFocused = onChildFocused,
             restoreSelected = returnFromShow,
             onRestoredSelected = { returnFromShow = false },
-            synopsisScrollSpeed = synopsisScrollSpeed,
             modifier = modifier,
         )
     }
@@ -204,7 +204,6 @@ private fun SeriesGrid(
     onChildFocused: () -> Unit,
     restoreSelected: Boolean = false,
     onRestoredSelected: () -> Unit = {},
-    synopsisScrollSpeed: com.lunaiptv.ui.theme.SynopsisScrollSpeed = com.lunaiptv.ui.theme.SynopsisScrollSpeed.OFF,
     modifier: Modifier,
 ) {
     val railItems by vm.railItems.collectAsStateWithLifecycle()
@@ -550,7 +549,7 @@ private fun SeriesGrid(
                 if (!plot.isNullOrBlank()) {
                     item("plot") {
                         Spacer(Modifier.height(8.dp))
-                        AutoScrollText(plot, synopsisScrollSpeed)
+                        key(plot) { AutoScrollText(plot, com.lunaiptv.ui.theme.SynopsisScrollSpeed.MEDIUM) }
                     }
                 }
             }
@@ -1285,8 +1284,9 @@ private fun AutoScrollText(
         return
     }
     val scrollState = rememberScrollState()
-    LaunchedEffect(text, speed) {
-        kotlinx.coroutines.delay(400)
+    val textKey = remember(text) { text.hashCode() }
+    LaunchedEffect(textKey, speed) {
+        kotlinx.coroutines.delay(800)
         val maxScroll = scrollState.maxValue
         if (maxScroll <= 0) return@LaunchedEffect
         val pauseMs = 2500L
@@ -1295,7 +1295,7 @@ private fun AutoScrollText(
         while (true) {
             scrollState.animateScrollTo(maxScroll, animationSpec = androidx.compose.animation.core.tween(tweenDuration, easing = easing))
             kotlinx.coroutines.delay(pauseMs)
-            scrollState.animateScrollTo(0, animationSpec = androidx.compose.animation.core.tween(tweenDuration, easing = easing))
+            scrollState.scrollTo(0)
             kotlinx.coroutines.delay(pauseMs)
         }
     }
