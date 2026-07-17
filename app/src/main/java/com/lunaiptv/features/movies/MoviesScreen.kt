@@ -360,6 +360,9 @@ fun MoviesScreen(
                                             val prog = movieProgress[movie.id]
                                             val done = prog?.let { vm.isMovieCompleted(it) } == true
                                             val isLastColumn = colIndex == columns - 1
+                                            val providerPlot = movie.plot?.takeIf { it.isNotBlank() }
+                                            val tmdbOverview = selectedMovieMeta?.takeIf { it.movieId == movie.id }?.cache?.overview
+                                            val effectivePlot = if (metadataMode.tmdbWins) tmdbOverview ?: providerPlot else providerPlot ?: tmdbOverview
                                             PosterCard(
                                                 posterUrl = movie.posterUrl,
                                                 title = movie.name,
@@ -368,7 +371,7 @@ fun MoviesScreen(
                                                 progressFraction = if (done || prog == null || prog.durationMs <= 0) null
                                                 else (prog.positionMs.toFloat() / prog.durationMs).takeIf { it > 0f },
                                                 isFavorite = favoriteIds.contains(movie.id),
-                                                plot = movie.plot,
+                                                plot = effectivePlot,
                                                 modifier = Modifier.weight(1f).then(
                                                     when {
                                                         movie.id == contextMovieId -> Modifier.focusRequester(contextFocus)
