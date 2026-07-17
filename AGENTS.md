@@ -139,6 +139,8 @@ LunaIPtv/
 - **Phone detail screen top bar**: Uses `.statusBarsPadding()` to avoid overlapping with phone status bar icons.
 - **Phone settings icons**: All SettingOption entries have leading icons (Palette, Language, Storage, etc.).
 - **Auto-scroll synopsis (TV series)**: `SynopsisScrollSpeed` enum in `:core` (`OFF/SLOW/MEDIUM/FAST` with `dpPerSec` 0/15/30/50). Setting stored in `SettingsRepository.Keys.SYNOPSIS_SCROLL_SPEED`. `AutoScrollText` composable in `SeriesScreen.kt` uses `animateScrollTo` with `LinearEasing`, 2.5s pause at each end, `heightIn(max=150.dp)`. Applied to both series grid preview pane and `EpisodeDetailPane`. Default: OFF.
+- **Movie poster focus synopsis**: `PosterCard` shows synopsis auto-scroll after 3s D-pad focus hold. `plot` param added. `AutoScrollSynopsisBox` (private in PosterCard.kt) renders white text on dark background, scrolls at 25px/sec, 2.5s pause at top/bottom. Resets on focus loss or movie change.
+- **TV app icon**: Uses `icono_lunaiptv_app_2.png` in all mipmap folders (replaced old adaptive icon XML + webp). Phone app uses the same image.
 
 ## Git Info
 - **Remote**: `origin https://github.com/JoseAngelAz/LunaIPtv.git` (your personal repo)
