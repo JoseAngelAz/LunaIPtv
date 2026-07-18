@@ -390,4 +390,22 @@
     <string name="engine_mpv">mpv</string>
     <string name="engine_mpv_desc">Basado en FFmpeg. Mejor soporte de códecs y red.</string>
     <string name="engine_switch_hint">Se aplicará en la próxima reproducción.</string>
+
+    <!-- Setup Wizard -->
+    <string name="wizard_welcome_title">Bienvenido a LunaIPtv</string>
+    <string name="wizard_welcome_body">Para ver TV en vivo, películas y series, necesitas agregar una fuente IPTV de tu proveedor.</string>
+    <string name="wizard_get_started">Comenzar</string>
+    <string name="wizard_skip">Omitir tutorial</string>
+    <string name="wizard_select_type_title">Elige el tipo de lista</string>
+    <string name="wizard_select_type_body">Pregunta a tu proveedor IPTV qué tipo usa.</string>
+    <string name="wizard_xtream_desc">Servidor + usuario + contraseña (la mayoría de proveedores)</string>
+    <string name="wizard_m3u_desc">URL directa a un archivo de lista .m3u</string>
+    <string name="wizard_fill_form_title">Completa tus datos</string>
+    <string name="wizard_hint_server">Ingresa la URL del servidor y credenciales</string>
+    <string name="wizard_hint_credentials">Opcionalmente configura un User-Agent personalizado</string>
+    <string name="wizard_hint_import">Toca \"Iniciar Importación\" para descargar tu catálogo</string>
+    <string name="wizard_open_add_source">Abrir formulario de agregar fuente</string>
+    <string name="wizard_done_title">¡Todo listo!</string>
+    <string name="wizard_done_body">Tu contenido se está importando. Puedes empezar a navegar cuando termine.</string>
+    <string name="wizard_start_watching">Empezar a ver</string>
 </resources>

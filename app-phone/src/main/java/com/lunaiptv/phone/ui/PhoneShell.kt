@@ -1,6 +1,7 @@
 package com.lunaiptv.phone.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -69,6 +70,8 @@ import com.lunaiptv.phone.ui.screens.PhoneManageSourcesScreen
 import com.lunaiptv.phone.ui.screens.PhoneAddSourceScreen
 import com.lunaiptv.phone.ui.screens.PhonePlayerScreen
 import com.lunaiptv.phone.ui.screens.PhoneVideoPlayerSettingsScreen
+import com.lunaiptv.phone.ui.screens.PhoneSetupWizard
+import com.lunaiptv.phone.ui.screens.WizardStep
 
 sealed class PhoneScreen(val route: String, val label: String, val icon: ImageVector) {
     data object Home : PhoneScreen("home", "Home", Icons.Filled.Home)
@@ -123,6 +126,22 @@ fun PhoneShell() {
     val context = LocalContext.current
 
     val downloads by downloadsVm.downloads.collectAsStateWithLifecycle()
+    val allSources by sourceVm.sources.collectAsStateWithLifecycle()
+
+    // Setup wizard: show when no sources exist
+    var showWizard by remember { mutableStateOf(false) }
+    var wizardStep by remember { mutableStateOf(WizardStep.WELCOME) }
+    var wizardPendingKind by remember { mutableStateOf<String?>(null) }
+
+    // Detect empty sources after initial load
+    LaunchedEffect(allSources) {
+        if (allSources.isEmpty() && !showWizard) {
+            showWizard = true
+        } else if (allSources.isNotEmpty() && showWizard) {
+            // Sources added — auto-dismiss wizard
+            showWizard = false
+        }
+    }
 
     // Stop live TV player when navigating away from the Live tab
     val currentRoute = currentDestination?.route
@@ -268,152 +287,184 @@ fun PhoneShell() {
                 )
             }
             else -> {
-                NavHost(
-                    navController = navController,
-                    startDestination = PhoneScreen.Home.route,
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    composable(PhoneScreen.Home.route) {
-                        PhoneHomeScreen(
-                            vm = homeVm,
-                            onPlayContinueMovie = { item ->
-                                scope.launch {
-                                    val movie = homeVm.getMovieById(item.targetItemId)
-                                    if (movie != null) {
-                                        moviesVm.playMovie(movie, item.positionMs)
-                                        showPlayer = PlayerNav(movie.name, movie.streamUrl, movieId = movie.id)
+                Box(Modifier.padding(innerPadding)) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = PhoneScreen.Home.route,
+                    ) {
+                        composable(PhoneScreen.Home.route) {
+                            PhoneHomeScreen(
+                                vm = homeVm,
+                                onPlayContinueMovie = { item ->
+                                    scope.launch {
+                                        val movie = homeVm.getMovieById(item.targetItemId)
+                                        if (movie != null) {
+                                            moviesVm.playMovie(movie, item.positionMs)
+                                            showPlayer = PlayerNav(movie.name, movie.streamUrl, movieId = movie.id)
+                                        }
                                     }
-                                }
-                            },
-                            onPlayContinueSeries = { item ->
-                                scope.launch {
-                                    val series = homeVm.getSeriesForEpisode(item.targetItemId)
-                                    if (series != null) showSeriesDetail = series
-                                }
-                            },
-                            onPlayChannel = { ch ->
-                                liveVm.playChannel(ch)
-                                navigateToTab(PhoneScreen.Live.route)
-                            },
-                            onFavMovie = { movie -> showMovieDetail = movie },
-                            onFavSeries = { series -> showSeriesDetail = series },
-                        )
-                    }
-                    composable(PhoneScreen.Live.route) {
-                        PhoneLiveScreen(
-                            vm = liveVm,
-                            onOpenFullScreen = {
-                                val ch = liveVm.selectedChannel.value
-                                if (ch != null) {
-                                    showPlayer = PlayerNav(ch.name, ch.streamUrl, isLive = true)
-                                }
-                            },
-                        )
-                    }
-                    composable(PhoneScreen.Movies.route) {
-                        PhoneMoviesScreen(
-                            vm = moviesVm,
-                            onMovieClick = { movie -> showMovieDetail = movie },
-                        )
-                    }
-                    composable(PhoneScreen.Series.route) {
-                        PhoneSeriesScreen(
-                            vm = seriesVm,
-                            onSeriesClick = { s -> showSeriesDetail = s },
-                        )
-                    }
-                    composable(PhoneScreen.Search.route) {
-                        PhoneSearchScreen(
-                            vm = searchVm,
-                            onPlayChannel = { ch ->
-                                liveVm.playChannel(ch)
-                                navigateToTab(PhoneScreen.Live.route)
-                            },
-                            onPlayMovie = { m -> showMovieDetail = m },
-                            onOpenSeries = { s -> showSeriesDetail = s },
-                        )
-                    }
-                    composable(PhoneScreen.Settings.route) {
-                        PhoneSettingsScreen(
-                            vm = settingsVm,
-                            onBack = { navController.popBackStack() },
-                            onProfiles = { navController.navigate("profiles") },
-                            onManageSources = { navController.navigate("manage-sources") },
-                            onEpgSources = { navController.navigate("epg-sources") },
-                            onNetworkSettings = { navController.navigate("network-settings") },
-                            onVideoPlayerSettings = { navController.navigate("video-player-settings") },
-                            onBackup = { navController.navigate("backup") },
-                            onDownloads = { navController.navigate("downloads") },
-                        )
-                    }
-                    composable("profiles") {
-                        PhoneProfileScreen(
-                            vm = profileVm,
-                            onProfileSelected = {
-                                navController.popBackStack()
-                                navigateToTab(PhoneScreen.Home.route)
-                            },
-                        )
-                    }
-                    composable("manage-sources") {
-                        PhoneManageSourcesScreen(
-                            vm = sourceVm,
-                            onBack = { navController.popBackStack() },
-                            onAddSource = { navController.navigate("add-source") },
-                            onEditSource = { source -> navController.navigate("edit-source/${source.id}") },
-                        )
-                    }
-                    composable("add-source") {
-                        PhoneAddSourceScreen(
-                            vm = sourceVm,
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                    composable("edit-source/{sourceId}") { backStackEntry ->
-                        val sourceId = backStackEntry.arguments?.getString("sourceId")?.toLongOrNull()
-                        val sources by sourceVm.sources.collectAsStateWithLifecycle()
-                        val source = sources.find { it.id == sourceId }
-                        val playlistAutoRefresh by sourceVm.playlistAutoRefresh.collectAsStateWithLifecycle()
-                        val defaultId by sourceVm.defaultSourceId.collectAsStateWithLifecycle()
-                        if (source != null) {
+                                },
+                                onPlayContinueSeries = { item ->
+                                    scope.launch {
+                                        val series = homeVm.getSeriesForEpisode(item.targetItemId)
+                                        if (series != null) showSeriesDetail = series
+                                    }
+                                },
+                                onPlayChannel = { ch ->
+                                    liveVm.playChannel(ch)
+                                    navigateToTab(PhoneScreen.Live.route)
+                                },
+                                onFavMovie = { movie -> showMovieDetail = movie },
+                                onFavSeries = { series -> showSeriesDetail = series },
+                            )
+                        }
+                        composable(PhoneScreen.Live.route) {
+                            PhoneLiveScreen(
+                                vm = liveVm,
+                                onOpenFullScreen = {
+                                    val ch = liveVm.selectedChannel.value
+                                    if (ch != null) {
+                                        showPlayer = PlayerNav(ch.name, ch.streamUrl, isLive = true)
+                                    }
+                                },
+                            )
+                        }
+                        composable(PhoneScreen.Movies.route) {
+                            PhoneMoviesScreen(
+                                vm = moviesVm,
+                                onMovieClick = { movie -> showMovieDetail = movie },
+                            )
+                        }
+                        composable(PhoneScreen.Series.route) {
+                            PhoneSeriesScreen(
+                                vm = seriesVm,
+                                onSeriesClick = { s -> showSeriesDetail = s },
+                            )
+                        }
+                        composable(PhoneScreen.Search.route) {
+                            PhoneSearchScreen(
+                                vm = searchVm,
+                                onPlayChannel = { ch ->
+                                    liveVm.playChannel(ch)
+                                    navigateToTab(PhoneScreen.Live.route)
+                                },
+                                onPlayMovie = { m -> showMovieDetail = m },
+                                onOpenSeries = { s -> showSeriesDetail = s },
+                            )
+                        }
+                        composable(PhoneScreen.Settings.route) {
+                            PhoneSettingsScreen(
+                                vm = settingsVm,
+                                onBack = { navController.popBackStack() },
+                                onProfiles = { navController.navigate("profiles") },
+                                onManageSources = { navController.navigate("manage-sources") },
+                                onEpgSources = { navController.navigate("epg-sources") },
+                                onNetworkSettings = { navController.navigate("network-settings") },
+                                onVideoPlayerSettings = { navController.navigate("video-player-settings") },
+                                onBackup = { navController.navigate("backup") },
+                                onDownloads = { navController.navigate("downloads") },
+                            )
+                        }
+                        composable("profiles") {
+                            PhoneProfileScreen(
+                                vm = profileVm,
+                                onProfileSelected = {
+                                    navController.popBackStack()
+                                    navigateToTab(PhoneScreen.Home.route)
+                                },
+                            )
+                        }
+                        composable("manage-sources") {
+                            PhoneManageSourcesScreen(
+                                vm = sourceVm,
+                                onBack = { navController.popBackStack() },
+                                onAddSource = { navController.navigate("add-source") },
+                                onEditSource = { source -> navController.navigate("edit-source/${source.id}") },
+                            )
+                        }
+                        composable("add-source") {
                             PhoneAddSourceScreen(
                                 vm = sourceVm,
                                 onBack = { navController.popBackStack() },
-                                editing = source,
-                                initialAutoRefresh = playlistAutoRefresh[source.id] ?: com.lunaiptv.features.settings.data.PlaylistAutoRefresh.OFF,
-                                initialIsDefault = source.id == defaultId,
-                                showDefaultToggle = sources.size > 1,
+                            )
+                        }
+                        composable("edit-source/{sourceId}") { backStackEntry ->
+                            val sourceId = backStackEntry.arguments?.getString("sourceId")?.toLongOrNull()
+                            val editSources by sourceVm.sources.collectAsStateWithLifecycle()
+                            val source = editSources.find { it.id == sourceId }
+                            val playlistAutoRefresh by sourceVm.playlistAutoRefresh.collectAsStateWithLifecycle()
+                            val defaultId by sourceVm.defaultSourceId.collectAsStateWithLifecycle()
+                            if (source != null) {
+                                PhoneAddSourceScreen(
+                                    vm = sourceVm,
+                                    onBack = { navController.popBackStack() },
+                                    editing = source,
+                                    initialAutoRefresh = playlistAutoRefresh[source.id] ?: com.lunaiptv.features.settings.data.PlaylistAutoRefresh.OFF,
+                                    initialIsDefault = source.id == defaultId,
+                                    showDefaultToggle = editSources.size > 1,
+                                )
+                            }
+                        }
+                        composable("epg-sources") {
+                            PhoneEPGSourcesScreen(
+                                vm = epgVm,
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+                        composable("network-settings") {
+                            PhoneNetworkSettingsScreen(
+                                vm = settingsVm,
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+                        composable("video-player-settings") {
+                            PhoneVideoPlayerSettingsScreen(
+                                vm = settingsVm,
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+                        composable("backup") {
+                            PhoneBackupScreen(
+                                vm = backupVm,
+                                onBack = { navController.popBackStack() },
+                            )
+                        }
+                        composable("downloads") {
+                            PhoneDownloadsScreen(
+                                vm = downloadsVm,
+                                onBack = { navController.popBackStack() },
                             )
                         }
                     }
-                    composable("epg-sources") {
-                        PhoneEPGSourcesScreen(
-                            vm = epgVm,
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                    composable("network-settings") {
-                        PhoneNetworkSettingsScreen(
-                            vm = settingsVm,
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                    composable("video-player-settings") {
-                        PhoneVideoPlayerSettingsScreen(
-                            vm = settingsVm,
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                    composable("backup") {
-                        PhoneBackupScreen(
-                            vm = backupVm,
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                    composable("downloads") {
-                        PhoneDownloadsScreen(
-                            vm = downloadsVm,
-                            onBack = { navController.popBackStack() },
+
+                    if (showWizard) {
+                        PhoneSetupWizard(
+                            currentStep = wizardStep,
+                            onNext = {
+                                wizardStep = when (wizardStep) {
+                                    WizardStep.WELCOME -> WizardStep.SELECT_TYPE
+                                    WizardStep.SELECT_TYPE -> WizardStep.FILL_FORM
+                                    WizardStep.FILL_FORM -> WizardStep.DONE
+                                    WizardStep.DONE -> WizardStep.DONE
+                                }
+                            },
+                            onSkip = { showWizard = false },
+                            onSelectXtream = {
+                                wizardPendingKind = "xtream"
+                                wizardStep = WizardStep.FILL_FORM
+                                showWizard = false
+                                navController.navigate("add-source")
+                            },
+                            onSelectM3u = {
+                                wizardPendingKind = "m3u"
+                                wizardStep = WizardStep.FILL_FORM
+                                showWizard = false
+                                navController.navigate("add-source")
+                            },
+                            onStartImport = {
+                                showWizard = false
+                                navController.navigate("add-source")
+                            },
                         )
                     }
                 }
@@ -421,3 +472,4 @@ fun PhoneShell() {
         }
     }
 }
+
