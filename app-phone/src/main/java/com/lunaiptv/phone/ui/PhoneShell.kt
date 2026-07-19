@@ -131,15 +131,15 @@ fun PhoneShell() {
     // Setup wizard: show when no sources exist
     var showWizard by remember { mutableStateOf(false) }
     var wizardStep by remember { mutableStateOf(WizardStep.WELCOME) }
-    var wizardPendingKind by remember { mutableStateOf<String?>(null) }
+    var wizardDismissed by remember { mutableStateOf(false) }
 
-    // Detect empty sources after initial load
+    // Detect empty sources after initial load (only show wizard once per composition)
     LaunchedEffect(allSources) {
-        if (allSources.isEmpty() && !showWizard) {
+        if (allSources.isEmpty() && !showWizard && !wizardDismissed) {
             showWizard = true
         } else if (allSources.isNotEmpty() && showWizard) {
-            // Sources added — auto-dismiss wizard
             showWizard = false
+            wizardDismissed = true
         }
     }
 
@@ -443,26 +443,35 @@ fun PhoneShell() {
                             onNext = {
                                 wizardStep = when (wizardStep) {
                                     WizardStep.WELCOME -> WizardStep.SELECT_TYPE
-                                    WizardStep.SELECT_TYPE -> WizardStep.FILL_FORM
-                                    WizardStep.FILL_FORM -> WizardStep.DONE
+                                    WizardStep.SELECT_TYPE -> WizardStep.SELECT_TYPE
+                                    WizardStep.FILL_FORM -> WizardStep.FILL_FORM
                                     WizardStep.DONE -> WizardStep.DONE
                                 }
                             },
-                            onSkip = { showWizard = false },
-                            onSelectXtream = {
-                                wizardPendingKind = "xtream"
-                                wizardStep = WizardStep.FILL_FORM
+                            onBackStep = {
+                                wizardStep = when (wizardStep) {
+                                    WizardStep.SELECT_TYPE -> WizardStep.WELCOME
+                                    WizardStep.FILL_FORM -> WizardStep.SELECT_TYPE
+                                    else -> wizardStep
+                                }
+                            },
+                            onSkip = {
                                 showWizard = false
+                                wizardDismissed = true
+                            },
+                            onSelectXtream = {
+                                showWizard = false
+                                wizardDismissed = true
                                 navController.navigate("add-source")
                             },
                             onSelectM3u = {
-                                wizardPendingKind = "m3u"
-                                wizardStep = WizardStep.FILL_FORM
                                 showWizard = false
+                                wizardDismissed = true
                                 navController.navigate("add-source")
                             },
                             onStartImport = {
                                 showWizard = false
+                                wizardDismissed = true
                                 navController.navigate("add-source")
                             },
                         )

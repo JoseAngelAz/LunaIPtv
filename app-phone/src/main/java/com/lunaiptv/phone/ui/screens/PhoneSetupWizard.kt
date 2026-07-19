@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -36,12 +34,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +56,7 @@ enum class WizardStep {
 fun PhoneSetupWizard(
     currentStep: WizardStep,
     onNext: () -> Unit,
+    onBackStep: () -> Unit,
     onSkip: () -> Unit,
     onSelectXtream: () -> Unit,
     onSelectM3u: () -> Unit,
@@ -85,8 +82,8 @@ fun PhoneSetupWizard(
         ) { step ->
             when (step) {
                 WizardStep.WELCOME -> WelcomeStep(onNext = onNext, onSkip = onSkip)
-                WizardStep.SELECT_TYPE -> SelectTypeStep(onSelectXtream = onSelectXtream, onSelectM3u = onSelectM3u, onBack = onNext)
-                WizardStep.FILL_FORM -> FillFormStep(onStartImport = onStartImport, onBack = onNext)
+                WizardStep.SELECT_TYPE -> SelectTypeStep(onSelectXtream = onSelectXtream, onSelectM3u = onSelectM3u, onBack = onBackStep)
+                WizardStep.FILL_FORM -> FillFormStep(onStartImport = onStartImport, onBack = onBackStep)
                 WizardStep.DONE -> DoneStep(onDone = onSkip)
             }
         }
